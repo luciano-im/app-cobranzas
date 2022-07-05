@@ -1,0 +1,16 @@
+.content {
+  padding: 2rem 3rem;
+}
+
+.content h2 {
+  border-bottom: 1px solid #BBB;
+  margin-bottom: 2rem;
+}
+
+.content form {
+  max-width: 600px;
+}
+
+.content form input[type="submit"] {
+  margin-top: 1.5rem;
+}

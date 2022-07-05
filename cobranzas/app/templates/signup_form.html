@@ -1,24 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-  <h2>Crear Usuario</h2>
-  <form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-      <div class="mb-3">
-        <p>
-          {{ field.label_tag }}<br>
-          {{ field }}
-          {% if field.help_text %}
-            <small style="color: grey">{{ field.help_text }}</small>
-          {% endif %}
-          {% for error in field.errors %}
-            <p style="color: red">{{ error }}</p>
-          {% endfor %}
-        </p>
-      </div>
-    {% endfor %}
-    <button type="submit">Sign up</button>
-  </form>
+  <h2>Alta de Usuario</h2>
+  {% crispy form %}
 {% endblock %}
