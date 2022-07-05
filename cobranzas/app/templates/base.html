@@ -42,9 +42,9 @@
                   Clientes
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-customers">
-                  <li><a class="dropdown-item" href="/">Nuevo Cliente</a></li>
+                  <li><a class="dropdown-item" href="{% url 'create-customer' %}">Crear Cliente</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Listado de Clientes</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-customers' %}">Listado de Clientes</a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">

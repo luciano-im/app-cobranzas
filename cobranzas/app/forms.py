@@ -1,8 +1,9 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from app.models import User
+from app.models import User, Customer
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -19,3 +20,11 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = UserCreationForm.Meta.fields + ('is_collector',)
+
+
+class CustomerCreationForm(forms.ModelForm):
+    collector = forms.ModelChoiceField(queryset=User.objects.filter(is_collector=True))
+
+    class Meta:
+        model = Customer
+        fields = '__all__'

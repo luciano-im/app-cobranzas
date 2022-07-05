@@ -17,7 +17,7 @@
     <tbody>
       {% for user in users %}
         <tr>
-          <th scope="row" align="center">{{user.username}}</th>
+          <th scope="row">{{user.username}}</th>
           <td>{{user.first_name}} {{user.last_name}}</td>
           <td>
             {% if user.is_staff %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h2>Lista de Usuarios</h2>
+  
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Dirección</th>
+        <th scope="col">Ciudad</th>
+        <th scope="col">Teléfono</th>
+        <th scope="col">Cobrador</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for customer in customers %}
+        <tr>
+          <th scope="row">{{customer.name}}</th>
+          <td>{{customer.address}}</td>
+          <td>{{customer.get_city_display}}</td>
+          <td>{{customer.telephone}}</td>
+          <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
+          <td>
+            <a href="#" class="btn btn-primary">Editar</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
