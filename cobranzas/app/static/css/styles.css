@@ -14,3 +14,13 @@
 .content form input[type="submit"] {
   margin-top: 1.5rem;
 }
+
+.content table td,
+.content table th {
+  vertical-align: middle;
+}
+
+.content table td i,
+.content table th i {
+  font-size: 1.2rem;
+}

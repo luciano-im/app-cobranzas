@@ -14,3 +14,13 @@ class UserCreationView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'signup_form.html'
     success_url = '/'
+
+
+class UserListView(TemplateView):
+    template_name = 'list_users.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.all()
+        return context
+    
