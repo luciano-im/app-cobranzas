@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm
-from app.models import User, Customer
+from app.models import User, Customer, Sale
 
 
 class HomeView(TemplateView):
@@ -39,3 +39,10 @@ class CustomerListView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['customers'] = Customer.objects.all()
         return context
+
+
+class SaleCreationView(CreateView):
+    model = Sale
+    fields = '__all__'
+    template_name = 'create_sale.html'
+    success_url = '/'

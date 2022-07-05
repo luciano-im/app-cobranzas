@@ -7,6 +7,6 @@
   <form action="{% url 'create-customer' %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Submit" class="btn btn-primary">
+    <input type="submit" value="Crear Cliente" class="btn btn-primary">
   </form>
 {% endblock %}
