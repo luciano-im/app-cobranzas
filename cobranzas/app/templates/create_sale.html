@@ -43,45 +43,78 @@
 
 {% block extra_js %}
 <script>
+  //TODO: Please refactor this shit!
   const priceInput = document.getElementById('id_price');
   const installmentsInput = document.getElementById('id_installments');
   const installmentAmountInput = document.getElementById('id_installment_amount');
   const paymentSchemeRow1 = document.getElementById('payment-scheme-row-1');
   const paymentSchemeRow2 = document.getElementById('payment-scheme-row-2');
-  //const quantity = document.getElementById('quantity');
-  //const i = document.getElementById('i');
-  //const iAmount = document.getElementById('i_amount');
-  //const restAmount = document.getElementById('rest_amount');
 
-  installmentsInput.addEventListener('keyup', e => {
+  const togglePaymentSchemeRow = (row, action) => {
+    const th = row.querySelector('th');
+    const td = row.querySelectorAll('td');
+    if(action == 'hidden') {
+      th.style.visibility = 'hidden';
+      td[0].style.visibility = 'hidden';
+      td[1].style.visibility = 'hidden';
+    } else if(action == 'visible') {
+      th.style.visibility = 'visible';
+      td[0].style.visibility = 'visible';
+      td[1].style.visibility = 'visible';
+    }
+  }
+
+  const updatePaymentSchemeRow = (row, installments, installmentAmount) => {
+    const th = row.querySelector('th');
+    const td = row.querySelectorAll('td');
+    th.innerText = installments;
+    td[1].innerText = installmentAmount.toFixed(2);
+  }
+
+  priceInput.addEventListener('change', e => {
+    installmentsInput.value = '';
+    installmentAmountInput.value = '';
+    togglePaymentSchemeRow(paymentSchemeRow1, 'hidden');
+    togglePaymentSchemeRow(paymentSchemeRow2, 'hidden');
+  });
+
+  installmentsInput.addEventListener('change', e => {
     const price = parseFloat(priceInput.value);
     const installments = parseInt(installmentsInput.value);
     const installmentAmount = price / installments;
-    installmentAmountInput.value = installmentAmount;
+    installmentAmountInput.value = installmentAmount.toFixed(2);
 
-    const th = paymentSchemeRow1.querySelector('th');
-    th.innerText = installments;
-    th.style.visibility = 'visible';
-
-    const td = paymentSchemeRow1.querySelectorAll('td');
-    td[0].style.visibility = 'visible';
-    td[1].innerText = price / installments;
-    td[1].style.visibility = 'visible';
+    updatePaymentSchemeRow(paymentSchemeRow1, installments, installmentAmount);
+    togglePaymentSchemeRow(paymentSchemeRow1, 'visible');
+    togglePaymentSchemeRow(paymentSchemeRow2, 'hidden');
   });
 
-  installmentAmountInput.addEventListener('keyup', e => {
+  installmentAmountInput.addEventListener('change', e => {
     const price = parseFloat(priceInput.value);
     const installmentAmount = parseFloat(installmentAmountInput.value);
-    const installmentsQuantity = installmentAmount;
+    const installments = price / installmentAmount;
 
-    //if(Number.isInteger(installmentsQuantity)) {
-    //  i.innerText = installmentsQuantity;
-    //  iAmount.innerText = installmentAmount;
-    //} else {
-    //  i.innerText = Math.trunc(installmentsQuantity) - 1;
-    //  iAmount.innerText = installmentAmount;
-    //  restAmount.innerText = price - ((Math.trunc(installmentsQuantity) - 1) * installmentAmount);
-    //}
+    togglePaymentSchemeRow(paymentSchemeRow1, 'visible');
+    if(Number.isInteger(installments)) {
+      updatePaymentSchemeRow(paymentSchemeRow1, installments, installmentAmount);
+      togglePaymentSchemeRow(paymentSchemeRow2, 'hidden');
+    } else {
+      rest = installments - Math.trunc(installments);
+      if(rest > 0.6) {
+        newQuantity = Math.trunc(installments);
+        installmentsInput.value = newQuantity + 1;
+        lastInstallmentAmount = price - (newQuantity * installmentAmount);
+        updatePaymentSchemeRow(paymentSchemeRow1, newQuantity, installmentAmount);
+        updatePaymentSchemeRow(paymentSchemeRow2, 1, lastInstallmentAmount);
+      } else {
+        newQuantity = Math.trunc(installments) - 1;
+        installmentsInput.value = newQuantity + 1;
+        lastInstallmentAmount = price - (newQuantity * installmentAmount);
+        updatePaymentSchemeRow(paymentSchemeRow1, newQuantity, installmentAmount);
+        updatePaymentSchemeRow(paymentSchemeRow2, 1, lastInstallmentAmount);
+      }
+      togglePaymentSchemeRow(paymentSchemeRow2, 'visible');
+    }
   });
 </script>
 {% endblock %}
