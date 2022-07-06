@@ -17,7 +17,7 @@ import hmac
 from django.contrib import admin
 from django.urls import path, include
 
-from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerListView, SaleCreationView
+from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerListView, SaleCreationView, SaleListView
 
 
 urlpatterns = [
@@ -29,4 +29,5 @@ urlpatterns = [
     path('customers/create/', CustomerCreationView.as_view(), name='create-customer'),
     path('customers/list/', CustomerListView.as_view(), name='list-customers'),
     path('sales/create/', SaleCreationView.as_view(), name='create-sale'),
+    path('sales/list/', SaleListView.as_view(), name='list-sales'),
 ]

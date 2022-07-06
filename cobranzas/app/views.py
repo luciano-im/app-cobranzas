@@ -46,3 +46,12 @@ class SaleCreationView(CreateView):
     fields = '__all__'
     template_name = 'create_sale.html'
     success_url = '/'
+
+
+class SaleListView(TemplateView):
+    template_name = 'list_sales.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sales'] = Sale.objects.all()
+        return context
