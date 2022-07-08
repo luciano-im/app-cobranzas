@@ -18,7 +18,7 @@
     </thead>
     <tbody>
       {% for sale in sales %}
-        <tr>
+        <tr class="sale-detail">
           <th scope="row">{{sale.pk}}</th>
           <td>{{sale.date|date:"d/m/Y"}}</td>
           <td>{{sale.customer}}</td>
@@ -27,6 +27,41 @@
           <td>{{sale.installments}}</td>
           <td>
             <a href="#" class="btn btn-primary">Editar</a>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7" class="installments-detail">
+            <div class="accordion accordion-flush" id="accordion-flush-{{sale.pk}}">
+              <div class="accordion-item">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
+                  Detalle de Cuotas
+                </button>
+                <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#accordion-flush-{{sale.pk}}">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="row">#</th>
+                          <th>Importe</th>
+                          <th>Pagado</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in sale.saleinstallment_set.all %}
+                          <tr>
+                            <td scope="row">{{i.installment}}</td>
+                            <td>{{i.installment_amount}}</td>
+                            <td>{{i.paid_amount}}</td>
+                            <td>{{i.status}}</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
       {% endfor %}

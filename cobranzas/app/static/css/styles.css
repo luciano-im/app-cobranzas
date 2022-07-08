@@ -37,3 +37,39 @@
 .content #payment-scheme .payment-scheme-row td {
   visibility: hidden;
 }
+
+.accordion-item {
+  margin-bottom: 1rem;
+}
+
+.accordion-button {
+  font-size: .8rem;
+  padding: 0;
+}
+
+.accordion-button::after {
+  background-position: center;
+  background-size: 15px;
+  margin-left: 1rem;
+}
+
+.accordion-button.collapsed {
+  border-radius: 0 !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: transparent;
+}
+
+.accordion-body {
+  padding-top: .5rem;
+}
+
+.sale-detail {
+  border-bottom-color: transparent;
+}
+
+.installments-detail {
+  box-shadow: none !important;
+  padding-top: 0 !important;
+}
