@@ -96,23 +96,21 @@
 
     togglePaymentSchemeRow(paymentSchemeRow1, 'visible');
     if(Number.isInteger(installments)) {
+      installmentsInput.value = installments;
       updatePaymentSchemeRow(paymentSchemeRow1, installments, installmentAmount);
       togglePaymentSchemeRow(paymentSchemeRow2, 'hidden');
     } else {
       rest = installments - Math.trunc(installments);
-      if(rest > 0.6) {
-        newQuantity = Math.trunc(installments);
-        installmentsInput.value = newQuantity + 1;
-        lastInstallmentAmount = price - (newQuantity * installmentAmount);
-        updatePaymentSchemeRow(paymentSchemeRow1, newQuantity, installmentAmount);
-        updatePaymentSchemeRow(paymentSchemeRow2, 1, lastInstallmentAmount);
-      } else {
-        newQuantity = Math.trunc(installments) - 1;
-        installmentsInput.value = newQuantity + 1;
-        lastInstallmentAmount = price - (newQuantity * installmentAmount);
-        updatePaymentSchemeRow(paymentSchemeRow1, newQuantity, installmentAmount);
-        updatePaymentSchemeRow(paymentSchemeRow2, 1, lastInstallmentAmount);
+      newQuantity = Math.trunc(installments);
+
+      if(rest <= 0.6) {
+        newQuantity--;
       }
+
+      installmentsInput.value = newQuantity + 1;
+      lastInstallmentAmount = price - (newQuantity * installmentAmount);
+      updatePaymentSchemeRow(paymentSchemeRow1, newQuantity, installmentAmount);
+      updatePaymentSchemeRow(paymentSchemeRow2, 1, lastInstallmentAmount);
       togglePaymentSchemeRow(paymentSchemeRow2, 'visible');
     }
   });
