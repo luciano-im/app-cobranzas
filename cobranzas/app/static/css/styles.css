@@ -38,38 +38,44 @@
   visibility: hidden;
 }
 
-.accordion-item {
+.content .sales-list .sale-detail {
+  border-bottom-color: transparent;
+}
+
+.content .sales-list .installments-detail {
+  box-shadow: none !important;
+  padding: 0 1.5rem 1rem 1.5rem;
+}
+
+.content .sales-list .installments-detail table {
+  font-size: .9rem;
+  max-width: 500px;
+}
+
+.content .sales-list .installments-detail .accordion-item {
   margin-bottom: 1rem;
 }
 
-.accordion-button {
+.content .sales-list .installments-detail .accordion-button {
+  color: var(--bs-accordion-active-color);
   font-size: .8rem;
   padding: 0;
 }
 
-.accordion-button::after {
+.content .sales-list .installments-detail .accordion-button::after {
   background-position: center;
   background-size: 15px;
   margin-left: 1rem;
 }
 
-.accordion-button.collapsed {
+.content .sales-list .installments-detail .accordion-button.collapsed {
   border-radius: 0 !important;
 }
 
-.accordion-button:not(.collapsed) {
+.content .sales-list .installments-detail .accordion-button:not(.collapsed) {
   background-color: transparent;
 }
 
-.accordion-body {
+.content .sales-list .installments-detail .accordion-body {
   padding-top: .5rem;
-}
-
-.sale-detail {
-  border-bottom-color: transparent;
-}
-
-.installments-detail {
-  box-shadow: none !important;
-  padding-top: 0 !important;
 }

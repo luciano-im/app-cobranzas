@@ -4,7 +4,7 @@
 {% block content %}
   <h2>Lista de Ventas</h2>
   
-  <table class="table table-hover">
+  <table class="table table-hover sales-list">
     <thead>
       <tr>
         <th scope="col">ID</th>
@@ -39,7 +39,7 @@
                 <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#accordion-flush-{{sale.pk}}">
                   <div class="accordion-body">
                     <table class="table">
-                      <thead>
+                      <thead class="table-light">
                         <tr>
                           <th scope="row">#</th>
                           <th>Importe</th>
