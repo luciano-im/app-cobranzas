@@ -10,7 +10,7 @@
       <select name="select-customer" id="select-customer" class="form-select" required>
         <option disabled selected> -- Selecciona un Cliente -- </option>
         {% for customer in customers %}
-        <option value="{{customer.pk}}">{{customer.name}}</option>
+        <option value="{{customer.pk}}" {% if selected_customer %}selected{% endif %}>{{customer.name}}</option>
         {% endfor %}
       </select>
     </div>
