@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<h2>Nuevo Cobro</h2>
+<form action="{% url 'create-collection' %}" method="get" id="filter-customer" name="filter-customer">
+  <div class="row">
+    <div class="col-8">
+      <select name="select-customer" id="select-customer" class="form-select" required>
+        <option disabled selected> -- Selecciona un Cliente -- </option>
+        {% for customer in customers %}
+        <option value="{{customer.pk}}">{{customer.name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+  </div>
+</form>
+
+<div class="accordion accordion-flush create-collection">
+  {% regroup salesinstallments by sale as sales_list %}
+  <form action="">
+    {% for sale, installments_list in sales_list %}
+    <div class="accordion-item">
+      <div style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-secondary">#{{sale.pk}}</li>
+          <li class="breadcrumb-item text-secondary">{{sale.date|date:"d/m/Y"}}</li>
+          <li class="breadcrumb-item text-secondary" aria-current="page">{{sale.installments}} cuotas</li>
+          <!-- TODO: Cobrado y pendiente de cobrar -->
+          <li class="breadcrumb-item text-secondary" aria-current="page">Cobrado: $000</li>
+          <li class="breadcrumb-item text-secondary" aria-current="page">Pendiente: $000</li>
+        </ol>
+      </div>
+      <h3 class="accordion-header" id="heading-{{sale.pk}}">{{sale.product}}</h3>
+      <!--<h3 class="accordion-header" id="heading-{{sale.pk}}">
+          <small class="text-secondary">#{{sale.pk}} |</small> {{sale.product}}
+        </h3>-->
+      {% regroup installments_list by group as group_list %}
+      {% with last_installment=group_list|length_is:"1" %}
+      {% for group, installments in group_list %}
+      {% if group == "due" %}
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Cuota</th>
+            <th scope="col">Importe Total</th>
+            <th scope="col">Importe Pagado</th>
+            <th scope="col">A Pagar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in installments %}
+          <tr>
+            <th scope="row">
+              <input class="form-check-input check-installment" type="checkbox" value=""
+                name="check-{{sale.pk}}-{{i.installment}}" id="check-{{sale.pk}}-{{i.installment}}"> {{i.installment}}
+            </th>
+            <td>
+              {{i.installment_amount}}
+              <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
+                id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}">
+            </td>
+            <td>
+              {{i.paid_amount}}
+              <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
+                value="{{i.paid_amount}}">
+            </td>
+            <td>
+              <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
+                class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
+                id="payment-{{sale.pk}}-{{i.installment}}" value="{{i.paid_amount}}" data-old-value="0.00">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
+        Ver cuotas pendientes
+      </button>
+      {% elif group == "future" %}
+      <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+        aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Cuota</th>
+              <th scope="col">Importe Total</th>
+              <th scope="col">Importe Pagado</th>
+              <th scope="col">A Pagar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in installments %}
+            <tr>
+              <th scope="row">
+                <input class="form-check-input check-installment" type="checkbox" value=""
+                  name="check-{{sale.pk}}-{{i.installment}}" id="check-{{sale.pk}}-{{i.installment}}"> {{i.installment}}
+              </th>
+              <td>
+                {{i.installment_amount}}
+                <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
+                  id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}">
+              </td>
+              <td>
+                {{i.paid_amount}}
+                <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
+                  value="{{i.paid_amount}}">
+              </td>
+              <td>
+                <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
+                  class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
+                  id="payment-{{sale.pk}}-{{i.installment}}" value="{{i.paid_amount}}" data-old-value="0.00">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% if last_installment %}
+      <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+        aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+        No hay mas cuotas pendientes
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endwith %}
+    </div>
+    <br><br><br><br>
+    {% endfor %}
+    <div class="totals d-flex flex-column align-items-end mb-5">
+      <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+      <input type="submit" value="Guardar" class="btn btn-primary">
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const checkInputs = document.querySelectorAll('.check-installment');
+  const paymentInputs = document.querySelectorAll('.payment-input');
+  const totalTag = document.getElementById('total');
+  let total = 0.0;
+
+  checkInputs.forEach(checkbox => {
+    checkbox.addEventListener('change', e => {
+      const name = checkbox.name.replace('check-', '');
+      const paymentInput = document.getElementById(`payment-${name}`);
+      const totalAmount = parseFloat(document.getElementById(`totalamount-${name}`).value);
+      const paidAmount = parseFloat(document.getElementById(`paid-${name}`).value);
+      // preserves old value
+      paymentInput.dataset.oldValue = paymentInput.value;
+      if (checkbox.checked) {
+        const payment = paidAmount > 0 ? totalAmount - paidAmount : totalAmount;
+        paymentInput.value = payment.toFixed(2);
+        updateTotal(payment);
+      } else {
+        updateTotal(-parseFloat(paymentInput.value));
+        paymentInput.value = 0.0.toFixed(2);
+      }
+    });
+  });
+
+  paymentInputs.forEach(input => {
+    input.addEventListener('click', e => {
+      // preserves old value
+      input.dataset.oldValue = input.value;
+    });
+  });
+
+  //The select event fires when some text has been selected.
+  paymentInputs.forEach(input => {
+    input.addEventListener('select', e => {
+      // preserves old value
+      input.dataset.oldValue = input.value;
+    });
+  });
+
+  paymentInputs.forEach(input => {
+    input.addEventListener('change', e => {
+      const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
+      const currentValue = parseFloat(input.value) || 0.0;
+
+      console.log(total, oldValue, currentValue, currentValue - oldValue);
+      updateTotal(currentValue === 0.0 ? -oldValue : currentValue - oldValue);
+      console.log(total);
+    });
+  });
+
+  const updateTotal = amount => {
+    total += amount;
+    totalTag.innerText = total.toFixed(2);
+  };
+</script>
+{% endblock %}

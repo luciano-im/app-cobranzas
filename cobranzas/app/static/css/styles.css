@@ -79,3 +79,20 @@
 .content .sales-list .installments-detail .accordion-body {
   padding-top: .5rem;
 }
+
+.content .create-collection {
+  margin-top: 5rem;
+}
+
+.content .create-collection .check-installment {
+  margin-right: .5rem;
+}
+
+.content .create-collection .payment-input {
+  text-align: right;
+  width: auto;
+}
+
+.content .create-collection form {
+  max-width: 100%;
+}
