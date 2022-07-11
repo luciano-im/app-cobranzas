@@ -27,10 +27,19 @@ class Customer(models.Model):
         return self.name
 
 
+class Product(models.Model):
+    name = models.CharField(max_length=255, db_index=True, verbose_name=_('Name'))
+    brand = models.CharField(max_length=255, db_index=True, verbose_name=_('Brand'))
+    price = models.FloatField(default=0.00, verbose_name=_('Price'))
+    sku = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('SKU'))
+
+    def __str__(self):
+        return f'{self.pk} - {self.name} {self.brand}'
+
+
 class Sale(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, db_index=True, on_delete=models.CASCADE)
-    product = models.CharField(max_length=150, db_index=True, verbose_name=_('Product'))
     price = models.FloatField(verbose_name=_('Price'))
     installment_amount = models.FloatField(verbose_name=_('Installment Amount'))
     installments = models.IntegerField(
@@ -42,6 +51,15 @@ class Sale(models.Model):
 
     def __str__(self):
         return f'{self.date} - {self.customer.name} - {self.product}'
+
+
+class SaleProduct(models.Model):
+    sale = models.ForeignKey(Sale, db_index=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, db_index=True, on_delete=models.RESTRICT)
+    price = models.FloatField(verbose_name=_('Unit Price'))
+
+    def __str__(self):
+        return f'{self.sale.pk} - {self.product.name} - {self.price}'
 
 
 class SaleInstallment(models.Model):
@@ -94,7 +112,7 @@ class Collection(models.Model):
             raise ValidationError(
                 {'amount': _('Amount can not be greater than installment total amount')}
             )
-    
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
