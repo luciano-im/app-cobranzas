@@ -22,7 +22,8 @@
 
 <div class="accordion accordion-flush create-collection">
   {% regroup salesinstallments by sale as sales_list %}
-  <form action="">
+  <form action="{% url 'create-collection' %}" method="post">
+    {% csrf_token %}
     {% for sale, installments_list in sales_list %}
     <div class="accordion-item">
       <div style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
@@ -56,23 +57,23 @@
           {% for i in installments %}
           <tr>
             <th scope="row">
-              <input class="form-check-input check-installment" type="checkbox" value=""
-                name="check-{{sale.pk}}-{{i.installment}}" id="check-{{sale.pk}}-{{i.installment}}"> {{i.installment}}
+              <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
+                name="check"> {{i.installment}}
             </th>
             <td>
               {{i.installment_amount}}
               <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}">
+                id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
             </td>
             <td>
               {{i.paid_amount}}
               <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                value="{{i.paid_amount}}">
+                value="{{i.paid_amount}}" disabled="disabled">
             </td>
             <td>
               <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
                 class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                id="payment-{{sale.pk}}-{{i.installment}}" value="{{i.paid_amount}}" data-old-value="0.00">
+                id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
             </td>
           </tr>
           {% endfor %}
@@ -98,23 +99,23 @@
             {% for i in installments %}
             <tr>
               <th scope="row">
-                <input class="form-check-input check-installment" type="checkbox" value=""
-                  name="check-{{sale.pk}}-{{i.installment}}" id="check-{{sale.pk}}-{{i.installment}}"> {{i.installment}}
+                <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
+                  name="check"> {{i.installment}}
               </th>
               <td>
                 {{i.installment_amount}}
                 <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                  id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}">
+                  id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
               </td>
               <td>
                 {{i.paid_amount}}
                 <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                  value="{{i.paid_amount}}">
+                  value="{{i.paid_amount}}" disabled="disabled">
               </td>
               <td>
                 <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
                   class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                  id="payment-{{sale.pk}}-{{i.installment}}" value="{{i.paid_amount}}" data-old-value="0.00">
+                  id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
               </td>
             </tr>
             {% endfor %}
@@ -150,7 +151,7 @@
 
   checkInputs.forEach(checkbox => {
     checkbox.addEventListener('change', e => {
-      const name = checkbox.name.replace('check-', '');
+      const name = checkbox.value;
       const paymentInput = document.getElementById(`payment-${name}`);
       const totalAmount = parseFloat(document.getElementById(`totalamount-${name}`).value);
       const paidAmount = parseFloat(document.getElementById(`paid-${name}`).value);

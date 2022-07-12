@@ -100,3 +100,12 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
                 order_by('sale', 'group', 'status', 'installment')
 
         return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        checkboxes = request.POST.getlist('check')
+        post_data = request.POST.dict()
+        for check in checkboxes:
+            print(check)
+            print(post_data.get(f'payment-{check}', None))
+        return self.render_to_response(context)
