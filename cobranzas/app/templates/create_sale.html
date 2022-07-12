@@ -4,11 +4,17 @@
 
 {% block content %}
   <h2>Nueva Venta</h2>
-  <form method="post">{% csrf_token %}
+  <form method="post" id="form-container">{% csrf_token %}
     {{ form.as_p }}
-    <h2>children</h2>
-    {{ products.as_p }}
-    <input type="submit" value="Save">
+    <h2>Productos</h2>
+    {{products.management_form}}
+    {% for form in products %}
+      <div class="product-form">
+        {{form.as_p}}
+      </div>
+    {% endfor %}
+    <button id="add-form" type="button" class="btn btn-secondary">Add Another Product</button>
+    <input type="submit" value="Guardar Venta" class="btn btn-primary">
   </form>
   <form action="{% url 'create-sale' %}" method="post">
     {% csrf_token %}
@@ -120,5 +126,34 @@
       togglePaymentSchemeRow(paymentSchemeRow2, 'visible');
     }
   });
+</script>
+<script>
+  let productForm = document.querySelectorAll(".product-form");
+  let container = document.querySelector("#form-container");
+  let addButton = document.querySelector("#add-form");
+  let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+  // Get the number of the last form on the page with zero-based indexing
+  let formNum = productForm.length-1;
+
+  addButton.addEventListener('click', addForm);
+
+  const addForm = (e) => {
+    e.preventDefault();
+
+    //Clone the product form
+    let newForm = productForm[0].cloneNode(true);
+    //Regex to find all instances of the form number
+    let formRegex = RegExp(`form-(\\d){1}-`,'g');
+
+    //Increment the form number
+    formNum++;
+    //Update the new form to have the correct form number
+    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`);
+    //Insert the new form at the end of the list of forms
+    container.insertBefore(newForm, addButton);
+
+    //Increment the number of total forms in the management form
+    totalForms.setAttribute('value', `${formNum+1}`);
+  }
 </script>
 {% endblock %}
