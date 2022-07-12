@@ -1,9 +1,10 @@
+from django.db import transaction
 from django.db.models import Min, Value, Q
 from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.forms import CustomUserCreationForm, CustomerCreationForm
+from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleProductFormSet
 from app.models import User, Customer, Sale, SaleInstallment
 
 
@@ -45,9 +46,30 @@ class CustomerListView(TemplateView):
 
 class SaleCreationView(CreateView):
     model = Sale
-    fields = '__all__'
     template_name = 'create_sale.html'
+    form_class = SaleCreationForm
     success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['products'] = SaleProductFormSet(self.request.POST)
+        else:
+            context['products'] = SaleProductFormSet()
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        products = context['products']
+        with transaction.atomic():
+            self.object = form.save()
+            if products.is_valid():
+                products.instance = self.object
+                products.save()
+        return super().form_valid(form)
+
+    # def get_success_url(self):
+    #     return reverse_lazy('mycollections:collection_detail', kwargs={'pk': self.object.pk})
 
 
 class SaleListView(TemplateView):

@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.forms.models import inlineformset_factory
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from app.models import User, Customer
+from app.models import User, Customer, Sale, SaleProduct
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -28,3 +29,13 @@ class CustomerCreationForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = '__all__'
+
+
+class SaleCreationForm(forms.ModelForm):
+
+    class Meta:
+        model = Sale
+        fields = '__all__'
+
+
+SaleProductFormSet = inlineformset_factory(Sale, SaleProduct, form=SaleCreationForm, fields='__all__', extra=1, can_delete=True)

@@ -4,11 +4,17 @@
 
 {% block content %}
   <h2>Nueva Venta</h2>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <h2>children</h2>
+    {{ products.as_p }}
+    <input type="submit" value="Save">
+  </form>
   <form action="{% url 'create-sale' %}" method="post">
     {% csrf_token %}
     {{ form.user|as_crispy_field }}
     {{ form.customer|as_crispy_field }}
-    {{ form.product|as_crispy_field }}
+    {% comment %} {{ form.product|as_crispy_field }} {% endcomment %}
     <div class="row">
       <div class="col-4">
         {{ form.price|as_crispy_field }}
