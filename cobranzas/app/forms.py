@@ -38,4 +38,4 @@ class SaleCreationForm(forms.ModelForm):
         fields = '__all__'
 
 
-SaleProductFormSet = inlineformset_factory(Sale, SaleProduct, form=SaleCreationForm, fields='__all__', extra=1, can_delete=True)
+SaleProductFormSet = inlineformset_factory(Sale, SaleProduct, form=SaleCreationForm, fields='__all__', extra=1, can_delete=False, absolute_max=50, max_num=50)
