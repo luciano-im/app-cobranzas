@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <h2>Alta de Producto</h2>
+  <form action="{% url 'create-product' %}" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Crear Producto" class="btn btn-primary">
+  </form>
+{% endblock %}

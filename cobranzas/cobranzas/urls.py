@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerListView, SaleCreationView, SaleListView, CollectionCreationView
+from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView
+from app.views import CustomerListView, SaleCreationView, SaleListView, CollectionCreationView
+from app.views import ProductCreationView, ProductListView
 
 
 urlpatterns = [
@@ -27,6 +29,8 @@ urlpatterns = [
     path('accounts/list/', UserListView.as_view(), name='list-users'),
     path('customers/create/', CustomerCreationView.as_view(), name='create-customer'),
     path('customers/list/', CustomerListView.as_view(), name='list-customers'),
+    path('products/create/', ProductCreationView.as_view(), name='create-product'),
+    path('products/list/', ProductListView.as_view(), name='list-product'),
     path('sales/create/', SaleCreationView.as_view(), name='create-sale'),
     path('sales/list/', SaleListView.as_view(), name='list-sales'),
     path('collections/create/', CollectionCreationView.as_view(), name='create-collection')

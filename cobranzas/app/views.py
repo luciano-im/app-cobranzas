@@ -4,8 +4,9 @@ from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleProductFormSet
-from app.models import User, Customer, Sale, SaleInstallment
+from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
+from app.forms import SaleProductFormSet, ProductCreationForm
+from app.models import User, Customer, Sale, SaleInstallment, Product
 
 
 class HomeView(TemplateView):
@@ -41,6 +42,22 @@ class CustomerListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['customers'] = Customer.objects.all()
+        return context
+
+
+class ProductCreationView(CreateView):
+    model = Product
+    form_class = ProductCreationForm
+    template_name = 'create_product.html'
+    success_url = '/'
+
+
+class ProductListView(TemplateView):
+    template_name = 'list_products.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.all()
         return context
 
 
