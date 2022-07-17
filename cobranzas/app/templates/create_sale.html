@@ -4,13 +4,13 @@
 
 {% block content %}
 <h2>Nueva Venta</h2>
-<form action="{% url 'create-sale' %}" method="post" id="form-container">
+<form action="{% url 'create-sale' %}" method="post" class="sale-creation">
   {% csrf_token %}
   {{ form.user|as_crispy_field }}
   {{ form.customer|as_crispy_field }}
   <hr>
   <div class="products-list">
-    <h3>Productos</h3>
+    <h3 class="title">Lista de Productos</h3>
     {{products.management_form|crispy}}
     <div id="empty_form" style="display: none;">
       {% with products.empty_form as emptyform %}
@@ -32,6 +32,14 @@
       {% endwith %}
     </div>
     <div class="product-forms">
+      <div class="row">
+        <div class="col-6">
+          <p style="margin-bottom: .5rem;">Producto</p>
+        </div>
+        <div class="col-4">
+          <p style="margin-bottom: .5rem;">Precio</p>
+        </div>
+      </div>
       {% for productform in products %}
       <div class="form-row" data-form-index="0">
         <div class="row">
@@ -45,9 +53,10 @@
       </div>
       {% endfor %}
     </div>
-    <button id="add-form" type="button" class="btn btn-secondary add-form-row">Agregar</button>
+    <button id="add-form" type="button" class="btn btn-outline-primary add-form-row">Agregar Producto</button>
   </div>
   <hr>
+  <h3 class="title">Esquema de Pago</h3>
   <div class="row">
     <div class="col-4">
       {{ form.price|as_crispy_field }}
@@ -60,7 +69,7 @@
     </div>
   </div>
   <div class="col-6" id="payment-scheme">
-    <p class="title">Esquema de Pago:</p>
+    <p class="title">Detalles:</p>
     <table class="table">
       <tbody>
         <tr id="payment-scheme-row-1" class="payment-scheme-row">

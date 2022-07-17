@@ -41,9 +41,23 @@ class SaleCreationForm(forms.ModelForm):
 
 class SaleProductCreationForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
     class Meta:
         model = SaleProduct
         fields = '__all__'
 
 
-SaleProductFormSet = inlineformset_factory(Sale, SaleProduct, form=SaleProductCreationForm, fields='__all__', extra=1, can_delete=False, absolute_max=50, max_num=50)
+SaleProductFormSet = inlineformset_factory(
+    Sale,
+    SaleProduct,
+    form=SaleProductCreationForm,
+    fields='__all__',
+    extra=1,
+    can_delete=False,
+    absolute_max=50,
+    max_num=50
+)
