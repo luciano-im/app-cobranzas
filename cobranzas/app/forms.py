@@ -39,7 +39,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
-    price = forms.FloatField(disabled=True)
+    price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
 
     class Meta:
         model = Sale

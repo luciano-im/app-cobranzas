@@ -75,9 +75,23 @@ class SaleCreationView(CreateView):
             context['products'] = SaleProductFormSet()
         return context
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        products = context['products']
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        product_formset = SaleProductFormSet(self.request.POST)
+        if form.is_valid() and product_formset.is_valid():
+            # Check if the sum of each product price is equal to the price of the sale
+            total_price = 0.0
+            for formset in product_formset:
+                total_price += formset.cleaned_data.get('price', 0.0)
+            if form.cleaned_data.get('price') == total_price:
+                return self.form_valid(form, product_formset)
+
+        return self.form_invalid(form)
+
+    def form_valid(self, form, formset):
+        products = formset
         with transaction.atomic():
             self.object = form.save()
             if products.is_valid():
