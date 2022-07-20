@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
   <h2>Lista de Ventas</h2>
@@ -10,9 +11,11 @@
         <th scope="col">ID</th>
         <th scope="col">Fecha</th>
         <th scope="col">Cliente</th>
-        <th scope="col">Producto</th>
+        <th scope="col">Productos</th>
         <th scope="col">Importe</th>
         <th scope="col">Cuotas</th>
+        <th scope="col">Cobrado</th>
+        <th scope="col">A Cobrar</th>
         <th scope="col">Acciones</th>
       </tr>
     </thead>
@@ -22,15 +25,22 @@
           <th scope="row">{{sale.pk}}</th>
           <td>{{sale.date|date:"d/m/Y"}}</td>
           <td>{{sale.customer}}</td>
-          <td>{{sale.product}}</td>
+          <td>
+            {% if sale.products_quantity == 1 %}
+              {{sale.products_quantity}} producto
+            {% else %}
+              {{sale.products_quantity}} productos
+            {% endif %}</td>
           <td>{{sale.price}}</td>
           <td>{{sale.installments}}</td>
+          <td>{{sale.paid_amount}}</td>
+          <td>{{sale.price|sub:sale.paid_amount}}</td>
           <td>
             <a href="#" class="btn btn-primary">Editar</a>
           </td>
         </tr>
         <tr>
-          <td colspan="7" class="installments-detail">
+          <td colspan="9" class="installments-detail">
             <div class="accordion accordion-flush" id="accordion-flush-{{sale.pk}}">
               <div class="accordion-item">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">

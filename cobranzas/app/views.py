@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Min, Value, Q
+from django.db.models import Min, Value, Q, Count, Sum, F
 from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
@@ -108,7 +108,11 @@ class SaleListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sales'] = Sale.objects.prefetch_related('saleinstallment_set').all()
+        context['sales'] = Sale.objects.\
+            prefetch_related('saleinstallment_set').\
+            annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
+            annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
+            all()
         return context
 
 
