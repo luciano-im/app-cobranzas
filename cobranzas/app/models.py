@@ -50,7 +50,7 @@ class Sale(models.Model):
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
 
     def __str__(self):
-        return f'{self.date} - {self.customer.name} - {self.product}'
+        return f'{self.date} - {self.customer.name} - {self.pk}'
 
 
 class SaleProduct(models.Model):
