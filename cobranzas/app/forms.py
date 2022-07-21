@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import formset_factory
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
@@ -68,3 +69,19 @@ SaleProductFormSet = inlineformset_factory(
     absolute_max=50,
     max_num=50
 )
+
+
+class CollectionForm(forms.Form):
+    checked = forms.BooleanField()
+    installment = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': True}))
+    installment_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
+    paid_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
+    amount = forms.FloatField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
+
+CollectionFormset = formset_factory(CollectionForm)

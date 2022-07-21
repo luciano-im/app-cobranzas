@@ -82,7 +82,7 @@ class SaleInstallment(models.Model):
     )
 
     def __str__(self):
-        return f'{self.sale.pk} - {self.sale.product} - {self.installment}'
+        return f'{self.sale.pk} - {self.installment}'
 
     class Meta:
         constraints = [

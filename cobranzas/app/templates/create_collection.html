@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load mathfilters %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <h2>Nuevo Cobro</h2>
@@ -20,7 +21,7 @@
   </div>
 </form>
 
-<div class="accordion accordion-flush create-collection">
+<!--<div class="accordion accordion-flush create-collection">
   {% regroup salesinstallments by sale as sales_list %}
   <form action="{% url 'create-collection' %}" method="post">
     {% csrf_token %}
@@ -31,15 +32,11 @@
           <li class="breadcrumb-item text-secondary">#{{sale.pk}}</li>
           <li class="breadcrumb-item text-secondary">{{sale.date|date:"d/m/Y"}}</li>
           <li class="breadcrumb-item text-secondary" aria-current="page">{{sale.installments}} cuotas</li>
-          <!-- TODO: Cobrado y pendiente de cobrar -->
           <li class="breadcrumb-item text-secondary" aria-current="page">Cobrado: $000</li>
           <li class="breadcrumb-item text-secondary" aria-current="page">Pendiente: $000</li>
         </ol>
       </div>
       <h3 class="accordion-header" id="heading-{{sale.pk}}">{{sale.product}}</h3>
-      <!--<h3 class="accordion-header" id="heading-{{sale.pk}}">
-          <small class="text-secondary">#{{sale.pk}} |</small> {{sale.product}}
-        </h3>-->
       {% regroup installments_list by group as group_list %}
       {% with last_installment=group_list|length_is:"1" %}
       {% for group, installments in group_list %}
@@ -139,7 +136,22 @@
       <input type="submit" value="Guardar" class="btn btn-primary">
     </div>
   </form>
-</div>
+</div>-->
+<form action="{% url 'create-collection' %}" method="post">
+  {% csrf_token %}
+  <div>
+    {{formset.management_form}}
+    {% for form in formset %}
+      {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+      <div>
+        {{form|crispy}}
+      </div>
+    {% endfor %}
+  </div>
+  <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
 {% endblock %}
 
 {% block extra_js %}
