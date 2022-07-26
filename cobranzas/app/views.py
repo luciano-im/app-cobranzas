@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
 from django.views import View
@@ -149,13 +150,10 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
             select_related('sale').\
             annotate(group=Value('future'))
 
-        # context['salesinstallments'] = partial_installment.\
-        #     union(next_installment, pending_installments).\
-        #     order_by('sale', 'group', 'status', 'installment')
-
         initial_data = partial_installment.\
             union(next_installment, pending_installments).\
-            order_by('sale', 'group', 'status', 'installment').values('installment', 'installment_amount', 'paid_amount')
+            order_by('sale', 'group', 'status', 'installment').\
+            values()
 
         return initial_data
 
@@ -165,7 +163,17 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
         if customer:
             self.initial_data = self.get_initial_data()
             context['formset'] = CollectionFormset(prefix='collection', initial=self.initial_data)
+            sales = Sale.objects.\
+                annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+                annotate(total_paid=Sum('saleinstallment__paid_amount')).\
+                exclude(installments=F('paid_installments'))
+            products_raw = sales.values('pk', 'saleproduct__product__name')
+            products = defaultdict()
+            for p in products_raw:
+                products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
 
+            context['sales'] = dict((s.pk, s) for s in sales)
+            context['products'] = products
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):

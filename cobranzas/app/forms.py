@@ -77,6 +77,8 @@ class CollectionForm(forms.Form):
     installment_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
     paid_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
     amount = forms.FloatField()
+    sale_id = forms.IntegerField(widget=forms.NumberInput(attrs={'disabled': True}))
+    group = forms.CharField(widget=forms.TextInput(attrs={'disabled': True}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,4 +86,10 @@ class CollectionForm(forms.Form):
         self.helper.form_show_labels = False
 
 
-CollectionFormset = formset_factory(CollectionForm)
+CollectionFormset = formset_factory(
+    CollectionForm,
+    extra=1,
+    can_delete=False,
+    absolute_max=50,
+    max_num=50
+)

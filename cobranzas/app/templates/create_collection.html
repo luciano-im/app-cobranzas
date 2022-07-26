@@ -2,6 +2,7 @@
 {% load static %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
+{% load lookup_dict %}
 
 {% block content %}
 <h2>Nuevo Cobro</h2>
@@ -21,137 +22,128 @@
   </div>
 </form>
 
-<!--<div class="accordion accordion-flush create-collection">
-  {% regroup salesinstallments by sale as sales_list %}
+<div class="accordion accordion-flush create-collection">
+  {% regroup formset by sale_id.value as sales_list %}
   <form action="{% url 'create-collection' %}" method="post">
     {% csrf_token %}
-    {% for sale, installments_list in sales_list %}
+    {{formset.management_form}}
+    {% for sale_id, installments_list in sales_list %}
+    {% with sale=sales|lookup_dict:sale_id %}
     <div class="accordion-item">
       <div style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item text-secondary">#{{sale.pk}}</li>
           <li class="breadcrumb-item text-secondary">{{sale.date|date:"d/m/Y"}}</li>
           <li class="breadcrumb-item text-secondary" aria-current="page">{{sale.installments}} cuotas</li>
-          <li class="breadcrumb-item text-secondary" aria-current="page">Cobrado: $000</li>
-          <li class="breadcrumb-item text-secondary" aria-current="page">Pendiente: $000</li>
+          <li class="breadcrumb-item text-secondary" aria-current="page">Cobrado: ${{sale.total_paid}}</li>
+          <li class="breadcrumb-item text-secondary" aria-current="page">Pendiente: ${{sale.price|sub:sale.total_paid}}</li>
         </ol>
       </div>
-      <h3 class="accordion-header" id="heading-{{sale.pk}}">{{sale.product}}</h3>
-      {% regroup installments_list by group as group_list %}
+      {% with product=products|lookup_dict:sale.pk %}
+        <h3 class="accordion-header" id="heading-{{sale.pk}}">
+          {% for p in product %}{{p}}<br>{% endfor %}
+        </h3>
+      {% endwith %}
+      {% regroup installments_list by group.value as group_list %}
       {% with last_installment=group_list|length_is:"1" %}
-      {% for group, installments in group_list %}
-      {% if group == "due" %}
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Cuota</th>
-            <th scope="col">Importe Total</th>
-            <th scope="col">Importe Pagado</th>
-            <th scope="col">A Pagar</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in installments %}
-          <tr>
-            <th scope="row">
-              <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
-                name="check"> {{i.installment}}
-            </th>
-            <td>
-              {{i.installment_amount}}
-              <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
-            </td>
-            <td>
-              {{i.paid_amount}}
-              <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                value="{{i.paid_amount}}" disabled="disabled">
-            </td>
-            <td>
-              <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
-                class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-        data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-        Ver cuotas pendientes
-      </button>
-      {% elif group == "future" %}
-      <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-        aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Cuota</th>
-              <th scope="col">Importe Total</th>
-              <th scope="col">Importe Pagado</th>
-              <th scope="col">A Pagar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for i in installments %}
-            <tr>
-              <th scope="row">
-                <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
-                  name="check"> {{i.installment}}
-              </th>
-              <td>
-                {{i.installment_amount}}
-                <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                  id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
-              </td>
-              <td>
-                {{i.paid_amount}}
-                <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                  value="{{i.paid_amount}}" disabled="disabled">
-              </td>
-              <td>
-                <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
-                  class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                  id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
-      {% if last_installment %}
-      <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-        aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-        No hay mas cuotas pendientes
-      </div>
-      {% endif %}
-      {% endfor %}
+        {% for group_name, installments_details in group_list %}
+          {% if group_name == "due" %}
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Cuota</th>
+                  <th scope="col">Importe Total</th>
+                  <th scope="col">Importe Pagado</th>
+                  <th scope="col">A Pagar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in installments_details %}
+                  <tr>
+                    <th scope="row">
+                      <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
+                      name="check"> {{i.installment}}
+                    </th>
+                    <td>
+                      {{i.installment_amount}}
+                      <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
+                      id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
+                    </td>
+                    <td>
+                      {{i.paid_amount}}
+                      <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
+                      value="{{i.paid_amount}}" disabled="disabled">
+                    </td>
+                    <td>
+                      <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
+                      class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
+                      id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
+              Ver cuotas pendientes
+            </button>
+          {% elif group_name == "future" %}
+            <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+            aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Cuota</th>
+                  <th scope="col">Importe Total</th>
+                  <th scope="col">Importe Pagado</th>
+                  <th scope="col">A Pagar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in installments_details %}
+                  <tr>
+                    <th scope="row">
+                      <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
+                      name="check"> {{i.installment}}
+                    </th>
+                    <td>
+                      {{i.installment_amount}}
+                      <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
+                      id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
+                    </td>
+                    <td>
+                      {{i.paid_amount}}
+                      <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
+                      value="{{i.paid_amount}}" disabled="disabled">
+                    </td>
+                    <td>
+                      <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
+                      class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
+                      id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+          {% if last_installment %}
+            <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+              aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+              No hay mas cuotas pendientes
+            </div>
+          {% endif %}
+        {% endfor %}
       {% endwith %}
     </div>
     <br><br><br><br>
+    {% endwith %}
     {% endfor %}
     <div class="totals d-flex flex-column align-items-end mb-5">
       <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
       <input type="submit" value="Guardar" class="btn btn-primary">
     </div>
   </form>
-</div>-->
-<form action="{% url 'create-collection' %}" method="post">
-  {% csrf_token %}
-  <div>
-    {{formset.management_form}}
-    {% for form in formset %}
-      {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-      {% endfor %}
-      <div>
-        {{form|crispy}}
-      </div>
-    {% endfor %}
-  </div>
-  <input type="submit" value="Guardar" class="btn btn-primary">
-</form>
+</div>
 {% endblock %}
 
 {% block extra_js %}
