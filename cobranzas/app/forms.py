@@ -74,9 +74,9 @@ SaleProductFormSet = inlineformset_factory(
 class CollectionForm(forms.Form):
     checked = forms.BooleanField()
     installment = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': True}))
-    installment_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
-    paid_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
-    amount = forms.FloatField()
+    installment_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True, 'class': 'form-control-plaintext'}))
+    paid_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True, 'class': 'form-control-plaintext'}))
+    amount = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'payment-input'}))
     sale_id = forms.IntegerField(widget=forms.NumberInput(attrs={'disabled': True}))
     group = forms.CharField(widget=forms.TextInput(attrs={'disabled': True}))
 

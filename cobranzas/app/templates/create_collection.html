@@ -46,121 +46,119 @@
       {% endwith %}
       {% regroup installments_list by group.value as group_list %}
       {% with last_installment=group_list|length_is:"1" %}
-        {% for group_name, installments_details in group_list %}
-          {% if group_name == "due" %}
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">Cuota</th>
-                  <th scope="col">Importe Total</th>
-                  <th scope="col">Importe Pagado</th>
-                  <th scope="col">A Pagar</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for i in installments_details %}
-                  <tr>
-                    <th scope="row">
-                      <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
-                      name="check"> {{i.installment}}
-                    </th>
-                    <td>
-                      {{i.installment_amount}}
-                      <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                      id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
-                    </td>
-                    <td>
-                      {{i.paid_amount}}
-                      <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                      value="{{i.paid_amount}}" disabled="disabled">
-                    </td>
-                    <td>
-                      <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
-                      class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                      id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-              Ver cuotas pendientes
-            </button>
-          {% elif group_name == "future" %}
-            <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-            aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">Cuota</th>
-                  <th scope="col">Importe Total</th>
-                  <th scope="col">Importe Pagado</th>
-                  <th scope="col">A Pagar</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for i in installments_details %}
-                  <tr>
-                    <th scope="row">
-                      <input class="form-check-input check-installment" type="checkbox" value="{{sale.pk}}-{{i.installment}}"
-                      name="check"> {{i.installment}}
-                    </th>
-                    <td>
-                      {{i.installment_amount}}
-                      <input type="hidden" name="totalamount-{{sale.pk}}-{{i.installment}}"
-                      id="totalamount-{{sale.pk}}-{{i.installment}}" value="{{i.installment_amount}}" disabled="disabled">
-                    </td>
-                    <td>
-                      {{i.paid_amount}}
-                      <input type="hidden" name="paid-{{sale.pk}}-{{i.installment}}" id="paid-{{sale.pk}}-{{i.installment}}"
-                      value="{{i.paid_amount}}" disabled="disabled">
-                    </td>
-                    <td>
-                      <input type="number" step="any" min="0" max="{{i.installment_amount|sub:i.paid_amount}}"
-                      class="form-control payment-input" name="payment-{{sale.pk}}-{{i.installment}}"
-                      id="payment-{{sale.pk}}-{{i.installment}}" placeholder="0,00" data-old-value="0.00">
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
-          {% if last_installment %}
-            <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-              aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-              No hay mas cuotas pendientes
-            </div>
-          {% endif %}
+      {% for group_name, installments_details in group_list %}
+      {% if group_name == "due" %}
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Cuota</th>
+            <th scope="col">Importe Total</th>
+            <th scope="col">Importe Pagado</th>
+            <th scope="col">A Pagar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in installments_details %}
+          <tr>
+            <th scope="row">
+              {{i.checked}} {{i.installment.value}}
+            </th>
+            <td>
+              {{i.installment_amount}}
+            </td>
+            <td>
+              {{i.paid_amount}}
+            </td>
+            <td>
+              {{i.amount|as_crispy_field}}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
+        Ver cuotas pendientes
+      </button>
+      {% elif group_name == "future" %}
+      <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+        aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Cuota</th>
+              <th scope="col">Importe Total</th>
+              <th scope="col">Importe Pagado</th>
+              <th scope="col">A Pagar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in installments_details %}
+            <tr>
+              <th scope="row">
+                {{i.checked}} {{i.installment.value}}
+              </th>
+              <td>
+                {{i.installment_amount}}
+              </td>
+              <td>
+                {{i.paid_amount}}
+              </td>
+              <td>
+                {{i.amount|as_crispy_field}}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if last_installment %}
+        <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+          aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+          No hay mas cuotas pendientes
+        </div>
+        {% endif %}
         {% endfor %}
+        {% endwith %}
+      </div>
+      <br><br><br>
       {% endwith %}
-    </div>
-    <br><br><br><br>
-    {% endwith %}
-    {% endfor %}
-    <div class="totals d-flex flex-column align-items-end mb-5">
-      <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
-      <input type="submit" value="Guardar" class="btn btn-primary">
-    </div>
+      {% endfor %}
+      <div class="totals d-flex flex-column align-items-end mb-5">
+        <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+        <input type="submit" value="Guardar" class="btn btn-primary">
+      </div>
   </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  const checkInputs = document.querySelectorAll('.check-installment');
+  // List of checkboxes
+  const checkInputs = document.querySelectorAll('input[type="checkbox"]');
+  // List of payment amount inputs
   const paymentInputs = document.querySelectorAll('.payment-input');
+  // Total tag
   const totalTag = document.getElementById('total');
+  // Variable to keep the total amount when user checks or changes installments amount
   let total = 0.0;
 
+  // Attach change event listener to each checkbox input
   checkInputs.forEach(checkbox => {
     checkbox.addEventListener('change', e => {
-      const name = checkbox.value;
-      const paymentInput = document.getElementById(`payment-${name}`);
-      const totalAmount = parseFloat(document.getElementById(`totalamount-${name}`).value);
-      const paidAmount = parseFloat(document.getElementById(`paid-${name}`).value);
-      // preserves old value
-      paymentInput.dataset.oldValue = paymentInput.value;
+      // Get the form ID from checkbox name attribute
+      const formID = checkbox.name.split('-')[1];
+      // Get amount input, installment amount and paid amount values
+      const paymentInput = document.getElementById(`id_collection-${formID}-amount`);
+      const totalAmount = parseFloat(document.getElementById(`id_collection-${formID}-installment_amount`).value);
+      const paidAmount = parseFloat(document.getElementById(`id_collection-${formID}-paid_amount`).value);
+
+      // Preserves old value in the data attribute "data-old-value"
+      paymentInput.dataset.oldValue = paymentInput.value || 0.0;
+
+      // When checkbox change its state:
+      // 1. the amount input is completed with the pending amount
+      // 2. the total is updated
       if (checkbox.checked) {
         const payment = paidAmount > 0 ? totalAmount - paidAmount : totalAmount;
         paymentInput.value = payment.toFixed(2);
@@ -172,6 +170,7 @@
     });
   });
 
+  // When an amount input is clicked, the "data-old-value" attribute is updated
   paymentInputs.forEach(input => {
     input.addEventListener('click', e => {
       // preserves old value
@@ -179,7 +178,7 @@
     });
   });
 
-  //The select event fires when some text has been selected.
+  // The select event fires when some text has been selected
   paymentInputs.forEach(input => {
     input.addEventListener('select', e => {
       // preserves old value
@@ -187,17 +186,17 @@
     });
   });
 
+  // Attach the change event to amount inputs to update values and totals
   paymentInputs.forEach(input => {
     input.addEventListener('change', e => {
       const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
       const currentValue = parseFloat(input.value) || 0.0;
 
-      console.log(total, oldValue, currentValue, currentValue - oldValue);
       updateTotal(currentValue === 0.0 ? -oldValue : currentValue - oldValue);
-      console.log(total);
     });
   });
 
+  // Update the total variable and the total layout tag
   const updateTotal = amount => {
     total += amount;
     totalTag.innerText = total.toFixed(2);
