@@ -7,7 +7,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
-from app.models import User, Customer, Sale, SaleInstallment, Product
+from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 
 
 class HomeView(TemplateView):
@@ -181,10 +181,29 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
         collection_formset = CollectionFormset(self.request.POST, initial=self.initial_data, prefix='collection')
         for f_form in collection_formset:
             if f_form.has_changed():
-                print(f_form.changed_data)
-        # checkboxes = request.POST.getlist('check')
-        # post_data = request.POST.dict()
-        # for check in checkboxes:
-        #     print(check)
-        #     print(post_data.get(f'payment-{check}', None))
+                if 'checked' and 'amount' in f_form.changed_data:
+                    if f_form.is_valid():
+                        data = f_form.cleaned_data
+                        sale_installment = SaleInstallment.objects.get(sale=data['sale_id'], installment=data['installment'])
+                        # TODO - Use request.user
+                        user = User.objects.get(username='andrea')
+                        collection = Collection(
+                            collector=user,
+                            sale_installment=sale_installment,
+                            amount=data['amount']
+                        )
+
+                        installment_amount = sale_installment.installment_amount
+                        paid_amount = sale_installment.paid_amount
+                        if installment_amount > paid_amount + data['amount']:
+                            sale_installment.status = SaleInstallment.PARTIAL
+                        else:
+                            sale_installment.status = SaleInstallment.PAID
+                        sale_installment.paid_amount = F('paid_amount') + data['amount']
+
+                        with transaction.atomic():
+                            collection.save()
+                            sale_installment.save()
+                    else:
+                        print(f_form.errors)
         return self.render_to_response(context)
