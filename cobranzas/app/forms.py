@@ -93,3 +93,8 @@ CollectionFormset = formset_factory(
     absolute_max=50,
     max_num=50
 )
+
+
+class CustomerFilterForm(forms.Form):
+    city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False)
+    collector = forms.ModelChoiceField(queryset=User.objects.all(), required=False)

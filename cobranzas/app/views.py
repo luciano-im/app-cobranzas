@@ -2,12 +2,30 @@ from collections import defaultdict
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
 from django.views import View
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
+from app.forms import CustomerFilterForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
+
+
+class FilterSetView:
+
+    def __init__(self):
+        # Filter set is a list of tuples containing (field, lookup_expression)
+        self.filterset = []
+
+    def get_filters(self, request):
+        q_lookup = Q()
+        filterset = self.filterset
+        for filter in filterset:
+            field, expr = filter[0], filter[1]
+            value = request.GET.get(field, None)
+            if value:
+                q_lookup = q_lookup & Q(**{f'{field}__{expr}': value})
+        return q_lookup
 
 
 class HomeView(TemplateView):
@@ -37,12 +55,25 @@ class CustomerCreationView(CreateView):
     success_url = '/'
 
 
-class CustomerListView(TemplateView):
+class CustomerListView(ListView, FilterSetView):
     template_name = 'list_customers.html'
+    context_object_name = 'customers'
+    filterset = [
+        ('city', 'exact'),
+        ('collector', 'exact'),
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = Customer.objects.filter(filters)
+        else:
+            queryset = Customer.objects.all()
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.all()
+        context['filter_form'] = CustomerFilterForm(self.request.GET)
         return context
 
 
