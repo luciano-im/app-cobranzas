@@ -7,7 +7,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
-from app.forms import CustomerFilterForm
+from app.forms import CustomerFilterForm, ProductFilterForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 
 
@@ -84,12 +84,26 @@ class ProductCreationView(CreateView):
     success_url = '/'
 
 
-class ProductListView(TemplateView):
+class ProductListView(ListView, FilterSetView):
     template_name = 'list_products.html'
+    context_object_name = 'products'
+    filterset = [
+        ('name', 'icontains'),
+        ('brand', 'iexact'),
+        ('sku', 'icontains'),
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = Product.objects.filter(filters)
+        else:
+            queryset = Product.objects.all()
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = Product.objects.all()
+        context['filter_form'] = ProductFilterForm(self.request.GET)
         return context
 
 

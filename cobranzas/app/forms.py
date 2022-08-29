@@ -98,3 +98,13 @@ CollectionFormset = formset_factory(
 class CustomerFilterForm(forms.Form):
     city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False)
     collector = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
+
+
+class ProductFilterForm(forms.Form):
+
+    def brand_choices():
+        return [('', '---------')] + [(c, c) for c in Product.objects.values_list('brand', flat=True)]
+
+    name = forms.CharField(required=False)
+    brand = forms.ChoiceField(choices=brand_choices, required=False)
+    sku = forms.CharField(required=False)

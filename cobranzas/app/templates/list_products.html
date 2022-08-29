@@ -1,8 +1,26 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
   <h2>Lista de Clientes</h2>
+
+  <form action="{% url 'list-product' %}" method="get" class="filterset-form">
+    <div class="row">
+      <div class="col-3">
+        {{ filter_form.name|as_crispy_field }}
+      </div>
+      <div class="col-3">
+        {{ filter_form.brand|as_crispy_field }}
+      </div>
+      <div class="col-3">
+        {{ filter_form.sku|as_crispy_field }}
+      </div>
+    </div>
+    <div>
+      <input type="submit" value="Filtrar" class="btn btn-secondary">
+    </div>
+  </form>
   
   <table class="table table-hover">
     <thead>
