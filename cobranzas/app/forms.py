@@ -108,3 +108,11 @@ class ProductFilterForm(forms.Form):
     name = forms.CharField(required=False)
     brand = forms.ChoiceField(choices=brand_choices, required=False)
     sku = forms.CharField(required=False)
+
+
+class SaleFilterForm(forms.Form):
+    id = forms.IntegerField(required=False)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False)
+    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    product = forms.ModelChoiceField(queryset=Product.objects.all(), required=False)

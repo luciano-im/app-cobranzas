@@ -7,7 +7,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
-from app.forms import CustomerFilterForm, ProductFilterForm
+from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 
 
@@ -21,8 +21,8 @@ class FilterSetView:
         q_lookup = Q()
         filterset = self.filterset
         for filter in filterset:
-            field, expr = filter[0], filter[1]
-            value = request.GET.get(field, None)
+            param, field, expr = filter[0], filter[1], filter[2]
+            value = request.GET.get(param, None)
             if value:
                 q_lookup = q_lookup & Q(**{f'{field}__{expr}': value})
         return q_lookup
@@ -59,8 +59,8 @@ class CustomerListView(ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
     filterset = [
-        ('city', 'exact'),
-        ('collector', 'exact'),
+        ('city', 'city', 'exact'),
+        ('collector', 'collector', 'exact'),
     ]
 
     def get_queryset(self):
@@ -88,9 +88,9 @@ class ProductListView(ListView, FilterSetView):
     template_name = 'list_products.html'
     context_object_name = 'products'
     filterset = [
-        ('name', 'icontains'),
-        ('brand', 'iexact'),
-        ('sku', 'icontains'),
+        ('name', 'name', 'icontains'),
+        ('brand', 'brand', 'iexact'),
+        ('sku', 'sku', 'icontains'),
     ]
 
     def get_queryset(self):
@@ -149,16 +149,37 @@ class SaleCreationView(CreateView):
     #     return reverse_lazy('mycollections:collection_detail', kwargs={'pk': self.object.pk})
 
 
-class SaleListView(TemplateView):
+class SaleListView(ListView, FilterSetView):
     template_name = 'list_sales.html'
+    context_object_name = 'sales'
+    filterset = [
+        ('id', 'pk', 'iexact'),
+        ('customer', 'customer', 'iexact'),
+        ('date_from', 'date', 'gte'),
+        ('date_to', 'date', 'lte'),
+        ('product', 'product', 'iexact'),
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = Sale.objects.\
+                filter(filters).\
+                prefetch_related('saleinstallment_set').\
+                annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
+                annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
+                all()
+        else:
+            queryset = Sale.objects.\
+                prefetch_related('saleinstallment_set').\
+                annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
+                annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
+                all()
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sales'] = Sale.objects.\
-            prefetch_related('saleinstallment_set').\
-            annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
-            annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
-            all()
+        context['filter_form'] = SaleFilterForm(self.request.GET)
         return context
 
 
