@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'cobranzas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
         'NAME': os.getenv('DB_NAME'),
