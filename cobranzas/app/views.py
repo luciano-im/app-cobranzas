@@ -1,3 +1,5 @@
+from datetime import datetime, time
+from django.utils import timezone
 from collections import defaultdict
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
@@ -14,7 +16,7 @@ from app.models import User, Customer, Sale, SaleInstallment, Product, Collectio
 class FilterSetView:
 
     def __init__(self):
-        # Filter set is a list of tuples containing (field, lookup_expression)
+        # Filter set is a list of tuples containing (url_param, field, lookup_expression)
         self.filterset = []
 
     def get_filters(self, request):
@@ -23,6 +25,20 @@ class FilterSetView:
         for filter in filterset:
             param, field, expr = filter[0], filter[1], filter[2]
             value = request.GET.get(param, None)
+            # Make dates aware
+            if 'date' in field and value:
+                # Convert string date to datetime
+                raw_datetime = datetime.strptime(value, '%Y-%m-%d')
+                # Get timezone
+                tz = timezone.get_current_timezone()
+                if 'date_to' in param:
+                    # If param is date_to then add 23:59:59 hour (end of the day)
+                    date_end = datetime.combine(raw_datetime, time.max)
+                    value = timezone.make_aware(date_end, tz, True)
+                else:
+                    # Else add 00:00:00 (start of the day)
+                    date_start = datetime.combine(raw_datetime, time.min)
+                    value = timezone.make_aware(date_start, tz, True)
             if value:
                 q_lookup = q_lookup & Q(**{f'{field}__{expr}': value})
         return q_lookup
@@ -154,10 +170,10 @@ class SaleListView(ListView, FilterSetView):
     context_object_name = 'sales'
     filterset = [
         ('id', 'pk', 'iexact'),
-        ('customer', 'customer', 'iexact'),
+        ('customer', 'customer', 'exact'),
         ('date_from', 'date', 'gte'),
         ('date_to', 'date', 'lte'),
-        ('product', 'product', 'iexact'),
+        ('product', 'saleproduct__product_id', 'exact'),
     ]
 
     def get_queryset(self):
