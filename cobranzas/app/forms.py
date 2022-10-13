@@ -116,3 +116,9 @@ class SaleFilterForm(forms.Form):
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     product = forms.ModelChoiceField(queryset=Product.objects.all(), required=False)
+
+
+class CollectionFilterForm(forms.Form):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False)
+    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))

@@ -18,7 +18,7 @@ from django.urls import path, include
 
 from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView
 from app.views import CustomerListView, SaleCreationView, SaleListView, CollectionCreationView
-from app.views import ProductCreationView, ProductListView
+from app.views import ProductCreationView, ProductListView, CollectionListView
 
 
 urlpatterns = [
@@ -33,5 +33,6 @@ urlpatterns = [
     path('products/list/', ProductListView.as_view(), name='list-product'),
     path('sales/create/', SaleCreationView.as_view(), name='create-sale'),
     path('sales/list/', SaleListView.as_view(), name='list-sales'),
-    path('collections/create/', CollectionCreationView.as_view(), name='create-collection')
+    path('collections/create/', CollectionCreationView.as_view(), name='create-collection'),
+    path('collections/list/', CollectionListView.as_view(), name='list-collection'),
 ]

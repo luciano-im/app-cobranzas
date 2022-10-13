@@ -9,7 +9,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
-from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
+from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm, CollectionFilterForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 
 
@@ -289,3 +289,34 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
                     else:
                         print(f_form.errors)
         return self.render_to_response(context)
+
+
+#TODO - Fix the results to the logged user
+class CollectionListView(ListView, FilterSetView):
+    template_name = 'list_collection.html'
+    context_object_name = 'collections'
+    filterset = [
+        ('customer', 'sale_installment__sale__customer', 'exact'),
+        ('date_from', 'date', 'gte'),
+        ('date_to', 'date', 'lte'),
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = Collection.objects.\
+                select_related('sale_installment__sale__customer').\
+                filter(filters).\
+                all()
+        else:
+            today = datetime.today()
+            queryset = Collection.objects.\
+                select_related('sale_installment__sale__customer').\
+                filter(date=today).\
+                all()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CollectionFilterForm(self.request.GET)
+        return context
