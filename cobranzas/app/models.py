@@ -98,13 +98,21 @@ class SaleInstallment(models.Model):
 
 class Collection(models.Model):
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    sale_installment = models.ForeignKey(SaleInstallment, db_index=True, on_delete=models.CASCADE)
-    amount = models.FloatField(verbose_name=_('Amount'))
+    # customer = models.ForeignKey(Customer, db_index=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
 
     def __str__(self):
-        return f'{self.sale_installment}: {self.date} - {self.amount}'
+        return f'{self.id}: {self.customer} - {self.date}'
+
+
+class CollectionInstallment(models.Model):
+    collection = models.ForeignKey(Collection, db_index=True, on_delete=models.CASCADE)
+    sale_installment = models.ForeignKey(SaleInstallment, db_index=True, on_delete=models.CASCADE)
+    amount = models.FloatField(verbose_name=_('Amount'))
+
+    def __str__(self):
+        return f'{self.id}: {self.collection} - {self.sale_installment} - {self.amount}'
 
     # Validate SaleInstallment before saving a Collection
     def clean(self):
@@ -116,6 +124,6 @@ class Collection(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['sale_installment', 'date'], name='unique_collection'
+                fields=['sale_installment', 'collection'], name='unique_collection'
             ),
         ]
