@@ -204,17 +204,20 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['customers'] = Customer.objects.all()
-        context['selected_customer'] = self.request.GET.get('select-customer', None)
+        selected_customer = self.request.GET.get('select-customer', None)
+        context['selected_customer'] = int(selected_customer) if selected_customer is not None else selected_customer
         return context
 
-    def get_initial_data(self, ):
+    def get_initial_data(self, customer):
         partial_installment = SaleInstallment.objects.\
             filter(status='PARTIAL').\
             select_related('sale').\
+            filter(sale__customer=customer).\
             annotate(group=Value('due'))
         filter = SaleInstallment.objects.\
             filter(status='PENDING').\
             values('sale').\
+            filter(sale__customer=customer).\
             annotate(next_installment=Min('installment'))
         q_filter = Q()
         for pair in filter:
@@ -222,11 +225,13 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
         next_installment = SaleInstallment.objects.\
             filter(q_filter).\
             select_related('sale').\
+            filter(sale__customer=customer).\
             annotate(group=Value('due'))
         pending_installments = SaleInstallment.objects.\
             filter(status='PENDING').\
             exclude(q_filter).\
             select_related('sale').\
+            filter(sale__customer=customer).\
             annotate(group=Value('future'))
 
         initial_data = partial_installment.\
@@ -240,9 +245,10 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
         context = self.get_context_data(**kwargs)
         customer = request.GET.get('select-customer', None)
         if customer:
-            self.initial_data = self.get_initial_data()
+            self.initial_data = self.get_initial_data(customer)
             context['formset'] = CollectionFormset(prefix='collection', initial=self.initial_data)
             sales = Sale.objects.\
+                filter(customer=customer).\
                 annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
                 annotate(total_paid=Sum('saleinstallment__paid_amount')).\
                 exclude(installments=F('paid_installments'))

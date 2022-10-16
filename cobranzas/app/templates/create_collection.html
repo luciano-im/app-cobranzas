@@ -12,7 +12,7 @@
       <select name="select-customer" id="select-customer" class="form-select" required>
         <option disabled selected> -- Selecciona un Cliente -- </option>
         {% for customer in customers %}
-        <option value="{{customer.pk}}" {% if selected_customer %}selected{% endif %}>{{customer.name}}</option>
+          <option value="{{customer.pk}}" {% if selected_customer == customer.pk %}selected{% endif %}>{{customer.name}}</option>
         {% endfor %}
       </select>
     </div>
@@ -28,66 +28,39 @@
     {% csrf_token %}
     {{formset.management_form}}
     {% for sale_id, installments_list in sales_list %}
-      {% with sale=sales|lookup_dict:sale_id %}
-        <div class="sale">
-          <div class="sale-details">
-            <span class="badge text-bg-primary">#{{sale.pk}}</span>
-            <span class="badge text-bg-primary">{{sale.date|date:"d/m/Y"}}</span>
-            <span class="badge text-bg-primary">{{sale.installments}} cuotas</span>
-            <span class="badge text-bg-primary">Cobrado: ${{sale.total_paid}}</span>
-            <span class="badge text-bg-primary">Pendiente: ${{sale.price|sub:sale.total_paid}}</span>
-          </div>
-          {% with product=products|lookup_dict:sale.pk %}
-            <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
-              <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
-                {% for p in product %}
-                  <li class="breadcrumb-item">{{p}}</li>
-                {% endfor %}
-              </ol>
+      {% comment %} Prevent empty formset {% endcomment %}
+      {% if sale_id %}
+        {% with sale=sales|lookup_dict:sale_id %}
+          <div class="sale">
+            <div class="sale-details">
+              <span class="badge text-bg-primary">#{{sale.pk}}</span>
+              <span class="badge text-bg-primary">{{sale.date|date:"d/m/Y"}}</span>
+              <span class="badge text-bg-primary">{{sale.installments}} cuotas</span>
+              <span class="badge text-bg-primary">Cobrado: ${{sale.total_paid}}</span>
+              <span class="badge text-bg-primary">Pendiente: ${{sale.price|sub:sale.total_paid}}</span>
             </div>
-          {% endwith %}
-          {% regroup installments_list by group.value as group_list %}
-          {% with last_installment=group_list|length_is:"1" %}
-            {% for group_name, installments_details in group_list %}
-              {% if group_name == "due" %}
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th scope="col">Cuota</th>
-                      <th scope="col">Importe Total</th>
-                      <th scope="col">Importe Pagado</th>
-                      <th scope="col">A Pagar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for i in installments_details %}
-                    {{i.installment.as_hidden}}
-                    {{i.sale_id.as_hidden}}
-                    {{i.group.as_hidden}}
-                    <tr>
-                      <th scope="row">
-                        {{i.checked}} {{i.installment.value}}
-                      </th>
-                      <td>
-                        {{i.installment_amount}}
-                      </td>
-                      <td>
-                        {{i.paid_amount}}
-                      </td>
-                      <td>
-                        {{i.amount|as_crispy_field}}
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-                  Ver cuotas pendientes
-                </button>
-              {% elif group_name == "future" %}
-                <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+            {% with product=products|lookup_dict:sale.pk %}
+              <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
+                <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
+                  {% for p in product %}
+                    <li class="breadcrumb-item">{{p}}</li>
+                  {% endfor %}
+                </ol>
+              </div>
+            {% endwith %}
+            {% regroup installments_list by group.value as group_list %}
+            {% with last_installment=group_list|length_is:"1" %}
+              {% for group_name, installments_details in group_list %}
+                {% if group_name == "due" %}
                   <table class="table table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">Cuota</th>
+                        <th scope="col">Importe Total</th>
+                        <th scope="col">Importe Pagado</th>
+                        <th scope="col">A Pagar</th>
+                      </tr>
+                    </thead>
                     <tbody>
                       {% for i in installments_details %}
                       {{i.installment.as_hidden}}
@@ -110,18 +83,48 @@
                       {% endfor %}
                     </tbody>
                   </table>
-                </div>
-              {% endif %}
-              {% if last_installment %}
-                <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-                  aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-                  No hay mas cuotas pendientes
-                </div>
-              {% endif %}
-            {% endfor %}
-          {% endwith %}
-        </div>
-      {% endwith %}
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
+                    Ver cuotas pendientes
+                  </button>
+                {% elif group_name == "future" %}
+                  <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+                    <table class="table table-hover">
+                      <tbody>
+                        {% for i in installments_details %}
+                        {{i.installment.as_hidden}}
+                        {{i.sale_id.as_hidden}}
+                        {{i.group.as_hidden}}
+                        <tr>
+                          <th scope="row">
+                            {{i.checked}} {{i.installment.value}}
+                          </th>
+                          <td>
+                            {{i.installment_amount}}
+                          </td>
+                          <td>
+                            {{i.paid_amount}}
+                          </td>
+                          <td>
+                            {{i.amount|as_crispy_field}}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% endif %}
+                {% if last_installment %}
+                  <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
+                    aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
+                    No hay mas cuotas pendientes
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
+          </div>
+        {% endwith %}
+      {% endif %}
     {% endfor %}
     <div class="totals d-flex flex-column align-items-end mb-5">
       <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
