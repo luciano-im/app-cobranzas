@@ -27,6 +27,7 @@
   <form action="{% url 'create-collection' %}" method="post">
     {% csrf_token %}
     {{formset.management_form}}
+    <input type="hidden" name="customer" value={{selected_customer}}>
     {% for sale_id, installments_list in sales_list %}
       {% comment %} Prevent empty formset {% endcomment %}
       {% if sale_id %}

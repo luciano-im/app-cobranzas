@@ -98,7 +98,7 @@ class SaleInstallment(models.Model):
 
 class Collection(models.Model):
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    # customer = models.ForeignKey(Customer, db_index=True, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, db_index=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
 

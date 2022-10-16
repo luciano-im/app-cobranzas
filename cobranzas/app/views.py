@@ -263,62 +263,66 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        collection_formset = CollectionFormset(
-            self.request.POST,
-            initial=self.initial_data,
-            prefix='collection'
-        )
-        # If there is an exception commits are rolled back
-        with transaction.atomic():
-            collection = None
+        selected_customer = request.POST.get('customer', None)
+        customer = Customer.objects.filter(id=selected_customer)
+        if customer:
+            collection_formset = CollectionFormset(
+                self.request.POST,
+                initial=self.initial_data,
+                prefix='collection'
+            )
+            # If there is an exception commits are rolled back
+            with transaction.atomic():
+                collection = None
 
-            for f_form in collection_formset:
-                # If form doesn't change then it remains unpaid
-                if f_form.has_changed():
-                    # If form has changed the fields "checked" and "amount" then it is being paid 
-                    # an installment
-                    if 'checked' and 'amount' in f_form.changed_data:
-                        # Check if form is valid or not
-                        if f_form.is_valid():
-                            data = f_form.cleaned_data
+                for f_form in collection_formset:
+                    # If form doesn't change then it remains unpaid
+                    if f_form.has_changed():
+                        # If form has changed the fields "checked" and "amount" then it is being paid
+                        # an installment
+                        if 'checked' and 'amount' in f_form.changed_data:
+                            # Check if form is valid or not
+                            if f_form.is_valid():
+                                data = f_form.cleaned_data
 
-                            # If collection record has not being created
-                            if not collection:
-                                # TODO - Use request.user
-                                user = User.objects.get(username='andrea')
-                                collection = Collection(
-                                    collector=user
+                                # If collection record has not being created
+                                if not collection:
+                                    # TODO - Use request.user
+                                    user = User.objects.get(username='andrea')
+                                    collection = Collection(
+                                        collector=user,
+                                        customer=customer
+                                    )
+                                    collection.save()
+
+                                # Create collection installment record
+                                sale_installment = SaleInstallment.objects.get(
+                                    sale=data['sale_id'],
+                                    installment=data['installment']
                                 )
-                                collection.save()
+                                collection_installment = CollectionInstallment(
+                                    collection=collection,
+                                    sale_installment=sale_installment,
+                                    amount=data['amount']
+                                )
+                                collection_installment.save()
 
-                            # Create collection installment record
-                            sale_installment = SaleInstallment.objects.get(
-                                sale=data['sale_id'],
-                                installment=data['installment']
-                            )
-                            collection_installment = CollectionInstallment(
-                                collection=collection,
-                                sale_installment=sale_installment,
-                                amount=data['amount']
-                            )
-                            collection_installment.save()
-
-                            # Update the paid amount and the status from the sale installment record
-                            installment_amount = sale_installment.installment_amount
-                            paid_amount = sale_installment.paid_amount
-                            if installment_amount > paid_amount + data['amount']:
-                                sale_installment.status = SaleInstallment.PARTIAL
+                                # Update the paid amount and the status from the sale installment record
+                                installment_amount = sale_installment.installment_amount
+                                paid_amount = sale_installment.paid_amount
+                                if installment_amount > paid_amount + data['amount']:
+                                    sale_installment.status = SaleInstallment.PARTIAL
+                                else:
+                                    sale_installment.status = SaleInstallment.PAID
+                                sale_installment.paid_amount = F('paid_amount') + data['amount']
+                                sale_installment.save()
                             else:
-                                sale_installment.status = SaleInstallment.PAID
-                            sale_installment.paid_amount = F('paid_amount') + data['amount']
-                            sale_installment.save()
-                        else:
-                            # If form has errors
-                            print(f_form.errors)
+                                # If form has errors
+                                print(f_form.errors)
         return self.render_to_response(context)
 
 
-#TODO - Fix the results to the logged user
+# TODO - Fix the results to the logged user
 class CollectionListView(ListView, FilterSetView):
     template_name = 'list_collection.html'
     context_object_name = 'collections'
