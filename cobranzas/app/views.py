@@ -264,7 +264,7 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         selected_customer = request.POST.get('customer', None)
-        customer = Customer.objects.filter(id=selected_customer)
+        customer = Customer.objects.get(id=selected_customer)
         if customer:
             collection_formset = CollectionFormset(
                 self.request.POST,
