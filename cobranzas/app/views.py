@@ -327,7 +327,7 @@ class CollectionListView(ListView, FilterSetView):
     template_name = 'list_collection.html'
     context_object_name = 'collections'
     filterset = [
-        ('customer', 'sale_installment__sale__customer', 'exact'),
+        ('customer', 'customer', 'exact'),
         ('date_from', 'date', 'gte'),
         ('date_to', 'date', 'lte'),
     ]
@@ -336,14 +336,23 @@ class CollectionListView(ListView, FilterSetView):
         filters = self.get_filters(self.request)
         if filters:
             queryset = Collection.objects.\
-                select_related('sale_installment__sale__customer').\
                 filter(filters).\
+                prefetch_related('collectioninstallment_set').\
+                annotate(paid_amount=Sum('collectioninstallment__amount')).\
+                order_by('-pk').\
                 all()
         else:
-            today = datetime.today()
+            today = datetime.today().date()
+            tz = timezone.get_current_timezone()
+            # Else add 00:00:00 (start of the day)
+            date_start = datetime.combine(today, time.min)
+            value = timezone.make_aware(date_start, tz, False)
+
             queryset = Collection.objects.\
-                select_related('sale_installment__sale__customer').\
-                filter(date=today).\
+                filter(date__gte=value).\
+                prefetch_related('collectioninstallment_set').\
+                annotate(paid_amount=Sum('collectioninstallment__amount')).\
+                order_by('-pk').\
                 all()
         return queryset
 

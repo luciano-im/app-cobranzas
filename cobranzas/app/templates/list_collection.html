@@ -40,8 +40,8 @@
         <tr class="collection-detail">
           <th scope="row">{{collection.pk}}</th>
           <td>{{collection.date|date:"d/m/Y"}}</td>
-          <td>{{collection.sale_installment.sale.customer}}</td>
-          <td>{{collection.amount}}</td>
+          <td>{{collection.customer}}</td>
+          <td>{{collection.paid_amount}}</td>
           <td>
             <a href="#" class="btn btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
@@ -51,6 +51,41 @@
               Recibo
             </a>
             <a href="#" class="btn btn-primary">Editar</a>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="9" class="installments-detail">
+            <div class="accordion accordion-flush" id="accordion-flush-{{collection.pk}}">
+              <div class="accordion-item">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{collection.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{collection.pk}}">
+                  Detalle de Cuotas
+                </button>
+                <div id="flush-collapse-{{collection.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{collection.pk}}" data-bs-parent="#accordion-flush-{{collection.pk}}">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="row"># Venta</th>
+                          <th>Fecha de Venta</th>
+                          <th>Cuota</th>
+                          <th>Pago</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in collection.collectioninstallment_set.all %}
+                          <tr>
+                            <td>{{i.sale_installment.sale.pk}}</td>
+                            <td>{{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
+                            <td>{{i.sale_installment.installment}}</td>
+                            <td>{{i.amount}}</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
       {% endfor %}
