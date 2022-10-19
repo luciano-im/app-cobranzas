@@ -18,7 +18,7 @@ from django.urls import path, include
 
 from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView
 from app.views import CustomerListView, SaleCreationView, SaleListView, CollectionCreationView
-from app.views import ProductCreationView, ProductListView, CollectionListView
+from app.views import ProductCreationView, ProductListView, CollectionListView, CollectionPrintView
 
 
 urlpatterns = [
@@ -35,4 +35,5 @@ urlpatterns = [
     path('sales/list/', SaleListView.as_view(), name='list-sales'),
     path('collections/create/', CollectionCreationView.as_view(), name='create-collection'),
     path('collections/list/', CollectionListView.as_view(), name='list-collection'),
+    path('collections/print/<int:id>/', CollectionPrintView.as_view(), name='print-collection'),
 ]

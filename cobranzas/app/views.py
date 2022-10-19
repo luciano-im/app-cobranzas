@@ -360,3 +360,25 @@ class CollectionListView(ListView, FilterSetView):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = CollectionFilterForm(self.request.GET)
         return context
+
+
+# TODO - Validate user
+class CollectionPrintView(TemplateView):
+    template_name = 'print_collection.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if 'id' in kwargs:
+            collection_id = kwargs['id']
+
+            collection = Collection.objects.get(id=collection_id)
+            collection_installment = CollectionInstallment.objects.\
+                filter(collection=collection_id)
+            total = CollectionInstallment.objects.\
+                filter(collection=collection_id).\
+                aggregate(total=Sum('amount'))
+
+            context['collection'] = collection
+            context['collection_installment'] = collection_installment
+            context['total'] = total
+        return self.render_to_response(context)

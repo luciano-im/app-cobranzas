@@ -1,0 +1,30 @@
+{% load static %}
+{% load mathfilters %}
+{% load get_sale_products %}
+
+{% block content %}
+  <h2>Comprobante de Pago</h2>
+  <p>Fecha: {{collection.date|date:"d/m/Y H:i"}}</p>
+  <p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>
+  {% for i in collection_installment %}
+  <ul>
+    <li>Importe: {{i.amount}}</li>
+    <li>Cuota {{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</li>
+    <li>Venta: #{{i.sale_installment.sale.id}} - {{i.sale_installment.sale.date|date:"d/m/Y"}}</li>
+    {% get_sale_products i.sale_installment.sale.id as products %}
+    <li>
+      Articulos:
+      <ul>
+        {% for p in products %}
+        <li>{{p}}</li>
+        {% endfor %}
+      </ul>
+    </li>
+    <li>Saldo: </li>
+  </ul>
+  {% endfor %}
+  <hr>
+  <p>TOTAL: {{total.total}}</p>
+  <p>Cobrador: {{collection.collector.first_name}} {{collection.collector.last_name}}</p>
+  <p>Exija y conserve este comprobante de pago</p>
+{% endblock %}
