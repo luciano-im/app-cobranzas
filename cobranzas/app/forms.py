@@ -90,8 +90,8 @@ CollectionFormset = formset_factory(
     CollectionForm,
     extra=1,
     can_delete=False,
-    absolute_max=50,
-    max_num=50
+    absolute_max=1500,
+    max_num=1500
 )
 
 
