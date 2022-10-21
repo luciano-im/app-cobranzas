@@ -37,8 +37,8 @@
               <span class="badge text-bg-primary">#{{sale.pk}}</span>
               <span class="badge text-bg-primary">{{sale.date|date:"d/m/Y"}}</span>
               <span class="badge text-bg-primary">{{sale.installments}} cuotas</span>
-              <span class="badge text-bg-primary">Cobrado: ${{sale.total_paid}}</span>
-              <span class="badge text-bg-primary">Pendiente: ${{sale.price|sub:sale.total_paid}}</span>
+              <span class="badge text-bg-primary">Cobrado: ${{sale.paid_amount}}</span>
+              <span class="badge text-bg-primary">Pendiente: ${{sale.pending_balance}}</span>
             </div>
             {% with product=products|lookup_dict:sale.pk %}
               <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">

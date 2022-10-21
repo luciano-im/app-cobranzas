@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 
 
@@ -51,6 +52,16 @@ class Sale(models.Model):
 
     def __str__(self):
         return f'{self.date} - {self.customer.name} - {self.pk}'
+
+    @property
+    def pending_balance(self):
+        paid = SaleInstallment.objects.filter(sale=self.id).aggregate(paid=Sum('paid_amount'))
+        return self.price - paid['paid']
+
+    @property
+    def paid_amount(self):
+        paid = SaleInstallment.objects.filter(sale=self.id).aggregate(paid=Sum('paid_amount'))
+        return paid['paid']
 
 
 class SaleProduct(models.Model):

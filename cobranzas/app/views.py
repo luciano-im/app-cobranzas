@@ -181,13 +181,11 @@ class SaleListView(ListView, FilterSetView):
                 filter(filters).\
                 prefetch_related('saleinstallment_set').\
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
-                annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
                 all()
         else:
             queryset = Sale.objects.\
                 prefetch_related('saleinstallment_set').\
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
-                annotate(paid_amount=Sum('saleinstallment__paid_amount')).\
                 all()
         return queryset
 
@@ -250,7 +248,6 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
             sales = Sale.objects.\
                 filter(customer=customer).\
                 annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-                annotate(total_paid=Sum('saleinstallment__paid_amount')).\
                 exclude(installments=F('paid_installments'))
             products_raw = sales.values('pk', 'saleproduct__product__name')
             products = defaultdict()
@@ -371,9 +368,13 @@ class CollectionPrintView(TemplateView):
         if 'id' in kwargs:
             collection_id = kwargs['id']
 
-            collection = Collection.objects.get(id=collection_id)
+            collection = Collection.objects.\
+                prefetch_related('collector').\
+                get(id=collection_id)
             collection_installment = CollectionInstallment.objects.\
-                filter(collection=collection_id)
+                filter(collection=collection_id).\
+                prefetch_related('sale_installment').\
+                prefetch_related('sale_installment__sale')
             total = CollectionInstallment.objects.\
                 filter(collection=collection_id).\
                 aggregate(total=Sum('amount'))
