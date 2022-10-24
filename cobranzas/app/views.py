@@ -370,6 +370,7 @@ class CollectionPrintView(TemplateView):
 
             collection = Collection.objects.\
                 prefetch_related('collector').\
+                prefetch_related('customer').\
                 get(id=collection_id)
             collection_installment = CollectionInstallment.objects.\
                 filter(collection=collection_id).\

@@ -2,29 +2,80 @@
 {% load mathfilters %}
 {% load get_sale_products %}
 
-{% block content %}
-  <h2>Comprobante de Pago</h2>
-  <p>Fecha: {{collection.date|date:"d/m/Y H:i"}}</p>
-  <p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>
-  {% for i in collection_installment %}
-  <ul>
-    <li>Importe: {{i.amount}}</li>
-    <li>Cuota {{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</li>
-    <li>Venta: #{{i.sale_installment.sale.id}} - {{i.sale_installment.sale.date|date:"d/m/Y"}}</li>
-    {% get_sale_products i.sale_installment.sale.id as products %}
-    <li>
-      Articulos:
-      <ul>
-        {% for p in products %}
-        <li>{{p}}</li>
-        {% endfor %}
-      </ul>
-    </li>
-    <li>Saldo: ${{i.sale_installment.sale.pending_balance}}</li>
-  </ul>
-  {% endfor %}
-  <hr>
-  <p>TOTAL: {{total.total}}</p>
-  <p>Cobrador: {{collection.collector.first_name}} {{collection.collector.last_name}}</p>
-  <p>Exija y conserve este comprobante de pago</p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comprobante de Pago</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static "css/styles.css" %}">
+  </head>
+  <body class="receipt">
+    <h1>Comprobante de Pago</h1>
+    {% comment %}<p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>{% endcomment %}
+    <table>
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Nro. Tran.</th>
+      </tr>
+      <tr>
+        <td>{{collection.date|date:"d/m/Y"}}</td>
+        <td>{{collection.date|date:"H:i"}}</td>
+        <td>{{collection.id}}</td>
+      </tr>
+    </table>
+    <hr>
+    <div class="customer details">
+      <p class="customer-name">{{collection.customer.name}}</p>
+      <p>{{collection.customer.address}} - {{collection.customer.get_city_display}}</p>
+      <p>{{collection.customer.telephone}}</p>
+    </div>
+    <hr>
+    <div class="collector details">
+      <p>COBRADOR: <span>{{collection.collector.first_name}} {{collection.collector.last_name}}</span></p>
+    </div>
+    <hr>
+    <div class="details installments">
+      <h3>Detalle de Cuotas</h3>
+      {% for i in collection_installment %}
+        <p class="line"><span></span></p>
+        {% get_sale_products i.sale_installment.sale.id as products %}
+        <table class="installment-detail">
+          <tr>
+            <td>Importe:</td>
+            <td><b>${{i.amount}}</b></td>
+          </tr>
+          <tr>
+            <td>Cuota:</td>
+            <td>{{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</td>
+          </tr>
+          <tr>
+            <td>Venta:</td>
+            <td>#{{i.sale_installment.sale.id}} - {{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
+          </tr>
+          {% for product in products %}
+          <tr>
+            <td colspan="2"><li>{{product}}</li></td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td>Saldo:</td>
+            <td>${{i.sale_installment.sale.pending_balance}}</td>
+          </tr>
+        </table>
+      {% endfor %}
+    </div>
+    <hr>
+    <div class="collection-details">
+      <p>TOTAL: <span>${{total.total}}</span></p>
+    </div>
+    <p>Exija y conserve este comprobante de pago</p>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  </body>
+</html>
