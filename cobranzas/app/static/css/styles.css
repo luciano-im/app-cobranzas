@@ -177,6 +177,7 @@ form.filterset-form input[type="submit"] {
 }
 
 .receipt .details {
+  font-size: .9rem;
   padding: 0 1rem;
 }
 
@@ -210,19 +211,35 @@ form.filterset-form input[type="submit"] {
   opacity: .60;
 }
 
-.receipt .installments table {
+.receipt .installments table,
+.receipt .total table {
   width: 100%;
 }
 
-.receipt .installments table td:first-child {
+.receipt .installments table td:first-child,
+.receipt .total table td:first-child {
   text-align: left;
 }
 
-.receipt .installments table td:nth-child(2) {
+.receipt .installments table td:nth-child(2),
+.receipt .total table td:nth-child(2) {
   text-align: right;
 }
 
 .receipt .installments table li {
   margin-left: 1rem;
   list-style-type: circle;
+}
+
+.receipt .total td {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.receipt .disclaimer {
+  margin-top: 2rem;
+}
+
+.receipt .disclaimer p {
+  font-size: .82rem;
 }
