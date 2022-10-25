@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from django.contrib.auth.views import LoginView
 from django.utils import timezone
 from collections import defaultdict
 from django.db import transaction
@@ -10,6 +11,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm, CollectionFilterForm
+from app.forms import CustomAuthenticationForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 from app.models import CollectionInstallment
 
@@ -47,6 +49,11 @@ class FilterSetView:
 
 class HomeView(TemplateView):
     template_name = 'base.html'
+
+
+class LoginView(LoginView):
+    template_name = 'login.html'
+    authentication_form = CustomAuthenticationForm
 
 
 class UserCreationView(CreateView):

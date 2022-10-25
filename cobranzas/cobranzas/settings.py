@@ -154,3 +154,11 @@ AUTH_USER_MODEL = 'app.User'
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Login setup
+# Redirect to this URL when try to access unauthorized user to extranet URL
+LOGIN_URL = '/login/'
+# Redirect to this URL after login
+LOGIN_REDIRECT_URL = '/'
+# Redirect to this URL after logout
+LOGOUT_REDIRECT_URL = '/'

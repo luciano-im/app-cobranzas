@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.forms import formset_factory
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
@@ -7,6 +7,13 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from app.models import User, Customer, Sale, SaleProduct, Product
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': _('The user or password is invalid'),
+        'inactive': _('Your account is not active.'),
+    }
 
 
 class CustomUserCreationForm(UserCreationForm):
