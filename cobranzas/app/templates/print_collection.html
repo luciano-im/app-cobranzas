@@ -48,7 +48,7 @@
         <table class="installment-detail">
           <tr>
             <td>Importe:</td>
-            <td><b>${{i.amount|intcomma}}</b></td>
+            <td><b>${{i.amount|floatformat:2|intcomma}}</b></td>
           </tr>
           <tr>
             <td>Cuota:</td>
@@ -65,7 +65,7 @@
           {% endfor %}
           <tr>
             <td>Saldo:</td>
-            <td>${{i.sale_installment.sale.pending_balance|intcomma}}</td>
+            <td>${{i.sale_installment.sale.pending_balance|floatformat:2|intcomma}}</td>
           </tr>
         </table>
       {% endfor %}
@@ -75,7 +75,7 @@
       <table>
         <tr>
           <td>TOTAL:</td>
-          <td>${{total.total|intcomma}}</td>
+          <td>${{total.total|floatformat:2|intcomma}}</td>
         </tr>
       </table>
     </div>

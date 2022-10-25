@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
 {% load lookup_dict %}
@@ -37,8 +38,8 @@
               <span class="badge text-bg-primary">#{{sale.pk}}</span>
               <span class="badge text-bg-primary">{{sale.date|date:"d/m/Y"}}</span>
               <span class="badge text-bg-primary">{{sale.installments}} cuotas</span>
-              <span class="badge text-bg-primary">Cobrado: ${{sale.paid_amount}}</span>
-              <span class="badge text-bg-primary">Pendiente: ${{sale.pending_balance}}</span>
+              <span class="badge text-bg-primary">Cobrado: ${{sale.paid_amount|floatformat:2|intcomma}}</span>
+              <span class="badge text-bg-primary">Pendiente: ${{sale.pending_balance|floatformat:2|intcomma}}</span>
             </div>
             {% with product=products|lookup_dict:sale.pk %}
               <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
@@ -202,7 +203,10 @@
   // Update the total variable and the total layout tag
   const updateTotal = amount => {
     total += amount;
-    totalTag.innerText = total.toFixed(2);
+    totalTag.innerText = total.toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   };
 </script>
 {% endblock %}

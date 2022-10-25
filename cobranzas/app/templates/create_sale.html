@@ -298,7 +298,10 @@
     const th = row.querySelector('th');
     const td = row.querySelectorAll('td');
     th.innerText = installments;
-    td[1].innerText = installmentAmount.toFixed(2);
+    td[1].innerText = installmentAmount.toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 </script>
 {% endblock %}

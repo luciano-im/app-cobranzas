@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
 
@@ -59,10 +60,10 @@
             {% else %}
               {{sale.products_quantity}} productos
             {% endif %}</td>
-          <td>{{sale.price}}</td>
+          <td>{{sale.price|floatformat:2|intcomma}}</td>
           <td>{{sale.installments}}</td>
-          <td>{{sale.paid_amount}}</td>
-          <td>{{sale.pending_balance}}</td>
+          <td>{{sale.paid_amount|floatformat:2|intcomma}}</td>
+          <td>{{sale.pending_balance|floatformat:2|intcomma}}</td>
           <td>
             <a href="#" class="btn btn-primary">Editar</a>
           </td>
@@ -89,9 +90,9 @@
                         {% for i in sale.saleinstallment_set.all %}
                           <tr>
                             <td scope="row">{{i.installment}}</td>
-                            <td>{{i.installment_amount}}</td>
-                            <td>{{i.paid_amount}}</td>
-                            <td>{{i.status}}</td>
+                            <td>{{i.installment_amount|floatformat:2|intcomma}}</td>
+                            <td>{{i.paid_amount|floatformat:2|intcomma}}</td>
+                            <td>{{i.get_status_display}}</td>
                           </tr>
                           {% endfor %}
                       </tbody>

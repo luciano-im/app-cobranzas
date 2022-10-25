@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -39,7 +40,7 @@
           <th scope="row">{{product.pk}}</th>
           <td>{{product.name}}</td>
           <td>{{product.brand}}</td>
-          <td>{{product.price}}</td>
+          <td>{{product.price|floatformat:2|intcomma}}</td>
           <td>{{product.sku}}</td>
           <td>
             <a href="#" class="btn btn-primary">Editar</a>

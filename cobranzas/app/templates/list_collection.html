@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
 
@@ -41,7 +42,7 @@
           <th scope="row">{{collection.pk}}</th>
           <td>{{collection.date|date:"d/m/Y"}}</td>
           <td>{{collection.customer}}</td>
-          <td>{{collection.paid_amount}}</td>
+          <td>{{collection.paid_amount|floatformat:2|intcomma}}</td>
           <td>
             <a href="{% url 'print-collection' collection.pk %}" class="btn btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
@@ -77,7 +78,7 @@
                             <td>{{i.sale_installment.sale.pk}}</td>
                             <td>{{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
                             <td>{{i.sale_installment.installment}}</td>
-                            <td>{{i.amount}}</td>
+                            <td>{{i.amount|floatformat:2|intcomma}}</td>
                           </tr>
                           {% endfor %}
                       </tbody>
