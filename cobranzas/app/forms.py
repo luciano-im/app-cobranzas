@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import formset_factory
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from app.models import User, Customer, Sale, SaleProduct, Product
@@ -25,7 +26,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomerCreationForm(forms.ModelForm):
-    collector = forms.ModelChoiceField(queryset=User.objects.filter(is_collector=True))
+    collector = forms.ModelChoiceField(queryset=User.objects.filter(is_collector=True), label=_('Collector'))
 
     class Meta:
         model = Customer
@@ -40,7 +41,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
-    price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}))
+    price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
 
     class Meta:
         model = Sale
@@ -96,8 +97,8 @@ CollectionFormset = formset_factory(
 
 
 class CustomerFilterForm(forms.Form):
-    city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False)
-    collector = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
+    city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False, label=_('City'))
+    collector = forms.ModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
 
 
 class ProductFilterForm(forms.Form):
@@ -105,20 +106,20 @@ class ProductFilterForm(forms.Form):
     def brand_choices():
         return [('', '---------')] + [(c, c) for c in Product.objects.values_list('brand', flat=True)]
 
-    name = forms.CharField(required=False)
-    brand = forms.ChoiceField(choices=brand_choices, required=False)
-    sku = forms.CharField(required=False)
+    name = forms.CharField(required=False, label=_('Name'))
+    brand = forms.ChoiceField(choices=brand_choices, required=False, label=_('Brand'))
+    sku = forms.CharField(required=False, label=_('SKU'))
 
 
 class SaleFilterForm(forms.Form):
-    id = forms.IntegerField(required=False)
-    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False)
-    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    product = forms.ModelChoiceField(queryset=Product.objects.all(), required=False)
+    id = forms.IntegerField(required=False, label=_('ID'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
+    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
+    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
+    product = forms.ModelChoiceField(queryset=Product.objects.all(), required=False, label=_('Product'))
 
 
 class CollectionFilterForm(forms.Form):
-    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False)
-    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
+    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
+    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
