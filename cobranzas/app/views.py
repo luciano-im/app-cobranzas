@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.utils import timezone
 from collections import defaultdict
@@ -47,7 +48,7 @@ class FilterSetView:
         return q_lookup
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'base.html'
 
 
@@ -56,14 +57,14 @@ class LoginView(LoginView):
     authentication_form = CustomAuthenticationForm
 
 
-class UserCreationView(CreateView):
+class UserCreationView(LoginRequiredMixin, CreateView):
     model = User
     form_class = CustomUserCreationForm
     template_name = 'signup_form.html'
     success_url = '/'
 
 
-class UserListView(TemplateView):
+class UserListView(LoginRequiredMixin, TemplateView):
     template_name = 'list_users.html'
 
     def get_context_data(self, **kwargs):
@@ -72,14 +73,14 @@ class UserListView(TemplateView):
         return context
 
 
-class CustomerCreationView(CreateView):
+class CustomerCreationView(LoginRequiredMixin, CreateView):
     model = Customer
     form_class = CustomerCreationForm
     template_name = 'create_customer.html'
     success_url = '/'
 
 
-class CustomerListView(ListView, FilterSetView):
+class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
     filterset = [
@@ -101,14 +102,14 @@ class CustomerListView(ListView, FilterSetView):
         return context
 
 
-class ProductCreationView(CreateView):
+class ProductCreationView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductCreationForm
     template_name = 'create_product.html'
     success_url = '/'
 
 
-class ProductListView(ListView, FilterSetView):
+class ProductListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_products.html'
     context_object_name = 'products'
     filterset = [
@@ -131,7 +132,7 @@ class ProductListView(ListView, FilterSetView):
         return context
 
 
-class SaleCreationView(CreateView):
+class SaleCreationView(LoginRequiredMixin, CreateView):
     model = Sale
     template_name = 'create_sale.html'
     form_class = SaleCreationForm
@@ -170,7 +171,7 @@ class SaleCreationView(CreateView):
         return super().form_valid(form)
 
 
-class SaleListView(ListView, FilterSetView):
+class SaleListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_sales.html'
     context_object_name = 'sales'
     filterset = [
@@ -202,7 +203,7 @@ class SaleListView(ListView, FilterSetView):
         return context
 
 
-class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
+class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
     initial_data = []
 
@@ -327,7 +328,7 @@ class CollectionCreationView(ContextMixin, TemplateResponseMixin, View):
 
 
 # TODO - Fix the results to the logged user
-class CollectionListView(ListView, FilterSetView):
+class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_collection.html'
     context_object_name = 'collections'
     filterset = [
@@ -367,7 +368,7 @@ class CollectionListView(ListView, FilterSetView):
 
 
 # TODO - Validate user
-class CollectionPrintView(TemplateView):
+class CollectionPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'print_collection.html'
 
     def get(self, request, *args, **kwargs):

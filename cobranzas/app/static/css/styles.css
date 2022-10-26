@@ -159,7 +159,7 @@ form.filterset-form input[type="submit"] {
 }
 
 
-/* COllection Receipt */
+/* Collection Receipt */
 
 .receipt {
   max-width: 80mm;
@@ -242,4 +242,44 @@ form.filterset-form input[type="submit"] {
 
 .receipt .disclaimer p {
   font-size: .82rem;
+}
+
+
+/* Login Page */
+
+.login {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.login .login-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.login .content {
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+.login header {
+  background-color: rgba(0,0,0,.1);
+  border-radius: 6px 6px 0 0;
+  margin-top: 3rem;
+  padding: .5rem;
+  padding-left: 3rem;
+}
+
+.login header a {
+  color: #212529;
+  font-size: 1.8rem;
+  text-decoration: none;
+}
+
+.login .errorlist {
+  color: red;
+}
+
+.login .content h2 {
+  font-size: 1.6rem;
 }
