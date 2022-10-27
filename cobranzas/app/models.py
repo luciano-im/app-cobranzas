@@ -11,6 +11,10 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     is_collector = models.BooleanField(default=False, verbose_name=_('Is a collector?'))
 
+    @property
+    def is_admin(self):
+        return self.is_staff
+
 
 class Customer(models.Model):
     CITY = (

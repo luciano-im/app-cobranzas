@@ -328,7 +328,6 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         return self.render_to_response(context)
 
 
-# TODO - Fix the results to the logged user
 class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_collection.html'
     context_object_name = 'collections'
@@ -360,6 +359,12 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
                 annotate(paid_amount=Sum('collectioninstallment__amount')).\
                 order_by('-pk').\
                 all()
+
+        # If the user is not an admin then filter collections by loggued user
+        user = self.request.user
+        if not user.is_admin:
+            return queryset.filter(collector=user)
+
         return queryset
 
     def get_context_data(self, **kwargs):
