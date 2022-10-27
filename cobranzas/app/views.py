@@ -295,10 +295,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
 
                                 # If collection record has not being created
                                 if not collection:
-                                    # TODO - Use request.user
-                                    user = User.objects.get(username='andrea')
                                     collection = Collection(
-                                        collector=user,
+                                        collector=request.user,
                                         customer=customer
                                     )
                                     collection.save()
