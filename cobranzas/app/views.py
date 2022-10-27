@@ -16,6 +16,8 @@ from app.forms import CustomAuthenticationForm
 from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
 from app.models import CollectionInstallment
 
+from app.permissions import AdminPermission
+
 
 class FilterSetView:
 
@@ -57,14 +59,14 @@ class LoginView(LoginView):
     authentication_form = CustomAuthenticationForm
 
 
-class UserCreationView(LoginRequiredMixin, CreateView):
+class UserCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = User
     form_class = CustomUserCreationForm
     template_name = 'signup_form.html'
     success_url = '/'
 
 
-class UserListView(LoginRequiredMixin, TemplateView):
+class UserListView(LoginRequiredMixin, AdminPermission, TemplateView):
     template_name = 'list_users.html'
 
     def get_context_data(self, **kwargs):
@@ -73,13 +75,14 @@ class UserListView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class CustomerCreationView(LoginRequiredMixin, CreateView):
+class CustomerCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = Customer
     form_class = CustomerCreationForm
     template_name = 'create_customer.html'
     success_url = '/'
 
 
+# TODO: Allow collectors to search for their own customers
 class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
@@ -102,14 +105,14 @@ class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
         return context
 
 
-class ProductCreationView(LoginRequiredMixin, CreateView):
+class ProductCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = Product
     form_class = ProductCreationForm
     template_name = 'create_product.html'
     success_url = '/'
 
 
-class ProductListView(LoginRequiredMixin, ListView, FilterSetView):
+class ProductListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
     template_name = 'list_products.html'
     context_object_name = 'products'
     filterset = [
@@ -132,7 +135,7 @@ class ProductListView(LoginRequiredMixin, ListView, FilterSetView):
         return context
 
 
-class SaleCreationView(LoginRequiredMixin, CreateView):
+class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = Sale
     template_name = 'create_sale.html'
     form_class = SaleCreationForm
@@ -171,7 +174,7 @@ class SaleCreationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class SaleListView(LoginRequiredMixin, ListView, FilterSetView):
+class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
     template_name = 'list_sales.html'
     context_object_name = 'sales'
     filterset = [
