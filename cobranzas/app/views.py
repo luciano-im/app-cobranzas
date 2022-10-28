@@ -1,6 +1,7 @@
 from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from collections import defaultdict
 from django.db import transaction
@@ -373,7 +374,6 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
         return context
 
 
-# TODO - Validate user
 class CollectionPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'print_collection.html'
 
@@ -386,6 +386,13 @@ class CollectionPrintView(LoginRequiredMixin, TemplateView):
                 prefetch_related('collector').\
                 prefetch_related('customer').\
                 get(id=collection_id)
+
+            # If the logged user is not an admin and is not the creator of the collection
+            # then raise a 403 error
+            user = request.user
+            if not user.is_admin and user != collection.collector:
+                raise PermissionDenied
+
             collection_installment = CollectionInstallment.objects.\
                 filter(collection=collection_id).\
                 prefetch_related('sale_installment').\
