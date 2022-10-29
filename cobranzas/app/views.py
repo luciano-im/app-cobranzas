@@ -83,21 +83,34 @@ class CustomerCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     success_url = '/'
 
 
-# TODO: Allow collectors to search for their own customers
 class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
-    filterset = [
-        ('city', 'city', 'exact'),
-        ('collector', 'collector', 'exact'),
-    ]
+    filterset = []
 
     def get_queryset(self):
+        # If the user is an admin then enable filter by collector
+        user = self.request.user
+        if user.is_admin:
+            self.filterset = [
+                ('city', 'city', 'exact'),
+                ('collector', 'collector', 'exact'),
+            ]
+        else:
+            self.filterset = [
+                ('city', 'city', 'exact'),
+            ]
+
         filters = self.get_filters(self.request)
         if filters:
             queryset = Customer.objects.filter(filters)
         else:
             queryset = Customer.objects.all()
+
+        # If the user is not an admin then filter customers assigned to the loggued user
+        if not user.is_admin:
+            return queryset.filter(collector=user)
+
         return queryset
 
     def get_context_data(self, **kwargs):

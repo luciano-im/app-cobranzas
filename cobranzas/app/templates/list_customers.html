@@ -10,9 +10,11 @@
       <div class="col-3">
         {{ filter_form.city|as_crispy_field }}
       </div>
-      <div class="col-3">
-        {{ filter_form.collector|as_crispy_field }}
-      </div>
+      {% if request.user.is_admin %}
+        <div class="col-3">
+          {{ filter_form.collector|as_crispy_field }}
+        </div>
+      {% endif %}
     </div>
     <div>
       <input type="submit" value="Filtrar" class="btn btn-secondary">
@@ -26,7 +28,9 @@
         <th scope="col">Dirección</th>
         <th scope="col">Ciudad</th>
         <th scope="col">Teléfono</th>
-        <th scope="col">Cobrador</th>
+        {% if request.user.is_admin %}
+          <th scope="col">Cobrador</th>
+        {% endif %}
         <th scope="col">Acciones</th>
       </tr>
     </thead>
@@ -37,7 +41,9 @@
           <td>{{customer.address}}</td>
           <td>{{customer.get_city_display}}</td>
           <td>{{customer.telephone}}</td>
-          <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
+          {% if request.user.is_admin %}
+            <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
+          {% endif %}
           <td>
             <a href="#" class="btn btn-primary">Editar</a>
           </td>
