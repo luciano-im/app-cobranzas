@@ -1,6 +1,8 @@
 const VERSION = '{{ version }}';
 const CACHE_NAME = 'collection';
-const URLS_TO_CACHE = [];
+const URLS_TO_CACHE = [
+  "{% url 'offline' %}",
+];
 
 // install files needed offline
 self.addEventListener('install', event => {
@@ -21,14 +23,10 @@ self.addEventListener('fetch', event => {
     // out whether our request is in any of them
     caches.match(event.request)
       .then(response => {
-        if (response) {
-          // if we are here, that means there's a match
-          //return the response stored in browser
-          return response;
-        }
-        // no match in cache, use the network instead
-        return fetch(event.request);
-      }
-    )
+        return response || fetch(event.request);
+      })
+      .catch(() => {
+        return caches.match("{% url 'offline' %}");
+      })
   );
 });
