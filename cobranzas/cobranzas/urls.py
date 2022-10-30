@@ -40,4 +40,6 @@ urlpatterns = [
     path('collections/print/<int:id>/', CollectionPrintView.as_view(), name='print-collection'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    # Include SW views
+    path('', include('collection.urls')),
 ]
