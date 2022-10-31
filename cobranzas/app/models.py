@@ -5,13 +5,14 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
     is_collector = models.BooleanField(default=False, verbose_name=_('Is a collector?'))
 
-    @property
+    @cached_property
     def is_admin(self):
         return self.is_staff
 
@@ -58,12 +59,11 @@ class Sale(models.Model):
     def __str__(self):
         return f'{self.date} - {self.customer.name} - {self.pk}'
 
-    @property
+    @cached_property
     def pending_balance(self):
-        paid = SaleInstallment.objects.filter(sale=self.id).aggregate(paid=Sum('paid_amount'))
-        return self.price - paid['paid']
+        return self.price - self.paid_amount
 
-    @property
+    @cached_property
     def paid_amount(self):
         paid = SaleInstallment.objects.filter(sale=self.id).aggregate(paid=Sum('paid_amount'))
         return paid['paid']
@@ -89,12 +89,12 @@ class SaleInstallment(models.Model):
     )
 
     sale = models.ForeignKey(Sale, db_index=True, on_delete=models.CASCADE, verbose_name=_('Sale'))
-    installment = models.IntegerField(verbose_name=_('Installment'))
+    installment = models.IntegerField(db_index=True, verbose_name=_('Installment'))
     installment_amount = models.FloatField(verbose_name=_('Installment Amount'))
     paid_amount = models.FloatField(default=0.0, verbose_name=_('Paid Amount'))
     payment_date = models.DateTimeField(blank=True, null=True, verbose_name=_('Payment Date'))
     status = models.CharField(
-        max_length=50, default=PENDING, choices=STATUS, verbose_name=_('Payment Status')
+        max_length=50, default=PENDING, choices=STATUS, db_index=True, verbose_name=_('Payment Status')
     )
 
     def __str__(self):
