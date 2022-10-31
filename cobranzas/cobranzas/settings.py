@@ -171,3 +171,4 @@ SILKY_AUTHORISATION = True
 # Silk record how long it takes to save everything down to the database at the end of each request
 SILKY_META = True
 SILKY_MAX_RECORDED_REQUESTS = 10**4
+SILKY_PYTHON_PROFILER = True

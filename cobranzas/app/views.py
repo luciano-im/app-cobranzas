@@ -19,6 +19,8 @@ from app.models import CollectionInstallment
 
 from app.permissions import AdminPermission
 
+from silk.profiling.profiler import silk_profile
+
 
 class FilterSetView:
 
@@ -226,7 +228,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.all()
+        context['customers'] = Customer.objects.values('pk', 'name')
         selected_customer = self.request.GET.get('select-customer', None)
         context['selected_customer'] = int(selected_customer) if selected_customer is not None else selected_customer
         return context
@@ -274,12 +276,12 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 filter(customer=customer).\
                 annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
                 exclude(installments=F('paid_installments'))
-            products_raw = sales.values('pk', 'saleproduct__product__name')
+            products_raw = list(sales.values('pk', 'saleproduct__product__name'))
             products = defaultdict()
             for p in products_raw:
                 products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
 
-            context['sales'] = dict((s.pk, s) for s in sales)
+            context['sales'] = dict((s.pk, s) for s in list(sales))
             context['products'] = products
         return self.render_to_response(context)
 
