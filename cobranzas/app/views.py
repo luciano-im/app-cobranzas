@@ -222,6 +222,8 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         return context
 
 
+# TODO: If user is not an admin then query just for the customers assigned to the user
+# TODO: Improve template performance when loading lots of formset
 class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
     initial_data = []
