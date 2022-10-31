@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'mathfilters',
+    'silk',
     'app',
 ]
 
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -162,3 +164,10 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 # Redirect to this URL after logout
 LOGOUT_REDIRECT_URL = '/'
+
+# Django-silk setup
+SILKY_AUTHENTICATION = True
+SILKY_AUTHORISATION = True
+# Silk record how long it takes to save everything down to the database at the end of each request
+SILKY_META = True
+SILKY_MAX_RECORDED_REQUESTS = 10**4
