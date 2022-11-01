@@ -1,11 +1,13 @@
 from datetime import datetime, time
+from collections import defaultdict
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core import serializers
 from django.core.exceptions import PermissionDenied
-from django.utils import timezone
-from collections import defaultdict
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
+from django.http import JsonResponse
+from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
@@ -224,13 +226,6 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
     template_name = 'create_collection.html'
     initial_data = []
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.all()
-        selected_customer = self.request.GET.get('select-customer', None)
-        context['selected_customer'] = int(selected_customer) if selected_customer is not None else selected_customer
-        return context
-
     def get_initial_data(self, customer):
         partial_installment = SaleInstallment.objects.\
             filter(status='PARTIAL').\
@@ -266,22 +261,36 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        customer = request.GET.get('select-customer', None)
-        if customer:
-            self.initial_data = self.get_initial_data(customer)
-            context['formset'] = CollectionFormset(prefix='collection', initial=self.initial_data)
+        customers = Customer.objects.values('pk', 'name')
+        selected_customer_param = self.request.GET.get('select-customer', None)
+        selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
+        if selected_customer:
+            self.initial_data = self.get_initial_data(selected_customer)
+            # context['formset'] = CollectionFormset(prefix='collection', initial=self.initial_data)
             sales = Sale.objects.\
-                filter(customer=customer).\
+                filter(customer=selected_customer).\
                 annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-                exclude(installments=F('paid_installments'))
+                exclude(installments=F('paid_installments')).\
+                values('pk')
             products_raw = sales.values('pk', 'saleproduct__product__name')
-            products = defaultdict()
-            for p in products_raw:
-                products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
+            # products = defaultdict()
+            # for p in products_raw:
+            #     products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
 
-            context['sales'] = dict((s.pk, s) for s in sales)
-            context['products'] = products
-        return self.render_to_response(context)
+            # context['sales'] = dict((s.pk, s) for s in sales)
+            # context['products'] = products
+        else:
+            context['customers'] = customers
+            return self.render_to_response(context)
+
+        obj = {
+            # 'sales': list(sales),
+            # 'products': list(products_raw),
+            'customers': list(customers),
+            'selected_customer': selected_customer,
+            'data': list(self.initial_data)
+        }
+        return JsonResponse(obj)
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

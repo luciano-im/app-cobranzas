@@ -7,7 +7,7 @@
 
 {% block content %}
 <h2>Nuevo Cobro</h2>
-<form action="{% url 'create-collection' %}" method="get" id="filter-customer" name="filter-customer">
+<form action="#" method="get" id="filter-customer" name="filter-customer">
   <div class="row">
     <div class="col-8">
       <select name="select-customer" id="select-customer" class="form-select" required>
@@ -137,6 +137,25 @@
 {% endblock %}
 
 {% block extra_js %}
+
+<script>
+  const filterCustomerForm = document.getElementById('filter-customer');
+  filterCustomerForm.addEventListener('submit', event => {
+    event.preventDefault();
+    fetch("{% url 'create-collection' %}", 
+      {
+        method: "GET", 
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+      .then(response => response.json())
+      .then(data => console.log(data));
+  });
+</script>
+
+
 <script>
   // List of checkboxes
   const checkInputs = document.querySelectorAll('input[type="checkbox"]');
