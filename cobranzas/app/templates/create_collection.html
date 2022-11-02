@@ -140,19 +140,40 @@
 
 <script>
   const filterCustomerForm = document.getElementById('filter-customer');
+  const selectCustomer = filterCustomerForm.querySelector('#select-customer');
   filterCustomerForm.addEventListener('submit', event => {
     event.preventDefault();
-    fetch("{% url 'create-collection' %}", 
-      {
-        method: "GET", 
-        headers: {
-          "Content-Type": "application/json"
-        }
+    fetchAPI(selectCustomer.value).then((res) => {
+      if (res) {
+        console.log(res);
       }
-    )
-      .then(response => response.json())
-      .then(data => console.log(data));
+    });
   });
+
+  const fetchAPI = async (customer) => {
+    const url = `{% url 'create-collection' %}?select-customer=${customer}`;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Parse json response
+      const result = await response.json();
+
+      const status_code = response.status;
+      if (status_code != 200) {
+        console.log("Error in getting brand info!");
+        return false;
+      }
+
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 </script>
 
 

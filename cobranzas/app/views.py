@@ -1,8 +1,6 @@
 from datetime import datetime, time
-from collections import defaultdict
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.core import serializers
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
@@ -16,7 +14,7 @@ from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreation
 from app.forms import SaleProductFormSet, ProductCreationForm, CollectionFormset
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm, CollectionFilterForm
 from app.forms import CustomAuthenticationForm
-from app.models import User, Customer, Sale, SaleInstallment, Product, Collection
+from app.models import User, Customer, Sale, SaleProduct, SaleInstallment, Product, Collection
 from app.models import CollectionInstallment
 
 from app.permissions import AdminPermission
@@ -228,68 +226,86 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
 # TODO: Improve template performance when loading lots of formset
 class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
-    initial_data = []
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.values('pk', 'name')
-        selected_customer = self.request.GET.get('select-customer', None)
-        context['selected_customer'] = int(selected_customer) if selected_customer is not None else selected_customer
-        return context
 
     def get_initial_data(self, customer):
-        partial_installment = SaleInstallment.objects.\
-            filter(status='PARTIAL').\
-            select_related('sale').\
-            filter(sale__customer=customer).\
-            annotate(group=Value('due'))
-        filter = SaleInstallment.objects.\
-            filter(status='PENDING').\
-            values('sale').\
-            filter(sale__customer=customer).\
-            annotate(next_installment=Min('installment'))
-        q_filter = Q()
-        for pair in filter:
-            q_filter |= (Q(sale=pair['sale']) & Q(installment=pair['next_installment']))
-        next_installment = SaleInstallment.objects.\
-            filter(q_filter).\
-            select_related('sale').\
-            filter(sale__customer=customer).\
-            annotate(group=Value('due'))
-        pending_installments = SaleInstallment.objects.\
-            filter(status='PENDING').\
-            exclude(q_filter).\
-            select_related('sale').\
-            filter(sale__customer=customer).\
-            annotate(group=Value('future'))
+        data = dict()
+        sales_with_pending_balance = self.get_sales_with_pending_balance(customer)
 
-        initial_data = partial_installment.\
-            union(next_installment, pending_installments).\
-            order_by('sale', 'group', 'status', 'installment').\
-            values()
+        for s in sales_with_pending_balance:
+            partial_installment = SaleInstallment.objects.\
+                filter(status='PARTIAL', sale=s['pk']).\
+                annotate(group=Value('due')).\
+                order_by('sale', 'group', 'status', 'installment').\
+                values('pk', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
-        return initial_data
+            filter = SaleInstallment.objects.\
+                filter(status='PENDING', sale=s['pk']).\
+                values('sale').\
+                annotate(next_installment=Min('installment'))
+            q_filter = Q()
+            for pair in filter:
+                q_filter |= (Q(sale=pair['sale']) & Q(installment=pair['next_installment']))
+            next_installment = SaleInstallment.objects.\
+                filter(q_filter, sale=s['pk']).\
+                annotate(group=Value('due')).\
+                order_by('sale', 'group', 'status', 'installment').\
+                values()
 
+            pending_installments = SaleInstallment.objects.\
+                filter(status='PENDING', sale=s['pk']).\
+                exclude(q_filter).\
+                annotate(group=Value('future')).\
+                order_by('sale', 'group', 'status', 'installment').\
+                values()
+
+            data[s['pk']] = {
+                'partial': list(partial_installment),
+                'next': list(next_installment),
+                'pending': list(pending_installments)
+            }
+        return data
+
+    def get_sales_with_pending_balance(self, customer):
+        return Sale.objects.\
+            filter(customer=customer).\
+            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            exclude(installments=F('paid_installments')).\
+            values('pk')
+
+    def get_sales_detail(self, customer):
+        data = dict()
+        sales_with_pending_balance = self.get_sales_with_pending_balance(customer)
+        for s in sales_with_pending_balance:
+            sale = Sale.objects.get(pk=s['pk'])
+            products = SaleProduct.objects.filter(sale=s['pk']).values('product__name')
+            data[s['pk']] = {
+                'date': sale.date,
+                'price': sale.price,
+                'paid_amount': sale.paid_amount,
+                'pending_balance': sale.pending_balance,
+                'products': [p['product__name'] for p in products]
+            }
+        return data
+
+    @silk_profile(name='Collection Get')
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        customers = Customer.objects.values('pk', 'name')
+        context['customers'] = Customer.objects.values('pk', 'name')
         selected_customer_param = self.request.GET.get('select-customer', None)
         selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
+        context['selected_customer'] = selected_customer
         if selected_customer:
-            self.initial_data = self.get_initial_data(selected_customer)
-            # context['formset'] = CollectionFormset(prefix='collection', initial=self.initial_data)
-            sales = Sale.objects.\
-                filter(customer=selected_customer).\
-                annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-                exclude(installments=F('paid_installments'))
-            products_raw = list(sales.values('pk', 'saleproduct__product__name'))
-            products = defaultdict()
-            for p in products_raw:
-                products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
-
-            context['sales'] = dict((s.pk, s) for s in list(sales))
-            context['products'] = products
-        return self.render_to_response(context)
+            sales_data = self.get_sales_detail(selected_customer)
+            installments_data = self.get_initial_data(selected_customer)
+            obj = {
+                'sales': sales_data,
+                'customers': list(context['customers']),
+                'selected_customer': selected_customer,
+                'installments': installments_data
+            }
+            return JsonResponse(obj)
+        else:
+            return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
