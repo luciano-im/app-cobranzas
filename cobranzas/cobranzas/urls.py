@@ -24,6 +24,7 @@ from app.views import LoginView
 
 
 urlpatterns = [
+    path('silk/', include('silk.urls', namespace='silk')),
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
     path('accounts/', include('django.contrib.auth.urls')),

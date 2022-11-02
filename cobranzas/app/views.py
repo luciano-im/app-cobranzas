@@ -21,6 +21,8 @@ from app.models import CollectionInstallment
 
 from app.permissions import AdminPermission
 
+from silk.profiling.profiler import silk_profile
+
 
 class FilterSetView:
 
@@ -222,9 +224,18 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         return context
 
 
+# TODO: If user is not an admin then query just for the customers assigned to the user
+# TODO: Improve template performance when loading lots of formset
 class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
     initial_data = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customers'] = Customer.objects.values('pk', 'name')
+        selected_customer = self.request.GET.get('select-customer', None)
+        context['selected_customer'] = int(selected_customer) if selected_customer is not None else selected_customer
+        return context
 
     def get_initial_data(self, customer):
         partial_installment = SaleInstallment.objects.\
@@ -270,27 +281,15 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             sales = Sale.objects.\
                 filter(customer=selected_customer).\
                 annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-                exclude(installments=F('paid_installments')).\
-                values('pk')
-            products_raw = sales.values('pk', 'saleproduct__product__name')
-            # products = defaultdict()
-            # for p in products_raw:
-            #     products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
+                exclude(installments=F('paid_installments'))
+            products_raw = list(sales.values('pk', 'saleproduct__product__name'))
+            products = defaultdict()
+            for p in products_raw:
+                products.setdefault(p['pk'], []).append(p['saleproduct__product__name'])
 
-            # context['sales'] = dict((s.pk, s) for s in sales)
-            # context['products'] = products
-        else:
-            context['customers'] = customers
-            return self.render_to_response(context)
-
-        obj = {
-            # 'sales': list(sales),
-            # 'products': list(products_raw),
-            'customers': list(customers),
-            'selected_customer': selected_customer,
-            'data': list(self.initial_data)
-        }
-        return JsonResponse(obj)
+            context['sales'] = dict((s.pk, s) for s in list(sales))
+            context['products'] = products
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
