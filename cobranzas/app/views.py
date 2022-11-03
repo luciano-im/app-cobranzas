@@ -279,6 +279,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             sale = Sale.objects.get(pk=s['pk'])
             products = SaleProduct.objects.filter(sale=s['pk']).values('product__name')
             data[s['pk']] = {
+                'id': sale.pk,
+                'installments': sale.installments,
                 'date': sale.date,
                 'price': sale.price,
                 'paid_amount': sale.paid_amount,

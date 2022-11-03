@@ -134,6 +134,52 @@
     </div>
   </form>
 </div>
+
+<div class="data-container">
+  <div class="accordion accordion-flush create-collection">
+    <form action="{% url 'create-collection' %}" method="post">
+      {% csrf_token %}
+      {% comment %} <input type="hidden" name="customer" value={{selected_customer}}> {% endcomment %}
+      <div class="sales-container">
+        <div class="empty-sale">
+          <div class="sale-details">
+            <span class="badge text-bg-primary">#<span class="id"></span></span>
+            <span class="badge text-bg-primary"><span class="date"></span></span>
+            <span class="badge text-bg-primary"><span class="installments"></span> cuotas</span>
+            <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount"></span></span>
+            <span class="badge text-bg-primary">Pendiente: $<span class="pending-balance"></span></span>
+          </div>
+          <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
+            <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
+            </ol>
+          </div>
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Cuota</th>
+                <th scope="col">Importe Total</th>
+                <th scope="col">Importe Pagado</th>
+                <th scope="col">A Pagar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="installment"></th>
+                <td class="installment-amount"></td>
+                <td class="paid-amount"></td>
+                <td class="amount"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="totals d-flex flex-column align-items-end mb-5">
+        <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+        <input type="submit" value="Guardar" class="btn btn-primary">
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -141,14 +187,49 @@
 <script>
   const filterCustomerForm = document.getElementById('filter-customer');
   const selectCustomer = filterCustomerForm.querySelector('#select-customer');
+  const emptySale = document.querySelector('.sales-container .empty-sale');
+  const salesContainer = document.querySelector('.data-container .sales-container');
   filterCustomerForm.addEventListener('submit', event => {
     event.preventDefault();
     fetchAPI(selectCustomer.value).then((res) => {
       if (res) {
-        console.log(res);
+        const sales = Object.values(res.sales);
+        const installments = res.installments;
+        sales.forEach(item => {
+          createSale(item, installments[item.id]);
+        });
       }
     });
   });
+
+  const createSale = (sale, installments) => {
+    // Clone the empty form and update its index
+    const newSale = emptySale.cloneNode(true);
+    newSale.classList.add('sale');
+    newSale.classList.remove('empty-sale');
+
+    newSale.querySelector('.id').innerText = sale.id;
+    newSale.querySelector('.date').innerText = sale.date;
+    newSale.querySelector('.installments').innerText = sale.installments;
+    newSale.querySelector('.paid-amount').innerText = sale.paid_amount;
+    newSale.querySelector('.pending-balance').innerText = sale.pending_balance;
+
+    const products = newSale.querySelector('.breadcrumb');
+    for(i = 0; i < sale.products.length; i++) {
+      products.innerHTML += `<li class="breadcrumb-item">${sale.products[i]}</li>`;
+    }
+
+    //salesContainer.appendChild(newSale);
+    createInstallments(newSale, installments);
+  }
+
+  const createInstallments = (saleElement, installments) => {
+    console.log(installments);
+
+    // TODO: Create partial, next and pending installments
+
+    salesContainer.appendChild(saleElement);
+  }
 
   const fetchAPI = async (customer) => {
     const url = `{% url 'create-collection' %}?select-customer=${customer}`;

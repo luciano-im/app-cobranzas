@@ -158,6 +158,10 @@ form.filterset-form input[type="submit"] {
   margin-top: .5rem;
 }
 
+.content .create-collection .empty-sale {
+  display: none;
+}
+
 
 /* Collection Receipt */
 
@@ -259,11 +263,11 @@ form.filterset-form input[type="submit"] {
 }
 
 .login .content {
-  border: 1px solid rgba(0,0,0,.1);
+  border: 1px solid rgba(0, 0, 0, .1);
 }
 
 .login header {
-  background-color: rgba(0,0,0,.1);
+  background-color: rgba(0, 0, 0, .1);
   border-radius: 6px 6px 0 0;
   margin-top: 3rem;
   padding: .5rem;
