@@ -162,6 +162,10 @@ form.filterset-form input[type="submit"] {
   display: none;
 }
 
+.content .create-collection tr.empty-form {
+  display: none;
+}
+
 
 /* Collection Receipt */
 

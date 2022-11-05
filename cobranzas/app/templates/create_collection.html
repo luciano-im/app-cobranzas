@@ -23,118 +23,6 @@
   </div>
 </form>
 
-<div class="accordion accordion-flush create-collection">
-  {% regroup formset by sale_id.value as sales_list %}
-  <form action="{% url 'create-collection' %}" method="post">
-    {% csrf_token %}
-    {{formset.management_form}}
-    <input type="hidden" name="customer" value={{selected_customer}}>
-    {% for sale_id, installments_list in sales_list %}
-      {% comment %} Prevent empty formset {% endcomment %}
-      {% if sale_id %}
-        {% with sale=sales|lookup_dict:sale_id %}
-          <div class="sale">
-            <div class="sale-details">
-              <span class="badge text-bg-primary">#{{sale.pk}}</span>
-              <span class="badge text-bg-primary">{{sale.date|date:"d/m/Y"}}</span>
-              <span class="badge text-bg-primary">{{sale.installments}} cuotas</span>
-              <span class="badge text-bg-primary">Cobrado: ${{sale.paid_amount|floatformat:2|intcomma}}</span>
-              <span class="badge text-bg-primary">Pendiente: ${{sale.pending_balance|floatformat:2|intcomma}}</span>
-            </div>
-            {% with product=products|lookup_dict:sale.pk %}
-              <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
-                <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
-                  {% for p in product %}
-                    <li class="breadcrumb-item">{{p}}</li>
-                  {% endfor %}
-                </ol>
-              </div>
-            {% endwith %}
-            {% regroup installments_list by group.value as group_list %}
-            {% with last_installment=group_list|length_is:"1" %}
-              {% for group_name, installments_details in group_list %}
-                {% if group_name == "due" %}
-                  <table class="table table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th scope="col">Cuota</th>
-                        <th scope="col">Importe Total</th>
-                        <th scope="col">Importe Pagado</th>
-                        <th scope="col">A Pagar</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for i in installments_details %}
-                      {{i.installment.as_hidden}}
-                      {{i.sale_id.as_hidden}}
-                      {{i.group.as_hidden}}
-                      <tr>
-                        <th scope="row">
-                          {{i.checked}} {{i.installment.value}}
-                        </th>
-                        <td>
-                          {{i.installment_amount}}
-                        </td>
-                        <td>
-                          {{i.paid_amount}}
-                        </td>
-                        <td>
-                          {{i.amount|as_crispy_field}}
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-                    Ver cuotas pendientes
-                  </button>
-                {% elif group_name == "future" %}
-                  <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-                    <table class="table table-hover">
-                      <tbody>
-                        {% for i in installments_details %}
-                        {{i.installment.as_hidden}}
-                        {{i.sale_id.as_hidden}}
-                        {{i.group.as_hidden}}
-                        <tr>
-                          <th scope="row">
-                            {{i.checked}} {{i.installment.value}}
-                          </th>
-                          <td>
-                            {{i.installment_amount}}
-                          </td>
-                          <td>
-                            {{i.paid_amount}}
-                          </td>
-                          <td>
-                            {{i.amount|as_crispy_field}}
-                          </td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                {% endif %}
-                {% if last_installment %}
-                  <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse"
-                    aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#installments">
-                    No hay mas cuotas pendientes
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% endwith %}
-          </div>
-        {% endwith %}
-      {% endif %}
-    {% endfor %}
-    <div class="totals d-flex flex-column align-items-end mb-5">
-      <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
-      <input type="submit" value="Guardar" class="btn btn-primary">
-    </div>
-  </form>
-</div>
-
 <div class="data-container">
   <div class="accordion accordion-flush create-collection">
     <form action="{% url 'create-collection' %}" method="post">
@@ -153,7 +41,7 @@
             <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
             </ol>
           </div>
-          <table class="table table-hover">
+          <table class="table table-hover next-installment">
             <thead class="table-light">
               <tr>
                 <th scope="col">Cuota</th>
@@ -163,14 +51,37 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row" class="installment"></th>
-                <td class="installment-amount"></td>
-                <td class="paid-amount"></td>
-                <td class="amount"></td>
+              <tr class="empty-form">
+                <input type="hidden" name="collection-__prefix__-installment" value="" id="id_collection-__prefix__-installment">
+                <input type="hidden" name="collection-__prefix__-sale_id" value="" id="id_collection-__prefix__-sale_id">
+                <input type="hidden" name="collection-__prefix__-group" value="" id="id_collection-__prefix__-group">
+                <th scope="row" class="installment">
+                  <input type="checkbox" name="collection-__prefix__-checked" id="id_collection-__prefix__-checked"> <span></span>
+                </th>
+                <td class="installment-amount">
+                  <input type="number" name="collection-__prefix__-installment_amount" value="" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-installment_amount">
+                </td>
+                <td class="paid-amount">
+                  <input type="number" name="collection-__prefix__-paid_amount" value="" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-paid_amount">
+                </td>
+                <td class="amount">
+                  <div id="div_id_collection-__prefix__-amount" class="mb-3">
+                    <input type="number" name="collection-__prefix__-amount" class="payment-input numberinput form-control" step="any" id="id_collection-__prefix__-amount">
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#flush-collapse-__sale_pk__" aria-expanded="false" aria-controls="flush-collapse-__sale_pk__">
+            <span class="button-text"></span>
+          </button>
+          <div id="flush-collapse-__sale_pk__" class="accordion-collapse collapse" aria-labelledby="flush-heading-__sale_pk__" data-bs-parent="#installments">
+            <table class="table table-hover pending-installments">
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <div class="totals d-flex flex-column align-items-end mb-5">
@@ -188,7 +99,9 @@
   const filterCustomerForm = document.getElementById('filter-customer');
   const selectCustomer = filterCustomerForm.querySelector('#select-customer');
   const emptySale = document.querySelector('.sales-container .empty-sale');
+  const emptyForm = document.querySelector('.sales-container .empty-form');
   const salesContainer = document.querySelector('.data-container .sales-container');
+  var numForm = 0;
   filterCustomerForm.addEventListener('submit', event => {
     event.preventDefault();
     fetchAPI(selectCustomer.value).then((res) => {
@@ -220,13 +133,57 @@
     }
 
     //salesContainer.appendChild(newSale);
-    createInstallments(newSale, installments);
+    createInstallments(sale.id, newSale, installments);
   }
 
-  const createInstallments = (saleElement, installments) => {
-    console.log(installments);
+  const createInstallments = (saleId, saleElement, installments) => {
+    const tableNextInstallment = saleElement.querySelector('.next-installment tbody');
+    const tablePendingInstallments = saleElement.querySelector('.pending-installments tbody');
+    const collapseButtonText = saleElement.querySelector('.accordion-button span');
 
-    // TODO: Create partial, next and pending installments
+    if(installments['partial'].length > 0) {
+      for(i = 0; i < installments['partial'].length; i++) {
+        // Clone the empty form and update its index
+        const newForm = emptyForm.cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
+        newForm.classList.remove('empty-form');
+  
+        tableNextInstallment.appendChild(newForm);
+
+        numForm++;
+      }
+    }
+
+    if(installments['next'].length > 0) {
+      for(i = 0; i < installments['next'].length; i++) {
+        // Clone the empty form and update its index
+        const newForm = emptyForm.cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
+        newForm.classList.remove('empty-form');
+  
+        tableNextInstallment.appendChild(newForm);
+
+        numForm++;
+      }
+    }
+
+    if(installments['pending'].length > 0) {
+      collapseButtonText.innerText = "Ver cuotas pendientes";
+      for(i = 0; i < installments['pending'].length; i++) {
+        // Clone the empty form and update its index
+        const newForm = emptyForm.cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
+        newForm.classList.remove('empty-form');
+  
+        tablePendingInstallments.appendChild(newForm);
+
+        numForm++;
+      }
+    } else {
+      collapseButtonText.innerText = "No hay mas cuotas pendientes";
+    }
+
+    saleElement.innerHTML = saleElement.innerHTML.replace(/__sale_pk__/g, saleId);
 
     salesContainer.appendChild(saleElement);
   }
