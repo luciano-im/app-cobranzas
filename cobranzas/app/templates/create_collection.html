@@ -148,8 +148,8 @@
         newForm.classList.remove('empty-form');
 
         newForm.querySelector('.installment span').innerText = installments['partial'][i]['installment'];
-        newForm.querySelector('.installment-amount input').setAttribute('value', installments['partial'][i]['installment_amount']);
-        newForm.querySelector('.paid-amount input').setAttribute('value', installments['partial'][i]['paid_amount']);
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['partial'][i]['installment_amount'].toFixed(2));
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['partial'][i]['paid_amount'].toFixed(2));
         newForm.querySelector('.amount input').setAttribute('value', "0.00");
 
         tableNextInstallment.appendChild(newForm);
@@ -166,8 +166,8 @@
         newForm.classList.remove('empty-form');
 
         newForm.querySelector('.installment span').innerText = installments['next'][i]['installment'];
-        newForm.querySelector('.installment-amount input').setAttribute('value', installments['next'][i]['installment_amount']);
-        newForm.querySelector('.paid-amount input').setAttribute('value', installments['next'][i]['paid_amount']);
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['next'][i]['installment_amount'].toFixed(2));
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['next'][i]['paid_amount'].toFixed(2));
         newForm.querySelector('.amount input').setAttribute('value', "0.00");
 
         tableNextInstallment.appendChild(newForm);
@@ -185,8 +185,8 @@
         newForm.classList.remove('empty-form');
 
         newForm.querySelector('.installment span').innerText = installments['pending'][i]['installment'];
-        newForm.querySelector('.installment-amount input').setAttribute('value', installments['pending'][i]['installment_amount']);
-        newForm.querySelector('.paid-amount input').setAttribute('value', installments['pending'][i]['paid_amount']);
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['pending'][i]['installment_amount'].toFixed(2));
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['pending'][i]['paid_amount'].toFixed(2));
         newForm.querySelector('.amount input').setAttribute('value', "0.00");
 
         tablePendingInstallments.appendChild(newForm);
