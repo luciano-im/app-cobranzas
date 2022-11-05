@@ -102,6 +102,35 @@
   const emptyForm = document.querySelector('.sales-container .empty-form');
   const salesContainer = document.querySelector('.data-container .sales-container');
   var numForm = 0;
+  // Total tag
+  const totalTag = document.getElementById('total');
+  // Variable to keep the total amount when user checks or changes installments amount
+  let total = 0.0;
+
+  const installmentsForm = document.querySelector('.data-container form');
+  
+  installmentsForm.addEventListener('change', (e) => {
+    if(e.target.type == 'checkbox') {
+      checkboxChangeEvent(e.target);
+    }
+
+    if(e.target.type == 'number') {
+      paymentInputChangeEvent(e.target);
+    }
+  });
+
+  installmentsForm.addEventListener('click', (e) => {
+    if(e.target.type == 'number') {
+      paymentInputClickEvent(e.target);
+    }
+  });
+  
+  installmentsForm.addEventListener('select', (e) => {
+    if(e.target.type == 'number') {
+      paymentInputSelectEvent(e.target);
+    }
+  });
+
   filterCustomerForm.addEventListener('submit', event => {
     event.preventDefault();
     fetchAPI(selectCustomer.value).then((res) => {
@@ -226,71 +255,50 @@
       console.log(error);
     }
   };
-</script>
 
+  const checkboxChangeEvent = checkbox => {
+    // Get the form ID from checkbox name attribute
+    const formID = checkbox.name.split('-')[1];
+    // Get amount input, installment amount and paid amount values
+    const paymentInput = document.getElementById(`id_collection-${formID}-amount`);
+    const totalAmount = parseFloat(document.getElementById(`id_collection-${formID}-installment_amount`).value);
+    const paidAmount = parseFloat(document.getElementById(`id_collection-${formID}-paid_amount`).value);
 
-<script>
-  // List of checkboxes
-  const checkInputs = document.querySelectorAll('input[type="checkbox"]');
-  // List of payment amount inputs
-  const paymentInputs = document.querySelectorAll('.payment-input');
-  // Total tag
-  const totalTag = document.getElementById('total');
-  // Variable to keep the total amount when user checks or changes installments amount
-  let total = 0.0;
+    // Preserves old value in the data attribute "data-old-value"
+    paymentInput.dataset.oldValue = paymentInput.value || 0.0;
 
-  // Attach change event listener to each checkbox input
-  checkInputs.forEach(checkbox => {
-    checkbox.addEventListener('change', e => {
-      // Get the form ID from checkbox name attribute
-      const formID = checkbox.name.split('-')[1];
-      // Get amount input, installment amount and paid amount values
-      const paymentInput = document.getElementById(`id_collection-${formID}-amount`);
-      const totalAmount = parseFloat(document.getElementById(`id_collection-${formID}-installment_amount`).value);
-      const paidAmount = parseFloat(document.getElementById(`id_collection-${formID}-paid_amount`).value);
+    // When checkbox change its state:
+    // 1. the amount input is completed with the pending amount
+    // 2. the total is updated
+    if (checkbox.checked) {
+      const payment = paidAmount > 0 ? totalAmount - paidAmount : totalAmount;
+      paymentInput.value = payment.toFixed(2);
+      updateTotal(payment);
+    } else {
+      updateTotal(-parseFloat(paymentInput.value));
+      paymentInput.value = 0.0.toFixed(2);
+    }
+  };
 
-      // Preserves old value in the data attribute "data-old-value"
-      paymentInput.dataset.oldValue = paymentInput.value || 0.0;
+  const paymentInputChangeEvent = input => {
+    // The change event in amount inputs updates values and totals
+    const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
+    const currentValue = parseFloat(input.value) || 0.0;
 
-      // When checkbox change its state:
-      // 1. the amount input is completed with the pending amount
-      // 2. the total is updated
-      if (checkbox.checked) {
-        const payment = paidAmount > 0 ? totalAmount - paidAmount : totalAmount;
-        paymentInput.value = payment.toFixed(2);
-        updateTotal(payment);
-      } else {
-        updateTotal(-parseFloat(paymentInput.value));
-        paymentInput.value = 0.0.toFixed(2);
-      }
-    });
-  });
+    updateTotal(currentValue === 0.0 ? -oldValue : currentValue - oldValue);
+  }
 
-  // When an amount input is clicked, the "data-old-value" attribute is updated
-  paymentInputs.forEach(input => {
-    input.addEventListener('click', e => {
-      // preserves old value
-      input.dataset.oldValue = input.value;
-    });
-  });
+  const paymentInputClickEvent = input => {
+    // When an amount input is clicked, the "data-old-value" attribute is updated
+    // preserves old value
+    input.dataset.oldValue = input.value;
+  }
 
-  // The select event fires when some text has been selected
-  paymentInputs.forEach(input => {
-    input.addEventListener('select', e => {
-      // preserves old value
-      input.dataset.oldValue = input.value;
-    });
-  });
-
-  // Attach the change event to amount inputs to update values and totals
-  paymentInputs.forEach(input => {
-    input.addEventListener('change', e => {
-      const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
-      const currentValue = parseFloat(input.value) || 0.0;
-
-      updateTotal(currentValue === 0.0 ? -oldValue : currentValue - oldValue);
-    });
-  });
+  const paymentInputSelectEvent = input => {
+    // The select event fires when some text has been selected
+    // preserves old value
+    input.dataset.oldValue = input.value;
+  };
 
   // Update the total variable and the total layout tag
   const updateTotal = amount => {
