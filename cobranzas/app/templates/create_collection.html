@@ -132,7 +132,6 @@
       products.innerHTML += `<li class="breadcrumb-item">${sale.products[i]}</li>`;
     }
 
-    //salesContainer.appendChild(newSale);
     createInstallments(sale.id, newSale, installments);
   }
 
@@ -147,7 +146,12 @@
         const newForm = emptyForm.cloneNode(true);
         newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
         newForm.classList.remove('empty-form');
-  
+
+        newForm.querySelector('.installment span').innerText = installments['partial'][i]['installment'];
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['partial'][i]['installment_amount']);
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['partial'][i]['paid_amount']);
+        newForm.querySelector('.amount input').setAttribute('value', "0.00");
+
         tableNextInstallment.appendChild(newForm);
 
         numForm++;
@@ -160,7 +164,12 @@
         const newForm = emptyForm.cloneNode(true);
         newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
         newForm.classList.remove('empty-form');
-  
+
+        newForm.querySelector('.installment span').innerText = installments['next'][i]['installment'];
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['next'][i]['installment_amount']);
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['next'][i]['paid_amount']);
+        newForm.querySelector('.amount input').setAttribute('value', "0.00");
+
         tableNextInstallment.appendChild(newForm);
 
         numForm++;
@@ -174,7 +183,12 @@
         const newForm = emptyForm.cloneNode(true);
         newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
         newForm.classList.remove('empty-form');
-  
+
+        newForm.querySelector('.installment span').innerText = installments['pending'][i]['installment'];
+        newForm.querySelector('.installment-amount input').setAttribute('value', installments['pending'][i]['installment_amount']);
+        newForm.querySelector('.paid-amount input').setAttribute('value', installments['pending'][i]['paid_amount']);
+        newForm.querySelector('.amount input').setAttribute('value', "0.00");
+
         tablePendingInstallments.appendChild(newForm);
 
         numForm++;
