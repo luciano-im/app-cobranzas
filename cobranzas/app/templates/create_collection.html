@@ -27,8 +27,8 @@
   <div class="accordion accordion-flush create-collection">
     <form action="{% url 'create-collection' %}" method="post">
       {% csrf_token %}
-      {% comment %} <input type="hidden" name="customer" value={{selected_customer}}> {% endcomment %}
-      <div class="sales-container">
+      <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>
+      <div class="empty-data">
         <div class="empty-sale">
           <div class="sale-details">
             <span class="badge text-bg-primary">#<span class="id"></span></span>
@@ -84,6 +84,7 @@
           </div>
         </div>
       </div>
+      <div class="sales-container"></div>
       <div class="totals d-flex flex-column align-items-end mb-5">
         <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
         <input type="submit" value="Guardar" class="btn btn-primary">
@@ -98,8 +99,9 @@
 <script>
   const filterCustomerForm = document.getElementById('filter-customer');
   const selectCustomer = filterCustomerForm.querySelector('#select-customer');
-  const emptySale = document.querySelector('.sales-container .empty-sale');
-  const emptyForm = document.querySelector('.sales-container .empty-form');
+  const selectedCustomerInput = document.querySelector('.create-collection input.selected-customer');
+  const emptySale = document.querySelector('.empty-data .empty-sale');
+  const emptyForm = document.querySelector('.empty-data .empty-form');
   const salesContainer = document.querySelector('.data-container .sales-container');
   var numForm = 0;
   // Total tag
@@ -133,8 +135,14 @@
 
   filterCustomerForm.addEventListener('submit', event => {
     event.preventDefault();
+    // Remove data from the previous customer if it exists
+    salesContainer.innerHTML = "";
+    // Set total to 0
+    totalTag.innerText = "0,00";
+    total = 0.00;
     fetchAPI(selectCustomer.value).then((res) => {
       if (res) {
+        selectedCustomerInput.setAttribute('value', selectCustomer.value);
         const sales = Object.values(res.sales);
         const installments = res.installments;
         sales.forEach(item => {
