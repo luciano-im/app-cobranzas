@@ -307,6 +307,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             }
             return JsonResponse(obj)
         else:
+            context['formset'] = CollectionFormset(prefix='collection')
             return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -316,7 +317,6 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         if customer:
             collection_formset = CollectionFormset(
                 self.request.POST,
-                initial=self.initial_data,
                 prefix='collection'
             )
             # If there is an exception commits are rolled back
@@ -324,47 +324,43 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 collection = None
 
                 for f_form in collection_formset:
-                    # If form doesn't change then it remains unpaid
-                    if f_form.has_changed():
-                        # If form has changed the fields "checked" and "amount" then it is being paid
-                        # an installment
-                        if 'checked' and 'amount' in f_form.changed_data:
-                            # Check if form is valid or not
-                            if f_form.is_valid():
-                                data = f_form.cleaned_data
-
-                                # If collection record has not being created
-                                if not collection:
-                                    collection = Collection(
-                                        collector=request.user,
-                                        customer=customer
-                                    )
-                                    collection.save()
-
-                                # Create collection installment record
-                                sale_installment = SaleInstallment.objects.get(
-                                    sale=data['sale_id'],
-                                    installment=data['installment']
+                    # If form has changed the field "checked" then it is being paid
+                    if 'checked' in f_form.changed_data:
+                        # Check if form is valid or not
+                        if f_form.is_valid():
+                            data = f_form.cleaned_data
+                            # If collection record has not being created
+                            if not collection:
+                                collection = Collection(
+                                    collector=request.user,
+                                    customer=customer
                                 )
-                                collection_installment = CollectionInstallment(
-                                    collection=collection,
-                                    sale_installment=sale_installment,
-                                    amount=data['amount']
-                                )
-                                collection_installment.save()
+                                collection.save()
 
-                                # Update the paid amount and the status from the sale installment record
-                                installment_amount = sale_installment.installment_amount
-                                paid_amount = sale_installment.paid_amount
-                                if installment_amount > paid_amount + data['amount']:
-                                    sale_installment.status = SaleInstallment.PARTIAL
-                                else:
-                                    sale_installment.status = SaleInstallment.PAID
-                                sale_installment.paid_amount = F('paid_amount') + data['amount']
-                                sale_installment.save()
+                            # Create collection installment record
+                            sale_installment = SaleInstallment.objects.get(
+                                sale=data['sale_id'],
+                                installment=data['installment']
+                            )
+                            collection_installment = CollectionInstallment(
+                                collection=collection,
+                                sale_installment=sale_installment,
+                                amount=data['amount']
+                            )
+                            collection_installment.save()
+
+                            # Update the paid amount and the status from the sale installment record
+                            installment_amount = sale_installment.installment_amount
+                            paid_amount = sale_installment.paid_amount
+                            if installment_amount > paid_amount + data['amount']:
+                                sale_installment.status = SaleInstallment.PARTIAL
                             else:
-                                # If form has errors
-                                print(f_form.errors)
+                                sale_installment.status = SaleInstallment.PAID
+                            sale_installment.paid_amount = F('paid_amount') + data['amount']
+                            sale_installment.save()
+                        else:
+                            # If form has errors
+                            print(f_form.errors)
         return self.render_to_response(context)
 
 

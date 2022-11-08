@@ -27,6 +27,7 @@
   <div class="accordion accordion-flush create-collection">
     <form action="{% url 'create-collection' %}" method="post">
       {% csrf_token %}
+      {{formset.management_form}}
       <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>
       <div class="empty-data">
         <div class="empty-sale">
@@ -108,6 +109,8 @@
   const totalTag = document.getElementById('total');
   // Variable to keep the total amount when user checks or changes installments amount
   let total = 0.0;
+  // Total forms
+  const formsetTotalForms = document.querySelector('.create-collection input[name="collection-TOTAL_FORMS"]');
 
   const installmentsForm = document.querySelector('.data-container form');
   
@@ -194,6 +197,9 @@
 
     saleElement.innerHTML = saleElement.innerHTML.replace(/__sale_pk__/g, saleId);
     salesContainer.appendChild(saleElement);
+
+    // Set the total quantity of forms
+    formsetTotalForms.setAttribute('value', numForm);
   }
 
   const createInstallmentForm = (parent, installments) => {
@@ -208,6 +214,9 @@
       const installmentAmount = installments[i]['installment_amount'];
       const payment = paidAmount > 0 ? installmentAmount - paidAmount : installmentAmount;
 
+      newForm.querySelector(`input[name="collection-${numForm}-installment"]`).setAttribute('value', installments[i]['installment']);
+      newForm.querySelector(`input[name="collection-${numForm}-sale_id"]`).setAttribute('value', installments[i]['sale_id']);
+      newForm.querySelector(`input[name="collection-${numForm}-group"]`).setAttribute('value', installments[i]['group']);
       newForm.querySelector('.installment span').innerText = installments[i]['installment'];
       newForm.querySelector('.installment-amount input').setAttribute('value', installmentAmount.toFixed(2));
       newForm.querySelector('.paid-amount input').setAttribute('value', paidAmount.toFixed(2));
