@@ -222,13 +222,18 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         return context
 
 
-# TODO: If user is not an admin then query just for the customers assigned to the user
 class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
+    collector = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.values('pk', 'name')
+        # If the user is not an admin then filter collections by loggued user
+        self.collector = self.request.user
+        if not self.collector.is_admin:
+            context['customers'] = Customer.objects.filter(collector=self.collector).values('pk', 'name')
+        else:
+            context['customers'] = Customer.objects.values('pk', 'name')
         context['formset'] = CollectionFormset(prefix='collection')
         return context
 
@@ -301,6 +306,13 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
         context['selected_customer'] = selected_customer
         if selected_customer:
+            # If the current collector is not an admin
+            # Raise a 403 error if the selected customer is not assigned to the collector
+            if not self.collector.is_admin:
+                customer = Customer.objects.get(id=selected_customer)
+                if customer.collector != self.collector:
+                    raise PermissionDenied
+
             sales_data = self.get_sales_detail(selected_customer)
             installments_data = self.get_initial_data(selected_customer)
             obj = {
@@ -318,6 +330,12 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         selected_customer = request.POST.get('customer', None)
         customer = Customer.objects.get(id=selected_customer)
         if customer:
+            # If the current collector is not an admin
+            # Raise a 403 error if the selected customer is not assigned to the collector
+            if not self.collector.is_admin:
+                if customer.collector != self.collector:
+                    raise PermissionDenied
+
             collection_formset = CollectionFormset(
                 self.request.POST,
                 prefix='collection'
@@ -325,6 +343,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             # If there is an exception commits are rolled back
             with transaction.atomic():
                 collection = None
+                # In this list I will save already checked sales
+                sales_check_collection = []
 
                 for f_form in collection_formset:
                     # If form has changed the field "checked" then it is being paid
@@ -332,6 +352,16 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                         # Check if form is valid or not
                         if f_form.is_valid():
                             data = f_form.cleaned_data
+
+                            # Check that the sale corresponds to the selected customer
+                            if not data['sale_id'] in sales_check_collection:
+                                sale = Sale.objects.get(id=data['sale_id'])
+                                if sale.customer != customer:
+                                    raise PermissionDenied
+                                # Add the sale to the list to prevent check it again if there are 
+                                # more than one paid installment
+                                sales_check_collection.append(data['sale_id'])
+
                             # If collection record has not being created
                             if not collection:
                                 collection = Collection(
