@@ -151,6 +151,7 @@ class ProductListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetVi
         return context
 
 
+# TODO: Save logged user when creting a new sale
 class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = Sale
     template_name = 'create_sale.html'
