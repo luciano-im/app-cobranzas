@@ -227,6 +227,12 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
 class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
     template_name = 'create_collection.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customers'] = Customer.objects.values('pk', 'name')
+        context['formset'] = CollectionFormset(prefix='collection')
+        return context
+
     def get_initial_data(self, customer):
         data = dict()
         sales_with_pending_balance = self.get_sales_with_pending_balance(customer)
@@ -236,7 +242,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 filter(status='PARTIAL', sale=s['pk']).\
                 annotate(group=Value('due')).\
                 order_by('sale', 'group', 'status', 'installment').\
-                values('pk', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
+                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
             filter = SaleInstallment.objects.\
                 filter(status='PENDING', sale=s['pk']).\
@@ -249,14 +255,14 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 filter(q_filter, sale=s['pk']).\
                 annotate(group=Value('due')).\
                 order_by('sale', 'group', 'status', 'installment').\
-                values()
+                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
             pending_installments = SaleInstallment.objects.\
                 filter(status='PENDING', sale=s['pk']).\
                 exclude(q_filter).\
                 annotate(group=Value('future')).\
                 order_by('sale', 'group', 'status', 'installment').\
-                values()
+                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
             data[s['pk']] = {
                 'partial': list(partial_installment),
@@ -292,7 +298,6 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
     @silk_profile(name='Collection Get')
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        context['customers'] = Customer.objects.values('pk', 'name')
         selected_customer_param = self.request.GET.get('select-customer', None)
         selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
         context['selected_customer'] = selected_customer
@@ -307,7 +312,6 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             }
             return JsonResponse(obj)
         else:
-            context['formset'] = CollectionFormset(prefix='collection')
             return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
