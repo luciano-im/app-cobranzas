@@ -18,9 +18,9 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
 from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView
-from app.views import CustomerListView, SaleCreationView, SaleListView, CollectionCreationView
-from app.views import ProductCreationView, ProductListView, CollectionListView, CollectionPrintView
-from app.views import LoginView
+from app.views import CustomerListView, SaleCreationView, SaleListView
+from app.views import ProductCreationView, ProductListView, LoginView
+from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 
 
 urlpatterns = [
