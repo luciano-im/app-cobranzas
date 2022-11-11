@@ -132,9 +132,12 @@
     </header>
     <section class="content">
       <div class="synchronization text-end">
-        <p>Última sincronización: <span class="last-sync">Vie. 11/09/22 09:28</span></p>
+        <p class="alert alert-danger idxdb-support" role="alert">
+          No es posible sincronizar!
+        </p>
+        <p class="sync-date">Última sincronización: <span class="last-sync">Vie. 11/09/22 09:28</span></p>
         <button id="sync-button" type="button" class="btn btn-primary">
-          <i class="bi bi-arrow-repeat"></i>
+          Sincronizar <i class="bi bi-arrow-repeat"></i>
         </button>
       </div>
       {% block content %}{% endblock %}

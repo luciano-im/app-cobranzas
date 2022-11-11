@@ -291,3 +291,19 @@ form.filterset-form input[type="submit"] {
 .login .content h2 {
   font-size: 1.6rem;
 }
+
+/* Synchonization */
+
+.synchronization p {
+  display: none;
+  margin-right: 2rem;
+  margin-bottom: 0;
+}
+
+.synchronization .alert {
+  padding: .375rem .8rem;
+}
+
+.synchronization p.show {
+  display: inline-block;
+}
