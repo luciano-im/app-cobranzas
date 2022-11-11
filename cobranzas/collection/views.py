@@ -18,45 +18,13 @@ from collection.forms import CollectionFormset, CollectionFilterForm
 from silk.profiling.profiler import silk_profile
 
 
-class ServiceWorkerView(TemplateView):
-    template_name = 'sw.js'
-    content_type = 'application/javascript'
+class CollectionData:
+    sales_with_pending_balance = None
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['version'] = '0.1'
-        return context
-
-
-class ManifestView(TemplateView):
-    template_name = 'manifest.json'
-    content_type = 'application/json'
-
-
-class OfflineView(TemplateView):
-    template_name = 'offline.html'
-
-
-class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, View):
-    template_name = 'create_collection.html'
-    collector = None
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # If the user is not an admin then filter collections by loggued user
-        self.collector = self.request.user
-        if not self.collector.is_admin:
-            context['customers'] = Customer.objects.filter(collector=self.collector).values('pk', 'name')
-        else:
-            context['customers'] = Customer.objects.values('pk', 'name')
-        context['formset'] = CollectionFormset(prefix='collection')
-        return context
-
-    def get_initial_data(self, customer):
+    def get_installments_detail(self):
         data = dict()
-        sales_with_pending_balance = self.get_sales_with_pending_balance(customer)
 
-        for s in sales_with_pending_balance:
+        for s in self.sales_with_pending_balance:
             partial_installment = SaleInstallment.objects.\
                 filter(status='PARTIAL', sale=s['pk']).\
                 annotate(group=Value('due')).\
@@ -90,17 +58,23 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             }
         return data
 
-    def get_sales_with_pending_balance(self, customer):
-        return Sale.objects.\
-            filter(customer=customer).\
+    def get_sales_with_pending_balance(self, customer=None):
+        if customer:
+            q_filter = Q(customer=customer)
+        else:
+            q_filter = Q(customer__collector=self.request.user)
+
+        self.sales_with_pending_balance = Sale.objects.\
+            filter(q_filter).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
             exclude(installments=F('paid_installments')).\
             values('pk')
 
-    def get_sales_detail(self, customer):
+    def get_sales_detail(self, customer=None):
         data = dict()
-        sales_with_pending_balance = self.get_sales_with_pending_balance(customer)
-        for s in sales_with_pending_balance:
+        self.get_sales_with_pending_balance(customer)
+
+        for s in self.sales_with_pending_balance:
             sale = Sale.objects.get(pk=s['pk'])
             products = SaleProduct.objects.filter(sale=s['pk']).values('product__name')
             data[s['pk']] = {
@@ -113,6 +87,52 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 'products': [p['product__name'] for p in products]
             }
         return data
+
+    def get_data(self, customer=None):
+        sales = self.get_sales_detail(customer)
+        installments = self.get_installments_detail()
+
+        data = {
+            'sales': sales,
+            'installments': installments
+        }
+
+        return data
+
+
+class ServiceWorkerView(TemplateView):
+    template_name = 'sw.js'
+    content_type = 'application/javascript'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['version'] = '0.1'
+        return context
+
+
+class ManifestView(TemplateView):
+    template_name = 'manifest.json'
+    content_type = 'application/json'
+
+
+class OfflineView(TemplateView):
+    template_name = 'offline.html'
+
+
+class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseMixin, CollectionData, View):
+    template_name = 'create_collection.html'
+    collector = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # If the user is not an admin then filter collections by loggued user
+        self.collector = self.request.user
+        if not self.collector.is_admin:
+            context['customers'] = Customer.objects.filter(collector=self.collector).values('pk', 'name')
+        else:
+            context['customers'] = Customer.objects.values('pk', 'name')
+        context['formset'] = CollectionFormset(prefix='collection')
+        return context
 
     @silk_profile(name='Collection Get')
     def get(self, request, *args, **kwargs):
@@ -128,18 +148,16 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 if customer.collector != self.collector:
                     raise PermissionDenied
 
-            sales_data = self.get_sales_detail(selected_customer)
-            installments_data = self.get_initial_data(selected_customer)
-            obj = {
-                'sales': sales_data,
-                'customers': list(context['customers']),
-                'selected_customer': selected_customer,
-                'installments': installments_data
-            }
-            return JsonResponse(obj)
+            # get_data return sales and installments data
+            data = self.get_data(selected_customer)
+            data['customers'] = list(context['customers'])
+            data['selected_customer'] = selected_customer
+
+            return JsonResponse(data)
         else:
             return self.render_to_response(context)
 
+    @silk_profile(name='Collection Post')
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         selected_customer = request.POST.get('customer', None)
@@ -173,7 +191,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                                 sale = Sale.objects.get(id=data['sale_id'])
                                 if sale.customer != customer:
                                     raise PermissionDenied
-                                # Add the sale to the list to prevent check it again if there are 
+                                # Add the sale to the list to prevent check it again if there are
                                 # more than one paid installment
                                 sales_check_collection.append(data['sale_id'])
 
@@ -288,3 +306,19 @@ class CollectionPrintView(LoginRequiredMixin, TemplateView):
             context['collection_installment'] = collection_installment
             context['total'] = total
         return self.render_to_response(context)
+
+
+class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View):
+
+    def get(self, request, *args, **kwargs):
+        # If the user is not an admin then filter collections by loggued user
+        if request.user.is_admin:
+            customers = Customer.objects.values('pk', 'name')
+        else:
+            customers = Customer.objects.filter(collector=self.request.user).values('pk', 'name')
+
+        # get_data return sales and installments data
+        data = self.get_data()
+        data['customers'] = list(customers)
+
+        return JsonResponse(data)
