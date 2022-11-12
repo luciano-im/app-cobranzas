@@ -294,16 +294,16 @@ form.filterset-form input[type="submit"] {
 
 /* Synchonization */
 
-.synchronization p {
+.synchronization {
   display: none;
-  margin-right: 2rem;
-  margin-bottom: 0;
+  width: 100%;
 }
 
-.synchronization .alert {
-  padding: .375rem .8rem;
-}
-
-.synchronization p.show {
+.synchronization.show {
   display: inline-block;
+}
+
+.synchronization .last-sync {
+  margin-right: 1.5rem;
+  margin-bottom: 0;
 }
