@@ -49,7 +49,7 @@ const createSale = (sale, installments) => {
     products.innerHTML += `<li class="breadcrumb-item">${sale.products[i]}</li>`;
   }
 
-  createInstallments(sale.id, newSale, installments);
+  createInstallments(sale.id, newSale, installments.installments);
 }
 
 const createInstallments = (saleId, saleElement, installments) => {

@@ -52,9 +52,12 @@ class CollectionData:
                 values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
             data[s['pk']] = {
-                'partial': list(partial_installment),
-                'next': list(next_installment),
-                'pending': list(pending_installments)
+                'id': s['pk'],
+                'installments': {
+                    'partial': list(partial_installment),
+                    'next': list(next_installment),
+                    'pending': list(pending_installments)
+                }
             }
         return data
 

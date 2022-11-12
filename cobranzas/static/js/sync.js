@@ -19,14 +19,6 @@ const syncButton = document.querySelector('.synchronization button');
 
 //// FUNCTIONS ////
 
-// Check for indexedDB support
-if (!('indexedDB' in window)) {
-  console.log("This browser doesn't support IndexedDB");
-} else {
-  syncContainer.classList.add('show');
-  createDatabase();
-}
-
 const createDatabase = () => {
   const request = window.indexedDB.open('cobranzas', 1);
 
@@ -45,12 +37,12 @@ const createDatabase = () => {
 
     const salesStore = db.createObjectStore('sales', { keyPath: 'id' });
     const installmentsStore = db.createObjectStore('installments', { keyPath: 'id' });
-    const customersStore = db.createObjectStore('customers', { keyPath: 'id' });
+    const customersStore = db.createObjectStore('customers', { keyPath: 'pk' });
   };
 }
 
-const addItem = (item, storeName, operation) => {
-  const request = db.transaction(storeName, operation)
+const addItem = (item, storeName) => {
+  const request = db.transaction(storeName, 'readwrite')
     .objectStore(storeName)
     .add(item);
 
@@ -58,8 +50,34 @@ const addItem = (item, storeName, operation) => {
     console.log(`New item added with key: ${request.result}`);
   }
 
-  request.onsuccess = (err) => {
+  request.onerror = (err) => {
     console.error(`Error to add new item: ${err}`)
+  }
+}
+
+const addItems = (items, storeName) => {
+  const transaction = db.transaction(storeName, 'readwrite');
+
+  transaction.oncomplete = function(event) {
+    console.log('All the items added successfully')
+  };
+
+  transaction.onerror = function(event) {
+    console.error('Error to add items');
+  };
+
+  const objectStore = transaction.objectStore(storeName);
+
+  for(const item of items) {
+    const request = objectStore.add(item);
+
+    request.onsuccess = ()=> {
+      console.log(`New item added with key: ${request.result}`);
+    }
+
+    request.onerror = (err)=> {
+      console.error(`Error to add new item: ${err}`)
+    }
   }
 }
 
@@ -146,12 +164,28 @@ const updateItem = (key, storeName) => {
   }
 }
 
+// Check for indexedDB support
+if (!('indexedDB' in window)) {
+  console.log("This browser doesn't support IndexedDB");
+} else {
+  syncContainer.classList.add('show');
+  createDatabase();
+}
+
+
 //// EVENTS ////
 
 syncButton.addEventListener('click', (e) => {
   fetchAPI(URL, 'GET', 'application/json').then((res) => {
     if (res) {
-      console.log(res);
+      const sales = Object.values(res.sales);
+      const installments = Object.values(res.installments);
+      const customers = Object.values(res.customers);
+      addItems(sales, 'sales');
+      addItems(installments, 'installments');
+      addItems(customers, 'customers');
     }
   });
 });
+
+export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem };
