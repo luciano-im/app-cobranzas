@@ -4,7 +4,11 @@ const VERSION = '{{ version }}';
 const CACHE_NAME = 'collection';
 const URLS_TO_CACHE = [
   "{% url 'offline' %}",
+  "{% url 'manifest' %}",
   "{% static 'css/styles.css' %}",
+  "{% static 'js/utils.js' %}",
+  "{% static 'js/sync.js' %}",
+  "{% static 'js/create-collection.js' %}",
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js',
@@ -48,8 +52,8 @@ self.addEventListener('activate', event => {
     caches.keys().then(cache => {
       return Promise.all(
         cache
-        .filter(cache => (cache.startsWith(CACHE_NAME)))
-        .map(cache => caches.delete(cache))
+          .filter(cache => (cache.startsWith(CACHE_NAME)))
+          .map(cache => caches.delete(cache))
       );
     })
   );

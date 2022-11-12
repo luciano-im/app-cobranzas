@@ -15,6 +15,7 @@ let db;
 const syncContainer = document.querySelector('.synchronization');
 const syncLastUpdate = document.querySelector('.synchronization .last-sync');
 const syncButton = document.querySelector('.synchronization button');
+const online = document.querySelector('.online');
 
 
 //// FUNCTIONS ////
@@ -58,24 +59,24 @@ const addItem = (item, storeName) => {
 const addItems = (items, storeName) => {
   const transaction = db.transaction(storeName, 'readwrite');
 
-  transaction.oncomplete = function(event) {
+  transaction.oncomplete = function (event) {
     console.log('All the items added successfully')
   };
 
-  transaction.onerror = function(event) {
+  transaction.onerror = function (event) {
     console.error('Error to add items');
   };
 
   const objectStore = transaction.objectStore(storeName);
 
-  for(const item of items) {
+  for (const item of items) {
     const request = objectStore.add(item);
 
-    request.onsuccess = ()=> {
+    request.onsuccess = () => {
       console.log(`New item added with key: ${request.result}`);
     }
 
-    request.onerror = (err)=> {
+    request.onerror = (err) => {
       console.error(`Error to add new item: ${err}`)
     }
   }
@@ -164,11 +165,20 @@ const updateItem = (key, storeName) => {
   }
 }
 
-// Check for indexedDB support
-if (!('indexedDB' in window)) {
-  console.log("This browser doesn't support IndexedDB");
-} else {
-  syncContainer.classList.add('show');
+const idbSupport = () => {
+  // Check for indexedDB support
+  if (!('indexedDB' in window)) {
+    syncContainer.classList.remove('show');
+    console.log("This browser doesn't support IndexedDB");
+    return false;
+  } else {
+    syncContainer.classList.add('show');
+    return true;
+  }
+}
+
+// Init app
+if (idbSupport()) {
   createDatabase();
 }
 
@@ -186,6 +196,19 @@ syncButton.addEventListener('click', (e) => {
       addItems(customers, 'customers');
     }
   });
+});
+
+// Show a message if network is not available
+window.addEventListener('offline', () => {
+  online.classList.add('show');
+  syncContainer.classList.remove('show');
+});
+
+// Hide message when network is available and check if there is support
+// for indexedDB to show sync button
+window.addEventListener('online', () => {
+  online.classList.remove('show');
+  idbSupport();
 });
 
 export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem };

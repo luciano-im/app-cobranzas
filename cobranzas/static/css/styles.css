@@ -307,3 +307,11 @@ form.filterset-form input[type="submit"] {
   margin-right: 1.5rem;
   margin-bottom: 0;
 }
+
+.online {
+  display: none;
+}
+
+.online.show {
+  display: block;
+}
