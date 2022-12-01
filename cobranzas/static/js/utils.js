@@ -20,5 +20,6 @@ export const fetchAPI = async (url, method, content_type, headers = {}) => {
     return result;
   } catch (error) {
     console.log(error);
+    return null;
   }
 };

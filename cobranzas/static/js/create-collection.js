@@ -1,6 +1,7 @@
 //// IMPORTS ////
 
 import { fetchAPI } from "./utils.js";
+import { db } from "./sync.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -45,7 +46,7 @@ const createSale = (sale, installments) => {
   newSale.querySelector('.pending-balance').innerText = sale.pending_balance;
 
   const products = newSale.querySelector('.breadcrumb');
-  for(var i = 0; i < sale.products.length; i++) {
+  for (var i = 0; i < sale.products.length; i++) {
     products.innerHTML += `<li class="breadcrumb-item">${sale.products[i]}</li>`;
   }
 
@@ -57,15 +58,15 @@ const createInstallments = (saleId, saleElement, installments) => {
   const tablePendingInstallments = saleElement.querySelector('.pending-installments tbody');
   const collapseButtonText = saleElement.querySelector('.accordion-button span');
 
-  if(installments['partial'].length > 0) {
+  if (installments['partial'].length > 0) {
     createInstallmentForm(tableNextInstallment, installments['partial']);
   }
 
-  if(installments['next'].length > 0) {
+  if (installments['next'].length > 0) {
     createInstallmentForm(tableNextInstallment, installments['next']);
   }
 
-  if(installments['pending'].length > 0) {
+  if (installments['pending'].length > 0) {
     collapseButtonText.innerText = "Ver cuotas pendientes";
     createInstallmentForm(tablePendingInstallments, installments['pending']);
   } else {
@@ -80,7 +81,7 @@ const createInstallments = (saleId, saleElement, installments) => {
 }
 
 const createInstallmentForm = (parent, installments) => {
-  for(var i = 0; i < installments.length; i++) {
+  for (var i = 0; i < installments.length; i++) {
     // Clone the empty form and update its index
     const newForm = emptyForm.cloneNode(true);
     newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, numForm);
@@ -139,7 +140,7 @@ const paymentInputChangeEventHandler = input => {
 
   // If the value entered by the user is greater than the maximum value
   // then use maxValue as the currentValue
-  if(currentValue > maxValue) {
+  if (currentValue > maxValue) {
     input.value = maxValue.toFixed(2);
     updateTotal(maxValue - oldValue);
   } else {
@@ -172,23 +173,23 @@ const updateTotal = amount => {
 //// EVENTS ////
 
 installmentsForm.addEventListener('change', (e) => {
-  if(e.target.type == 'checkbox') {
+  if (e.target.type == 'checkbox') {
     checkboxChangeEventHandler(e.target);
   }
 
-  if(e.target.type == 'number') {
+  if (e.target.type == 'number') {
     paymentInputChangeEventHandler(e.target);
   }
 });
 
 installmentsForm.addEventListener('click', (e) => {
-  if(e.target.type == 'number') {
+  if (e.target.type == 'number') {
     paymentInputClickEventHandler(e.target);
   }
 });
 
 installmentsForm.addEventListener('select', (e) => {
-  if(e.target.type == 'number') {
+  if (e.target.type == 'number') {
     paymentInputSelectEventHandler(e.target);
   }
 });
@@ -210,6 +211,15 @@ filterCustomerForm.addEventListener('submit', event => {
       sales.forEach(item => {
         createSale(item, installments[item.id]);
       });
+    } else {
+      const getSales = db.transaction('sales').objectStore('sales').get(parseInt(selectCustomer.value));
+      const getInstallments = db.transaction('installments').objectStore('installments').get(parseInt(selectCustomer.value));
+      getSales.onsuccess = event => {
+        console.log(getSales.result);
+      }
+      getInstallments.onsuccess = event => {
+        console.log(getInstallments.result);
+      }
     }
   });
 });

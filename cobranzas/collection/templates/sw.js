@@ -1,10 +1,13 @@
 {% load static %}
 
+// VARIABLES
+
 const VERSION = '{{ version }}';
-const CACHE_NAME = 'collection';
+const CACHE_NAME = 'collection-{{ version }}';
 const URLS_TO_CACHE = [
   "{% url 'offline' %}",
   "{% url 'manifest' %}",
+  "{% url 'create-collection' %}",
   "{% static 'css/styles.css' %}",
   "{% static 'js/utils.js' %}",
   "{% static 'js/sync.js' %}",
@@ -19,6 +22,37 @@ const URLS_TO_CACHE = [
   "{% static 'img/icon/icon-512x512.png' %}",
 ];
 
+// UTILS
+
+const getFromCache = async (request) => {
+  const cache = await caches.open(CACHE_NAME);
+  const res = await cache.match(request);
+  return res;
+};
+
+const networkFirst = async (request, callback = null) => {
+  // Get from network
+  try {
+    const responseFromNetwork = await fetch(request);
+    return responseFromNetwork;
+  } catch (err) {
+    // If received callback then call it
+    if (callback) {
+      return callback()
+    }
+    // If error, get from cache
+    const responseFromCache = await getFromCache(request);
+    if (responseFromCache) {
+      return responseFromCache;
+    }
+
+    // If network and cache fails, return offline page
+    return caches.match("{% url 'offline' %}");
+  }
+};
+
+// EVENT LISTENERS
+
 // install files needed offline
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -30,22 +64,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// Every request from our site passes through the fetch handler
-self.addEventListener('fetch', event => {
-  console.log('I am a request with url:', event.request.clone().url)
-  event.respondWith(
-    // check all the caches in the browser and find
-    // out whether our request is in any of them
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
-      .catch(() => {
-        return caches.match("{% url 'offline' %}");
-      })
-  );
-});
-
 // Clear cache on activate
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -53,8 +71,26 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cache
           .filter(cache => (cache.startsWith(CACHE_NAME)))
-          .map(cache => caches.delete(cache))
+          .map(cache => {
+            if (cache != 'collection-{{ version }}') {
+              caches.delete(cache);
+            }
+          })
       );
     })
   );
+});
+
+self.addEventListener('fetch', event => {
+  console.log('Fetch url:', event.request.clone().url);
+  var requestUrl = new URL(event.request.url);
+
+  if (requestUrl.pathname == "{% url 'create-collection' %}") {
+    if (event.request.method == "POST") {
+      // TODO: Save failed POST requests
+      console.log('POST');
+    }
+  }
+
+  return event.respondWith(networkFirst(event.request));
 });

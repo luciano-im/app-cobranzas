@@ -211,4 +211,4 @@ window.addEventListener('online', () => {
   idbSupport();
 });
 
-export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem };
+export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, db };
