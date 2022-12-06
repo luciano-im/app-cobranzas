@@ -25,6 +25,9 @@ class CollectionData:
         data = dict()
 
         for s in self.sales_with_pending_balance:
+            if not data.get(s['customer']):
+                data[s['customer']] = dict()
+
             partial_installment = SaleInstallment.objects.\
                 filter(status='PARTIAL', sale=s['pk']).\
                 annotate(group=Value('due')).\
@@ -51,7 +54,7 @@ class CollectionData:
                 order_by('sale', 'group', 'status', 'installment').\
                 values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
 
-            data[s['pk']] = {
+            data[s['customer']][s['pk']] = {
                 'id': s['pk'],
                 'installments': {
                     'partial': list(partial_installment),
@@ -71,16 +74,20 @@ class CollectionData:
             filter(q_filter).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
             exclude(installments=F('paid_installments')).\
-            values('pk')
+            values('pk', 'customer')
 
     def get_sales_detail(self, customer=None):
         data = dict()
         self.get_sales_with_pending_balance(customer)
 
         for s in self.sales_with_pending_balance:
+            if not data.get(s['customer']):
+                data[s['customer']] = []
+
             sale = Sale.objects.get(pk=s['pk'])
             products = SaleProduct.objects.filter(sale=s['pk']).values('product__name')
-            data[s['pk']] = {
+
+            temp = {
                 'id': sale.pk,
                 'installments': sale.installments,
                 'date': sale.date,
@@ -89,6 +96,8 @@ class CollectionData:
                 'pending_balance': sale.pending_balance,
                 'products': [p['product__name'] for p in products]
             }
+
+            data[s['customer']].append(temp)
         return data
 
     def get_data(self, customer=None):

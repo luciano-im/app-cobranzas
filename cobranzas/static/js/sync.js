@@ -36,8 +36,8 @@ const createDatabase = () => {
     console.info('Database created');
     const db = request.result;
 
-    const salesStore = db.createObjectStore('sales', { keyPath: 'id' });
-    const installmentsStore = db.createObjectStore('installments', { keyPath: 'id' });
+    const salesStore = db.createObjectStore('sales', { keyPath: 'customer' });
+    const installmentsStore = db.createObjectStore('installments', { keyPath: 'customer' });
     const customersStore = db.createObjectStore('customers', { keyPath: 'pk' });
   };
 }
@@ -188,11 +188,26 @@ if (idbSupport()) {
 syncButton.addEventListener('click', (e) => {
   fetchAPI(URL, 'GET', 'application/json').then((res) => {
     if (res) {
-      const sales = Object.values(res.sales);
-      const installments = Object.values(res.installments);
+      // Insert sales
+      const sales_keys = Object.keys(res.sales);
+      for (var key of sales_keys) {
+        const data = {
+          'customer': key,
+          'sales': res.sales[key]
+        }
+        addItem(data, 'sales');
+      }
+      // Insert installments
+      const installments_keys = Object.keys(res.installments);
+      for (var key of installments_keys) {
+        const data = {
+          'customer': key,
+          'installments': res.installments[key]
+        }
+        addItem(data, 'installments');
+      }
+      // Insert customers
       const customers = Object.values(res.customers);
-      addItems(sales, 'sales');
-      addItems(installments, 'installments');
       addItems(customers, 'customers');
     }
   });
