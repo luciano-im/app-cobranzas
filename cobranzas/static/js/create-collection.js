@@ -212,13 +212,17 @@ filterCustomerForm.addEventListener('submit', event => {
         createSale(item, installments[item.id]);
       });
     } else {
-      const getSales = db.transaction('sales').objectStore('sales').get(parseInt(selectCustomer.value));
-      const getInstallments = db.transaction('installments').objectStore('installments').get(parseInt(selectCustomer.value));
-      getSales.onsuccess = event => {
-        console.log(getSales.result);
-      }
-      getInstallments.onsuccess = event => {
-        console.log(getInstallments.result);
+      const getSales = db.transaction('sales').objectStore('sales').get(selectCustomer.value);
+      const getInstallments = db.transaction('installments').objectStore('installments').get(selectCustomer.value);
+      getSales.onsuccess = event_s => {
+        const sales = getSales.result || null;
+        getInstallments.onsuccess = event_i => {
+          const installments = getInstallments.result || null;
+
+          sales.sales.forEach(item => {
+            createSale(item, installments.installments[item.id]);
+          });
+        }
       }
     }
   });
