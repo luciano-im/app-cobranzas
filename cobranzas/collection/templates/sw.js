@@ -38,7 +38,7 @@ const networkFirst = async (request, callback = null) => {
   } catch (err) {
     // If received callback then call it
     if (callback) {
-      return callback()
+      return callback(request);
     }
     // If error, get from cache
     const responseFromCache = await getFromCache(request);
@@ -50,6 +50,36 @@ const networkFirst = async (request, callback = null) => {
     return caches.match("{% url 'offline' %}");
   }
 };
+
+const manageCreateCollection = (postRequest) => {
+  console.log('POST');
+
+  const request = self.indexedDB.open('cobranzas', 1);
+
+  request.onerror = (e) => {
+    console.error(`IndexedDB error: ${request.errorCode}`);
+  };
+
+  request.onsuccess = (e) => {
+    console.info('Successful database connection');
+    db = request.result;
+    console.log(postRequest);
+    const requestData = {
+      url: postRequest.url,
+      method: postRequest.method,
+      mode: postRequest.mode,
+      body: postRequest.body,
+      headers: postRequest.headers
+    }
+    console.log(requestData);
+    const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(requestData);
+    saveRequest.onsuccess = () => {
+      db.close();
+    };
+  };
+
+  return caches.match("{% url 'create-collection' %}");
+}
 
 // EVENT LISTENERS
 
@@ -87,8 +117,7 @@ self.addEventListener('fetch', event => {
 
   if (requestUrl.pathname == "{% url 'create-collection' %}") {
     if (event.request.method == "POST") {
-      // TODO: Save failed POST requests
-      console.log('POST');
+      return event.respondWith(networkFirst(event.request, manageCreateCollection));
     }
   }
 

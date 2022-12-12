@@ -39,6 +39,7 @@ const createDatabase = () => {
     const salesStore = db.createObjectStore('sales', { keyPath: 'customer' });
     const installmentsStore = db.createObjectStore('installments', { keyPath: 'customer' });
     const customersStore = db.createObjectStore('customers', { keyPath: 'pk' });
+    const postRequests = db.createObjectStore('collections', { autoIncrement: true });
   };
 }
 
