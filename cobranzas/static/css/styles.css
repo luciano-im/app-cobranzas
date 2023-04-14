@@ -308,10 +308,10 @@ form.filterset-form input[type="submit"] {
   margin-bottom: 0;
 }
 
-.online {
+.offline {
   display: none;
 }
 
-.online.show {
+.offline.show {
   display: block;
 }

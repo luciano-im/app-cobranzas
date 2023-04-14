@@ -15,12 +15,12 @@ let db;
 const syncContainer = document.querySelector('.synchronization');
 const syncLastUpdate = document.querySelector('.synchronization .last-sync');
 const syncButton = document.querySelector('.synchronization button');
-const online = document.querySelector('.online');
+const offline = document.querySelector('.offline');
 
 
 //// FUNCTIONS ////
 
-const createDatabase = () => {
+const openDatabase = () => {
   const request = window.indexedDB.open('cobranzas', 1);
 
   request.onerror = (e) => {
@@ -33,6 +33,7 @@ const createDatabase = () => {
   };
 
   request.onupgradeneeded = (e) => {
+    // Create database if needed
     console.info('Database created');
     const db = request.result;
 
@@ -166,6 +167,22 @@ const updateItem = (key, storeName) => {
   }
 }
 
+const updateOnlineStatus = () => {
+  const condition = navigator.onLine ? 'online' : 'offline';
+  if (condition == 'online') {
+    // Hide message when network is available and check if there is support
+    // for indexedDB to show sync button
+    // TODO: Check if server is available or not, because if there is an active connection (like a wifi connection) 
+    // window.navigator.onLine will be always "online", even if the wifi connection doesn't have internet
+    offline.classList.remove('show');
+    idbSupport();
+  } else {
+    // Show a message if network is not available
+    offline.classList.add('show');
+    syncContainer.classList.remove('show');
+  }
+}
+
 const idbSupport = () => {
   // Check for indexedDB support
   if (!('indexedDB' in window)) {
@@ -176,11 +193,6 @@ const idbSupport = () => {
     syncContainer.classList.add('show');
     return true;
   }
-}
-
-// Init app
-if (idbSupport()) {
-  createDatabase();
 }
 
 
@@ -214,17 +226,16 @@ syncButton.addEventListener('click', (e) => {
   });
 });
 
-// Show a message if network is not available
-window.addEventListener('offline', () => {
-  online.classList.add('show');
-  syncContainer.classList.remove('show');
-});
+window.addEventListener('offline', updateOnlineStatus);
 
-// Hide message when network is available and check if there is support
-// for indexedDB to show sync button
-window.addEventListener('online', () => {
-  online.classList.remove('show');
-  idbSupport();
-});
+window.addEventListener('online', updateOnlineStatus);
+
+
+// Init app
+if (idbSupport()) {
+  openDatabase();
+  updateOnlineStatus();
+}
+
 
 export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, db };
