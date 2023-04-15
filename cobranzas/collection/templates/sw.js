@@ -22,6 +22,25 @@ const URLS_TO_CACHE = [
   "{% static 'img/icon/icon-512x512.png' %}",
 ];
 
+const APP_URLS = [
+  "{% url 'home' %}",
+  "{% url 'signup' %}",
+  "{% url 'list-users' %}",
+  "{% url 'create-customer' %}",
+  "{% url 'list-customers' %}",
+  "{% url 'create-product' %}",
+  "{% url 'list-product' %}",
+  "{% url 'create-sale' %}",
+  "{% url 'list-sales' %}",
+  "{% url 'create-collection' %}",
+  "{% url 'list-collection' %}",
+  "{% url 'collections-data' %}",
+  {% comment %} "{% url 'print-collection' %}", {% endcomment %}
+  "{% url 'offline' %}",
+];
+
+const broadcast = new BroadcastChannel('sw-messages');
+
 // UTILS
 
 const getFromCache = async (request) => {
@@ -30,12 +49,20 @@ const getFromCache = async (request) => {
   return res;
 };
 
-const networkFirst = async (request, callback = null) => {
+const networkFirst = async (request, url, callback = null) => {
   // Get from network
   try {
     const responseFromNetwork = await fetch(request);
+    if(APP_URLS.includes(url)) {
+      console.log('Fetch url:', url);
+      broadcast.postMessage({response: 'online'});
+    }
     return responseFromNetwork;
   } catch (err) {
+    if(APP_URLS.includes(url)) {
+      console.log('Fetch url:', url);
+      broadcast.postMessage({response: 'offline'});
+    }
     // If received callback then call it
     if (callback) {
       return callback(request);
@@ -112,14 +139,14 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  console.log('Fetch url:', event.request.clone().url);
+  //console.log('Fetch url:', event.request.clone().url);
   var requestUrl = new URL(event.request.url);
 
   if (requestUrl.pathname == "{% url 'create-collection' %}") {
     if (event.request.method == "POST") {
-      return event.respondWith(networkFirst(event.request, manageCreateCollection));
+      return event.respondWith(networkFirst(event.request, requestUrl.pathname, manageCreateCollection));
     }
   }
 
-  return event.respondWith(networkFirst(event.request));
+  return event.respondWith(networkFirst(event.request, requestUrl.pathname));
 });

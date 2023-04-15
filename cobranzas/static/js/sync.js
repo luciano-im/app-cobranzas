@@ -9,6 +9,7 @@ const URL = `/collections/data/`;
 // Database connection (IDBDatabase)
 let db;
 
+const broadcast = new BroadcastChannel('sw-messages');
 
 //// DOM ACCESS ////
 
@@ -167,8 +168,13 @@ const updateItem = (key, storeName) => {
   }
 }
 
-const updateOnlineStatus = () => {
-  const condition = navigator.onLine ? 'online' : 'offline';
+const updateOnlineStatus = (status = null) => {
+  let condition = null;
+  if (status) {
+    condition = status;
+  } else {
+    condition = navigator.onLine ? 'online' : 'offline';
+  }
   if (condition == 'online') {
     // Hide message when network is available and check if there is support
     // for indexedDB to show sync button
@@ -230,11 +236,20 @@ window.addEventListener('offline', updateOnlineStatus);
 
 window.addEventListener('online', updateOnlineStatus);
 
+broadcast.addEventListener('message', e => {
+  //console.log('Message received is', e.data.response);
+  updateOnlineStatus(e.data.response);
+});
+
+broadcast.addEventListener('messageerror', e => {
+  console.error('Message error', e);
+});
+
 
 // Init app
 if (idbSupport()) {
   openDatabase();
-  updateOnlineStatus();
+  //updateOnlineStatus();
 }
 
 
