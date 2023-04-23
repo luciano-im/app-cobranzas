@@ -9,8 +9,6 @@ const URL = `/collections/data/`;
 // Database connection (IDBDatabase)
 let db;
 
-const broadcast = new BroadcastChannel('sw-messages');
-
 //// DOM ACCESS ////
 
 const syncContainer = document.querySelector('.synchronization');
@@ -232,24 +230,21 @@ syncButton.addEventListener('click', (e) => {
   });
 });
 
-window.addEventListener('offline', updateOnlineStatus);
-
-window.addEventListener('online', updateOnlineStatus);
-
-broadcast.addEventListener('message', e => {
-  //console.log('Message received is', e.data.response);
-  updateOnlineStatus(e.data.response);
+window.addEventListener('offline', (e) => {
+  updateOnlineStatus('offline');
 });
 
-broadcast.addEventListener('messageerror', e => {
-  console.error('Message error', e);
+window.addEventListener('online', (e) => {
+  updateOnlineStatus('online');
 });
 
+document.addEventListener('served-offline-page', (e) => {
+  updateOnlineStatus('offline');
+})
 
 // Init app
 if (idbSupport()) {
   openDatabase();
-  //updateOnlineStatus();
 }
 
 

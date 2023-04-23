@@ -22,30 +22,37 @@ const URLS_TO_CACHE = [
   "{% static 'img/icon/icon-512x512.png' %}",
 ];
 
-const APP_URLS = [
-  "{% url 'home' %}",
-  "{% url 'signup' %}",
-  "{% url 'list-users' %}",
-  "{% url 'create-customer' %}",
-  "{% url 'list-customers' %}",
-  "{% url 'create-product' %}",
-  "{% url 'list-product' %}",
-  "{% url 'create-sale' %}",
-  "{% url 'list-sales' %}",
-  "{% url 'create-collection' %}",
-  "{% url 'list-collection' %}",
-  "{% url 'collections-data' %}",
-  {% comment %} "{% url 'print-collection' %}", {% endcomment %}
-  "{% url 'offline' %}",
-];
-
-const broadcast = new BroadcastChannel('sw-messages');
-
 // UTILS
+
+// This function inject the served-offline-page event into the request
+// On the client side, we can catch this event to differentiate an online response from an offline response.
+const offlineResponse = async (response) => {
+  const contentReader = response.body.getReader();
+  let content = '';
+  let readResult = { done: false, value: undefined };
+  while(!readResult.done) {
+    readResult = await contentReader.read();
+    content += readResult.value ? new TextDecoder().decode(readResult.value) : '';
+  }
+
+  // We're "cloning" response by injecting some JS code in it
+  content = content.replace("</body>", `
+    <script type='text/javascript'>
+    document.addEventListener('DOMContentLoaded', () => document.dispatchEvent(new Event('served-offline-page')));
+    </script>
+    </body>
+  `);
+  return new Response(content, {
+    headers: response.headers,
+    status: response.status,
+    statusText: response.statusText
+  });
+}
 
 const getFromCache = async (request) => {
   const cache = await caches.open(CACHE_NAME);
-  const res = await cache.match(request);
+  // Return request or offline page!
+  const res = await cache.match(request) || cache.match("{% url 'offline' %}");
   return res;
 };
 
@@ -53,28 +60,15 @@ const networkFirst = async (request, url, callback = null) => {
   // Get from network
   try {
     const responseFromNetwork = await fetch(request);
-    if(APP_URLS.includes(url)) {
-      console.log('Fetch url:', url);
-      broadcast.postMessage({response: 'online'});
-    }
     return responseFromNetwork;
   } catch (err) {
-    if(APP_URLS.includes(url)) {
-      console.log('Fetch url:', url);
-      broadcast.postMessage({response: 'offline'});
-    }
     // If received callback then call it
     if (callback) {
       return callback(request);
     }
     // If error, get from cache
     const responseFromCache = await getFromCache(request);
-    if (responseFromCache) {
-      return responseFromCache;
-    }
-
-    // If network and cache fails, return offline page
-    return caches.match("{% url 'offline' %}");
+    return offlineResponse(responseFromCache);
   }
 };
 
