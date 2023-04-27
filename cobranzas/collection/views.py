@@ -68,7 +68,11 @@ class CollectionData:
         if customer:
             q_filter = Q(customer=customer)
         else:
-            q_filter = Q(customer__collector=self.request.user)
+            user = self.request.user
+            if user.is_admin:
+                q_filter = Q()
+            else:
+                q_filter = Q(customer__collector=self.request.user)
 
         self.sales_with_pending_balance = Sale.objects.\
             filter(q_filter).\
