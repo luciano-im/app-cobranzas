@@ -30,7 +30,7 @@ const offlineResponse = async (response) => {
   const contentReader = response.body.getReader();
   let content = '';
   let readResult = { done: false, value: undefined };
-  while(!readResult.done) {
+  while (!readResult.done) {
     readResult = await contentReader.read();
     content += readResult.value ? new TextDecoder().decode(readResult.value) : '';
   }
@@ -57,14 +57,17 @@ const getFromCache = async (request) => {
 };
 
 const networkFirst = async (request, url, callback = null) => {
-  // Get from network
+  // After calling fetch(request), I can't call text() because request was already read
+  // That's the reason I create a copy of the request at the beginning
+  const requestCopy = request.clone();
   try {
     const responseFromNetwork = await fetch(request);
     return responseFromNetwork;
   } catch (err) {
     // If received callback then call it
     if (callback) {
-      return callback(request);
+      // send a copy of the request to the callback function
+      return callback(requestCopy);
     }
     // If error, get from cache
     const responseFromCache = await getFromCache(request);
@@ -72,7 +75,7 @@ const networkFirst = async (request, url, callback = null) => {
   }
 };
 
-const manageCreateCollection = (postRequest) => {
+const manageCreateCollection = async (postRequest) => {
   console.log('POST');
 
   const request = self.indexedDB.open('cobranzas', 1);
@@ -81,25 +84,20 @@ const manageCreateCollection = (postRequest) => {
     console.error(`IndexedDB error: ${request.errorCode}`);
   };
 
-  request.onsuccess = (e) => {
+  request.onsuccess = async (e) => {
     console.info('Successful database connection');
     db = request.result;
-    console.log(postRequest);
-    const requestData = {
-      url: postRequest.url,
-      method: postRequest.method,
-      mode: postRequest.mode,
-      body: postRequest.body,
-      headers: postRequest.headers
-    }
-    console.log(requestData);
-    const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(requestData);
+
+    const payload = await postRequest.blob();
+
+    const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(payload);
     saveRequest.onsuccess = () => {
       db.close();
     };
   };
 
-  return caches.match("{% url 'create-collection' %}");
+  const responseCollection = await caches.match("{% url 'create-collection' %}");;
+  return offlineResponse(responseCollection);
 }
 
 // EVENT LISTENERS

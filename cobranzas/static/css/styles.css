@@ -308,6 +308,15 @@ form.filterset-form input[type="submit"] {
   margin-bottom: 0;
 }
 
+.synchronization #pending-requests {
+  display: none;
+  margin-left: .5rem;
+}
+
+.synchronization #pending-requests.show {
+  display: inline-block;
+}
+
 .offline {
   display: none;
 }

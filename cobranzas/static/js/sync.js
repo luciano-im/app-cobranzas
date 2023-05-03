@@ -1,6 +1,6 @@
 //// IMPORTS ////
 
-import { fetchAPI } from "./utils.js";
+import { fetchAPI, getCookie } from "./utils.js";
 
 
 //// CONSTANTS & HELPERS ////
@@ -9,11 +9,16 @@ const URL = `/collections/data/`;
 // Database connection (IDBDatabase)
 let db;
 
+// initialize tooltips
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
 //// DOM ACCESS ////
 
 const syncContainer = document.querySelector('.synchronization');
 const syncLastUpdate = document.querySelector('.synchronization .last-sync');
 const syncButton = document.querySelector('.synchronization button');
+const pendingRequests = document.querySelector('.synchronization #pending-requests');
 const offline = document.querySelector('.offline');
 
 
@@ -29,6 +34,9 @@ const openDatabase = () => {
   request.onsuccess = (e) => {
     console.info('Successful database connection');
     db = request.result;
+
+    // Show badge if there are pending requests stored
+    showPendingRequestsBadge();
   };
 
   request.onupgradeneeded = (e) => {
@@ -112,37 +120,37 @@ const emptyStore = storeName => {
 }
 
 const getItem = (key, storeName) => {
-  const request = db.transaction(storeName)
-    .objectStore(storeName)
-    .get(key);
+  return new Promise((res, rej) => {
+    const request = db.transaction(storeName)
+      .objectStore(storeName)
+      .get(key);
 
-  request.onsuccess = () => {
-    const item = request.result;
-    return item;
-  }
+    request.onsuccess = (event) => {
+      const items = request.result;
+      res(items);
+    };
 
-  request.onerror = (err) => {
-    console.error(`Error to get item information: ${err}`)
-  }
+    request.onerror = (err) => {
+      rej(`Error to get item information: ${err}`);
+    };
+  });
 }
 
 const getAllItems = storeName => {
-  const request = db.transaction(storeName)
-    .objectStore(storeName)
-    .getAll();
+  return new Promise((res, rej) => {
+    const request = db.transaction(storeName)
+      .objectStore(storeName)
+      .getAll();
 
-  request.onsuccess = () => {
-    const items = request.result;
+    request.onsuccess = (event) => {
+      const items = request.result;
+      res(items);
+    };
 
-    console.log('Got all the items');
-    console.table(items)
-
-    return items;
-  }
-
-  request.onerror = (err) => {
-    console.error(`Error to get all items: ${err}`)
-  }
+    request.onerror = (err) => {
+      rej(`Error to get all items: ${err}`);
+    };
+  });
 }
 
 const updateItem = (key, storeName) => {
@@ -153,9 +161,6 @@ const updateItem = (key, storeName) => {
 
   request.onsuccess = () => {
     const item = request.result;
-
-    // Change the property
-    //item.name = 'Fulanito';
 
     // Create a request to update
     const updateRequest = objectStore.update(item);
@@ -199,10 +204,17 @@ const idbSupport = () => {
   }
 }
 
+const showPendingRequestsBadge = async () => {
+  const storedRequests = await getAllItems('collections');
+  if (storedRequests.length > 0) {
+    pendingRequests.classList.add('show');
+  }
+}
 
 //// EVENTS ////
 
-syncButton.addEventListener('click', (e) => {
+syncButton.addEventListener('click', async (e) => {
+  // Fetch data from server and store into the database
   fetchAPI(URL, 'GET', 'application/json').then((res) => {
     if (res) {
       // Insert sales
@@ -228,6 +240,37 @@ syncButton.addEventListener('click', (e) => {
       addItems(customers, 'customers');
     }
   });
+
+  // Send pending requests to the server
+  const storedRequests = await getAllItems('collections');
+  // New csrf token
+  const csrftoken = getCookie('csrftoken');
+
+  storedRequests.map(async reqBlob => {
+    // Convert blob to text
+    const reqText = await new Response(reqBlob).text();
+    // Convert text to Params
+    const params = new URLSearchParams(reqText);
+    // Update old csrf token with new csrf token
+    params.set('csrfmiddlewaretoken', csrftoken);
+    fetch('/collections/create/', {
+      method: 'POST',
+      // Convert params to text again
+      body: params.toString(),
+      // Send form content type and csrf token headers
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrftoken,
+      },
+      mode: 'same-origin',
+    })
+      .then(response => {
+        // TODO: Delete record from indexedDB
+      })
+      .catch(err => {
+        alert(err)
+      });
+  });
 });
 
 window.addEventListener('offline', (e) => {
@@ -243,9 +286,12 @@ document.addEventListener('served-offline-page', (e) => {
 })
 
 // Init app
-if (idbSupport()) {
-  openDatabase();
+const init = () => {
+  if (idbSupport()) {
+    openDatabase();
+  }
 }
 
+init();
 
 export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, db };

@@ -140,6 +140,11 @@
           <button id="sync-button" type="button" class="btn btn-primary">
             Sincronizar <i class="bi bi-arrow-repeat"></i>
           </button>
+          <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cobranza pendiente de sincronizar!">
+            <button type="button" class="btn btn-sm btn-danger" disabled>
+              <i class="bi bi-exclamation-lg"></i>
+            </button>
+          </span>
         </p>
       </div>
       {% block content %}{% endblock %}

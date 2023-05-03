@@ -1,4 +1,4 @@
-export const fetchAPI = async (url, method, content_type, headers = {}) => {
+const fetchAPI = async (url, method, content_type, headers = {}) => {
   try {
     const response = await fetch(url, {
       method: method,
@@ -23,3 +23,21 @@ export const fetchAPI = async (url, method, content_type, headers = {}) => {
     return null;
   }
 };
+
+const getCookie = name => {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+export { fetchAPI, getCookie };
