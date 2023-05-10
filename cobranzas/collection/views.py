@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.models import Customer, Sale, SaleProduct, SaleInstallment, Collection, CollectionInstallment
+from app.models import Customer, Sale, SaleProduct, SaleInstallment, Collection, CollectionInstallment, KeyValueStore
 from app.views import FilterSetView
 
 from collection.forms import CollectionFormset, CollectionFilterForm
@@ -336,5 +336,6 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
         # get_data return sales and installments data
         data = self.get_data()
         data['customers'] = list(customers)
+        data['last_update'] = KeyValueStore.get('sync')
 
         return JsonResponse(data)

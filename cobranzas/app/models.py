@@ -1,3 +1,4 @@
+import json
 from tabnanny import verbose
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -143,3 +144,31 @@ class CollectionInstallment(models.Model):
                 fields=['sale_installment', 'collection'], name='unique_collection'
             ),
         ]
+
+
+class KeyValueStore(models.Model):
+    key = models.CharField(max_length=50)
+    value = models.CharField(max_length=250)
+
+    @classmethod
+    def set(self, key, value):
+        obj = None
+        val = {'value': value}
+        try:
+            obj = self.objects.get(key=key)
+        except:
+            obj = KeyValueStore(key=key)
+
+        obj.value = json.dumps(val)
+        obj.save()
+
+    @classmethod
+    def get(self, key):
+        try:
+            obj = json.loads(self.objects.get(key=key).value)
+            return obj['value']
+        except:
+            return None
+
+    def __str__(self):
+        return f'{self.key}'

@@ -1,7 +1,8 @@
 import math
+import time
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from app.models import Sale, SaleInstallment
+from app.models import Sale, SaleInstallment, Customer, Collection, KeyValueStore
 
 
 @receiver(post_save, sender=Sale, dispatch_uid='app.signals.postSave_Sale')
@@ -42,3 +43,11 @@ def postSave_User(sender, instance, created, **kwargs):
             # Last installment
             objs.append(SaleInstallment(sale=instance, installment=last_installment_number, installment_amount=last_installment_amount))
             SaleInstallment.objects.bulk_create(objs)
+
+
+@receiver(post_save, sender=Sale, dispatch_uid='app.signals.update_sync_value.Sale')
+@receiver(post_save, sender=Customer, dispatch_uid='app.signals.update_sync_value.Customer')
+@receiver(post_save, sender=Collection, dispatch_uid='app.signals.update_sync_value.Collection')
+def update_sync_value(sender, instance, created, **kwargs):
+    epoc = int(time.time())
+    KeyValueStore.set('sync', epoc)
