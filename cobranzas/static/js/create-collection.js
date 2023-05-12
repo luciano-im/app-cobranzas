@@ -204,8 +204,8 @@ filterCustomerForm.addEventListener('submit', event => {
 
   const url = `/collections/create/?select-customer=${selectCustomer.value}`;
   fetchAPI(url, 'GET', 'application/json').then((res) => {
+    selectedCustomerInput.setAttribute('value', selectCustomer.value);
     if (res) {
-      selectedCustomerInput.setAttribute('value', selectCustomer.value);
       const sales = Object.values(res.sales[selectCustomer.value]);
       const installments = res.installments[selectCustomer.value];
       sales.forEach(item => {
