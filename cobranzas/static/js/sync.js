@@ -91,13 +91,13 @@ const addItems = (items, storeName) => {
   }
 }
 
-const removeItem = (key, storeName, operation) => {
-  const request = db.transaction(storeName, operation)
+const removeItem = (key, storeName) => {
+  const request = db.transaction(storeName, 'readwrite')
     .objectStore(storeName)
     .delete(key);
 
   request.onsuccess = () => {
-    console.log(`Item deleted with key: ${request.result}`);
+    console.log(`Item deleted with key: ${key}`);
   }
 
   request.onerror = (err) => {
@@ -153,6 +153,23 @@ const getAllItems = storeName => {
   });
 }
 
+const getAllKeys = storeName => {
+  return new Promise((res, rej) => {
+    const request = db.transaction(storeName)
+      .objectStore(storeName)
+      .getAllKeys();
+
+    request.onsuccess = (event) => {
+      const keys = request.result;
+      res(keys);
+    };
+
+    request.onerror = (err) => {
+      rej(`Error to get all keys: ${err}`);
+    };
+  });
+}
+
 const updateItem = (key, storeName) => {
   const objectStore = db.transaction(storeName)
     .objectStore(storeName);
@@ -166,7 +183,7 @@ const updateItem = (key, storeName) => {
     const updateRequest = objectStore.update(item);
 
     updateRequest.onsuccess = () => {
-      console.log(`Item updated with key: ${updateRequest.result}`)
+      console.log(`Item updated with key: ${key}`)
     }
   }
 }
@@ -181,8 +198,6 @@ const updateOnlineStatus = (status = null) => {
   if (condition == 'online') {
     // Hide message when network is available and check if there is support
     // for indexedDB to show sync button
-    // TODO: Check if server is available or not, because if there is an active connection (like a wifi connection) 
-    // window.navigator.onLine will be always "online", even if the wifi connection doesn't have internet
     offline.classList.remove('show');
     idbSupport();
   } else {
@@ -214,62 +229,87 @@ const showPendingRequestsBadge = async () => {
 //// EVENTS ////
 
 syncButton.addEventListener('click', async (e) => {
-  // Fetch data from server and store into the database
-  fetchAPI(URL, 'GET', 'application/json').then((res) => {
-    if (res) {
-      // Insert sales
-      const sales_keys = Object.keys(res.sales);
-      for (var key of sales_keys) {
-        const data = {
-          'customer': key,
-          'sales': res.sales[key]
-        }
-        addItem(data, 'sales');
-      }
-      // Insert installments
-      const installments_keys = Object.keys(res.installments);
-      for (var key of installments_keys) {
-        const data = {
-          'customer': key,
-          'installments': res.installments[key]
-        }
-        addItem(data, 'installments');
-      }
-      // Insert customers
-      const customers = Object.values(res.customers);
-      addItems(customers, 'customers');
-    }
-  });
+  const STORE_NAME = 'collections';
+  // 1 - SEND PENDING REQUESTS TO THE SERVER
+  const storedRequests = await getAllItems(STORE_NAME);
+  const storedRequestsKeys = await getAllKeys(STORE_NAME);
+  if (storedRequests && storedRequestsKeys) {
+    // New csrf token
+    const csrftoken = getCookie('csrftoken');
 
-  // Send pending requests to the server
-  const storedRequests = await getAllItems('collections');
-  // New csrf token
-  const csrftoken = getCookie('csrftoken');
-
-  storedRequests.map(async reqBlob => {
-    // Convert blob to text
-    const reqText = await new Response(reqBlob).text();
-    // Convert text to Params
-    const params = new URLSearchParams(reqText);
-    // Update old csrf token with new csrf token
-    params.set('csrfmiddlewaretoken', csrftoken);
-    fetch('/collections/create/', {
-      method: 'POST',
-      // Convert params to text again
-      body: params.toString(),
-      // Send form content type and csrf token headers
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-CSRFToken': csrftoken,
-      },
-      mode: 'same-origin',
-    })
+    storedRequests.map(async (reqBlob, idx) => {
+      // Convert blob to text
+      const reqText = await new Response(reqBlob).text();
+      // Convert text to Params
+      const params = new URLSearchParams(reqText);
+      // Update old csrf token with new csrf token
+      params.set('csrfmiddlewaretoken', csrftoken);
+      fetch('/collections/create/', {
+        method: 'POST',
+        // Convert params to text again
+        body: params.toString(),
+        // Send form content type and csrf token headers
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken,
+        },
+        mode: 'same-origin',
+      })
       .then(response => {
-        // TODO: Delete record from indexedDB
+        if(response.status == 200) {
+          removeItem(storedRequestsKeys[idx], STORE_NAME);
+        }
       })
       .catch(err => {
         alert(err)
       });
+    });
+  }
+
+  // 2 - FETCH DATA FROM THE SERVER AND STORE IT IN THE DATABASE
+  fetchAPI(URL, 'GET', 'application/json').then(async (res) => {
+    if (res) {
+      const localStorage = window.localStorage;
+      // I get the value of last-update to check if have been changes since the last update
+      const lastUpdate = await localStorage.getItem('last-update');
+      if (!lastUpdate || res.last_update != lastUpdate) {
+        // If last-update value doesn't exists or has changed
+        localStorage.setItem('last-update', res.last_update);
+        // Check if there are pending request
+        const checkStoredRequests = await getAllKeys(STORE_NAME);
+        if(checkStoredRequests.length > 0) {
+          // If there are pending requests, then show a notification to the user
+          console.log('Hay requests pendientes');
+        } else {
+          // If there are no pending requests, then update the database
+          // Empty database
+          await emptyStore('sales');
+          await emptyStore('installments');
+          await emptyStore('customers');
+          // Insert sales
+          const sales_keys = Object.keys(res.sales);
+          for (var key of sales_keys) {
+            const data = {
+              'customer': key,
+              'sales': res.sales[key]
+            }
+            addItem(data, 'sales');
+          }
+          // Insert installments
+          const installments_keys = Object.keys(res.installments);
+          for (var key of installments_keys) {
+            const data = {
+              'customer': key,
+              'installments': res.installments[key]
+            }
+            addItem(data, 'installments');
+          }
+          // Insert customers
+          const customers = Object.values(res.customers);
+          addItems(customers, 'customers');
+        }
+      }
+    }
   });
 });
 
