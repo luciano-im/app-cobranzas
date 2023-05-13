@@ -6,6 +6,7 @@ import { fetchAPI, getCookie } from "./utils.js";
 //// CONSTANTS & HELPERS ////
 
 const URL = `/collections/data/`;
+const COLLECTIONS_STORE_NAME = 'collections';
 // Database connection (IDBDatabase)
 let db;
 
@@ -188,6 +189,20 @@ const updateItem = (key, storeName) => {
   }
 }
 
+// Check indexedDB support
+const idbSupport = () => {
+  // Check for indexedDB support
+  if (!('indexedDB' in window)) {
+    syncContainer.classList.remove('show');
+    console.log("This browser doesn't support IndexedDB");
+    return false;
+  } else {
+    syncContainer.classList.add('show');
+    return true;
+  }
+}
+
+// Show message when app is offline
 const updateOnlineStatus = (status = null) => {
   let condition = null;
   if (status) {
@@ -207,18 +222,7 @@ const updateOnlineStatus = (status = null) => {
   }
 }
 
-const idbSupport = () => {
-  // Check for indexedDB support
-  if (!('indexedDB' in window)) {
-    syncContainer.classList.remove('show');
-    console.log("This browser doesn't support IndexedDB");
-    return false;
-  } else {
-    syncContainer.classList.add('show');
-    return true;
-  }
-}
-
+// Shows a badge when there are collections pending to be sent to the server
 const showPendingRequestsBadge = async () => {
   const storedRequests = await getAllItems('collections');
   if (storedRequests.length > 0) {
@@ -226,13 +230,10 @@ const showPendingRequestsBadge = async () => {
   }
 }
 
-//// EVENTS ////
-
-syncButton.addEventListener('click', async (e) => {
-  const STORE_NAME = 'collections';
-  // 1 - SEND PENDING REQUESTS TO THE SERVER
-  const storedRequests = await getAllItems(STORE_NAME);
-  const storedRequestsKeys = await getAllKeys(STORE_NAME);
+// Send pending POST requests to the server
+const sendPendingRequests = async () => {
+  const storedRequests = await getAllItems(COLLECTIONS_STORE_NAME);
+  const storedRequestsKeys = await getAllKeys(COLLECTIONS_STORE_NAME);
   if (storedRequests && storedRequestsKeys) {
     // New csrf token
     const csrftoken = getCookie('csrftoken');
@@ -255,18 +256,20 @@ syncButton.addEventListener('click', async (e) => {
         },
         mode: 'same-origin',
       })
-      .then(response => {
-        if(response.status == 200) {
-          removeItem(storedRequestsKeys[idx], STORE_NAME);
-        }
-      })
-      .catch(err => {
-        alert(err)
-      });
+        .then(response => {
+          if (response.status == 200) {
+            removeItem(storedRequestsKeys[idx], COLLECTIONS_STORE_NAME);
+          }
+        })
+        .catch(err => {
+          alert(err)
+        });
     });
   }
+}
 
-  // 2 - FETCH DATA FROM THE SERVER AND STORE IT IN THE DATABASE
+// Fetch server for updated data and update local database
+const synchronizeLocalDatabase = async () => {
   fetchAPI(URL, 'GET', 'application/json').then(async (res) => {
     if (res) {
       const localStorage = window.localStorage;
@@ -276,16 +279,16 @@ syncButton.addEventListener('click', async (e) => {
         // If last-update value doesn't exists or has changed
         localStorage.setItem('last-update', res.last_update);
         // Check if there are pending request
-        const checkStoredRequests = await getAllKeys(STORE_NAME);
-        if(checkStoredRequests.length > 0) {
+        const checkStoredRequests = await getAllKeys(COLLECTIONS_STORE_NAME);
+        if (checkStoredRequests.length > 0) {
           // If there are pending requests, then show a notification to the user
           console.log('Hay requests pendientes');
         } else {
           // If there are no pending requests, then update the database
           // Empty database
-          await emptyStore('sales');
-          await emptyStore('installments');
-          await emptyStore('customers');
+          emptyStore('sales');
+          emptyStore('installments');
+          emptyStore('customers');
           // Insert sales
           const sales_keys = Object.keys(res.sales);
           for (var key of sales_keys) {
@@ -311,6 +314,15 @@ syncButton.addEventListener('click', async (e) => {
       }
     }
   });
+}
+
+//// EVENTS ////
+
+syncButton.addEventListener('click', async (e) => {
+  // 1 - SEND PENDING REQUESTS TO THE SERVER
+  sendPendingRequests();
+  // 2 - FETCH DATA FROM THE SERVER AND STORE IT IN THE DATABASE
+  synchronizeLocalDatabase();
 });
 
 window.addEventListener('offline', (e) => {
