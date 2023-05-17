@@ -88,7 +88,40 @@ const manageCreateCollection = async (postRequest) => {
     console.info('Successful database connection');
     db = request.result;
 
-    const payload = await postRequest.blob();
+    // Get a request copy and transform to a formData object
+    const formData = await postRequest.clone().formData();
+    // Create an object from the formData object
+    const formDataObject = Object.fromEntries(formData);
+
+    // Store installments being paid in the collection
+    let checkedInstallments = new Array();
+    for (const key of formData.keys()) {
+      if (key.includes('checked')) {
+        checkedInstallments.push(key.replace('collection-', '').replace('-checked', ''));
+      }
+    }
+
+    // Create an object to store installments data
+    let installments = {};
+    checkedInstallments.map(el => {
+      const sale = formDataObject[`collection-${el}-sale_id`];
+      const installment = formDataObject[`collection-${el}-installment`];
+      const key = `${sale}-${installment}`;
+      installments[key] = {};
+      installments[key]['sale'] = sale;
+      installments[key]['installment'] = installment;
+      installments[key]['amount'] = formDataObject[`collection-${el}-amount`];
+    })
+    // Get customer id
+    const customer = formDataObject['customer'];
+    // Transform request to a blob object
+    const blob = await postRequest.blob();
+
+    const payload = {
+      'customer': customer,
+      'installments': installments,
+      'request': blob
+    }
 
     const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(payload);
     saveRequest.onsuccess = () => {
