@@ -29,6 +29,8 @@ const selectedCustomerInput = document.querySelector('.create-collection input.s
 const formsetTotalForms = document.querySelector('.create-collection input[name="collection-TOTAL_FORMS"]');
 // Total tag to keep the total amount
 const totalTag = document.getElementById('total');
+// Submit button
+const submitButton = document.querySelector('#submit-collection');
 
 
 //// FUNCTIONS ////
@@ -212,6 +214,11 @@ const checkboxChangeEventHandler = checkbox => {
 };
 
 const paymentInputChangeEventHandler = input => {
+  // Get form ID
+  const formID = input.name.split('-')[1];
+  // Check the checkbox field
+  document.querySelector(`input[name=collection-${formID}-checked]`).checked = true;
+
   // The change event in amount inputs updates values and totals
   const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
   const currentValue = parseFloat(input.value) || 0.0;
@@ -242,6 +249,11 @@ const paymentInputSelectEventHandler = input => {
 // Update the total variable and the total layout tag
 const updateTotal = amount => {
   total += amount;
+  if (total == 0) {
+    submitButton.disabled = true;
+  } else {
+    submitButton.disabled = false;
+  }
   totalTag.innerText = total.toLocaleString("es-AR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2

@@ -1,7 +1,7 @@
 from datetime import datetime, time
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
 from django.http import JsonResponse
@@ -194,6 +194,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                 collection = None
                 # In this list I will save already checked sales
                 sales_check_collection = []
+                # To sum the total paid amount and prevent saving empty collections
+                check_total = 0
 
                 for f_form in collection_formset:
                     # If form has changed the field "checked" then it is being paid
@@ -201,6 +203,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                         # Check if form is valid or not
                         if f_form.is_valid():
                             data = f_form.cleaned_data
+
+                            check_total += data['amount']
 
                             # Check that the sale corresponds to the selected customer
                             if not data['sale_id'] in sales_check_collection:
@@ -243,6 +247,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                         else:
                             # If form has errors
                             print(f_form.errors)
+                if check_total == 0:
+                    raise ValidationError('El total pagado debe ser mayor a cero')
         return self.render_to_response(context)
 
 
