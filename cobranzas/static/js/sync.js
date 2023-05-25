@@ -240,7 +240,7 @@ const sendPendingRequests = async () => {
 
     storedRequests.map(async (reqBlob, idx) => {
       // Convert blob to text
-      const reqText = await new Response(reqBlob).text();
+      const reqText = await new Response(reqBlob.request).text();
       // Convert text to Params
       const params = new URLSearchParams(reqText);
       // Update old csrf token with new csrf token
