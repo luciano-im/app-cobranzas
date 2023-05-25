@@ -1,7 +1,7 @@
 //// IMPORTS ////
 
 import { fetchAPI } from "./utils.js";
-import { db } from "./sync.js";
+import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems } from "./sync.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -33,46 +33,125 @@ const totalTag = document.getElementById('total');
 
 //// FUNCTIONS ////
 
-const createSale = (sale, installments) => {
+const createSale = (sale, installments, storedInstallments) => {
+  // Calculate the sum of stored installments
+  let paidAmount = 0.00;
+  if (storedInstallments.length > 0) {
+    paidAmount = storedInstallments.reduce((accumulator, item) => {
+      return accumulator + parseFloat(item.amount);
+    }, 0);
+  }
+
   // Clone the empty form and update its index
   const newSale = emptySale.cloneNode(true);
   newSale.classList.add('sale');
   newSale.classList.remove('empty-sale');
 
+  // Data for sale header
   newSale.querySelector('.id').innerText = sale.id;
   newSale.querySelector('.date').innerText = sale.date;
   newSale.querySelector('.installments').innerText = sale.installments;
-  newSale.querySelector('.paid-amount').innerText = sale.paid_amount;
-  newSale.querySelector('.pending-balance').innerText = sale.pending_balance;
-
+  newSale.querySelector('.paid-amount').innerText = parseFloat(sale.paid_amount) + paidAmount;
+  newSale.querySelector('.pending-balance').innerText = parseFloat(sale.pending_balance) - paidAmount;
+  // List of sold products
   const products = newSale.querySelector('.breadcrumb');
   for (var i = 0; i < sale.products.length; i++) {
     products.innerHTML += `<li class="breadcrumb-item">${sale.products[i]}</li>`;
   }
-
-  createInstallments(sale.id, newSale, installments.installments);
+  // Create the installments layout
+  createInstallments(sale.id, newSale, installments.installments, storedInstallments);
 }
 
-const createInstallments = (saleId, saleElement, installments) => {
+const createInstallments = (saleId, saleElement, installments, storedInstallments) => {
+  // Initialize an array to store the stored installments ID
+  let storedInstallmentsID = [];
+  // Initialize an object to store the paid amount of each installment
+  // Each installment could have more than one record or been collected partially in different collections
+  // {installmentID: paidAmount, ...}
+  let storedInstallmentsData = {};
+  if (storedInstallments.length > 0) {
+    storedInstallments.map(el => {
+      const installmentID = parseInt(el.installment);
+      if (!storedInstallmentsID.includes(installmentID)) {
+        storedInstallmentsID.push(installmentID);
+        storedInstallmentsData[installmentID] = 0;
+      }
+      storedInstallmentsData[installmentID] += parseFloat(el.amount);
+    });
+  }
+
+  // Combine synced data with pending installments stored in indexedDB
+  // I create a new object with updated installments called "installmentsResponse"
+
+  // Get the installments container (partial, next, pending) to iterate over
+  const installmentsContainers = Object.keys(installments);
+  // Initialize the object
+  let installmentsResponse = {};
+  // Loop over the installments of each container
+  installmentsContainers.map(container => {
+    // Initialize an array to store the ID of partially paid installments
+    let partialInstallments = [];
+    installmentsResponse[container] = installments[container].filter(el => {
+      // Remove cancelled installments
+      if (storedInstallmentsID.includes(el.installment)) {
+        if (el.installment_amount - el.paid_amount - storedInstallmentsData[el.installment] !== 0) {
+          return el;
+        } else {
+          // Delete installment ID
+          storedInstallmentsID.splice(storedInstallmentsID.indexOf(el.installment), 1);
+        }
+      } else {
+        return el;
+      }
+    }).map((el, index) => {
+      // Update installments paid amount
+      if (storedInstallmentsID.includes(el.installment)) {
+        el.paid_amount = el.paid_amount + storedInstallmentsData[el.installment];
+        if (container !== 'partial') {
+          partialInstallments.push(index);
+        }
+        // Delete installment ID
+        storedInstallmentsID.splice(storedInstallmentsID.indexOf(el.installment), 1);
+      }
+      return el;
+    });
+
+    // Move installments to "partial" installments array
+    partialInstallments.map(installmentID => {
+      installmentsResponse['partial'].push(installmentsResponse[container][installmentID]);
+      installmentsResponse[container].splice(installmentID, 1);
+    });
+  });
+
+
+  // If "next" array is empty but not "pending" array, move the first installment from "pending" to "next"
+  if (installmentsResponse['next'].length == 0 && installmentsResponse['pending'].length > 0) {
+    installmentsResponse['next'].push(installmentsResponse['pending'][0]);
+    installmentsResponse['pending'].splice(0, 1);
+  }
+
+  // Get the DOM object from each section to create the layout
   const tableNextInstallment = saleElement.querySelector('.next-installment tbody');
   const tablePendingInstallments = saleElement.querySelector('.pending-installments tbody');
   const collapseButtonText = saleElement.querySelector('.accordion-button span');
 
-  if (installments['partial'].length > 0) {
-    createInstallmentForm(tableNextInstallment, installments['partial']);
+  // Fill DOM objects with the installments
+  if (installmentsResponse['partial'].length > 0) {
+    createInstallmentForm(tableNextInstallment, installmentsResponse['partial']);
   }
 
-  if (installments['next'].length > 0) {
-    createInstallmentForm(tableNextInstallment, installments['next']);
+  if (installmentsResponse['next'].length > 0) {
+    createInstallmentForm(tableNextInstallment, installmentsResponse['next']);
   }
 
-  if (installments['pending'].length > 0) {
+  if (installmentsResponse['pending'].length > 0) {
     collapseButtonText.innerText = "Ver cuotas pendientes";
-    createInstallmentForm(tablePendingInstallments, installments['pending']);
+    createInstallmentForm(tablePendingInstallments, installmentsResponse['pending']);
   } else {
     collapseButtonText.innerText = "No hay mas cuotas pendientes";
   }
 
+  // Update form ID and append form to the DOM
   saleElement.innerHTML = saleElement.innerHTML.replace(/__sale_pk__/g, saleId);
   salesContainer.appendChild(saleElement);
 
@@ -203,27 +282,48 @@ filterCustomerForm.addEventListener('submit', event => {
   total = 0.00;
 
   const url = `/collections/create/?select-customer=${selectCustomer.value}`;
-  fetchAPI(url, 'GET', 'application/json').then((res) => {
+  fetchAPI(url, 'GET', 'application/json').then(async (res) => {
     selectedCustomerInput.setAttribute('value', selectCustomer.value);
     if (res) {
+      // App is online
       const sales = Object.values(res.sales[selectCustomer.value]);
       const installments = res.installments[selectCustomer.value];
       sales.forEach(item => {
-        createSale(item, installments[item.id]);
+        createSale(item, installments[item.id], []);
       });
     } else {
-      const getSales = db.transaction('sales').objectStore('sales').get(selectCustomer.value);
-      const getInstallments = db.transaction('installments').objectStore('installments').get(selectCustomer.value);
-      getSales.onsuccess = event_s => {
-        const sales = getSales.result || null;
-        getInstallments.onsuccess = event_i => {
-          const installments = getInstallments.result || null;
+      // If app is offline, then load data from indexedDB
+      const storedCollections = await getAllItems(COLLECTIONS_STORE_NAME);
+      // Create a variable to store an array of installments for each sale
+      // An object like this  {saleID: [installment, installment, installment], ...}
+      let pendingCollectionsBySale = {};
+      storedCollections.filter(el => {
+        // Filter sales for the current customer
+        return el.customer == selectCustomer.value;
+      }).map(el => {
+        // Get the keys from the object
+        const keys = Object.keys(el.installments);
+        keys.map(key => {
+          // Get the sale ID
+          const sale = el.installments[key].sale;
+          // Check if sale already exists in pendingCollectionsBySale
+          if (!pendingCollectionsBySale.hasOwnProperty(sale)) {
+            pendingCollectionsBySale[sale] = [];
+          }
+          // Store installments in the sale ID position
+          pendingCollectionsBySale[sale].push(el.installments[key]);
+        });
+      });
 
-          sales.sales.forEach(item => {
-            createSale(item, installments.installments[item.id]);
-          });
-        }
-      }
+      // Get sales and installments stored in indexedDB
+      const sales = await getItem(selectCustomer.value, 'sales');
+      const installments = await getItem(selectCustomer.value, 'installments');
+      sales.sales.forEach(item => {
+        // Get installments for the current sale
+        const storedInstallments = pendingCollectionsBySale[item.id] || [];
+        // Create sale layout
+        createSale(item, installments.installments[item.id], storedInstallments);
+      });
     }
   });
 });

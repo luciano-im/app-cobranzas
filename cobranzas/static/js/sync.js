@@ -346,4 +346,4 @@ const init = () => {
 
 init();
 
-export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, db };
+export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, COLLECTIONS_STORE_NAME, db };
