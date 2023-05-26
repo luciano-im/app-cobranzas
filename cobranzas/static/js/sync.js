@@ -9,6 +9,7 @@ const URL = `/collections/data/`;
 const COLLECTIONS_STORE_NAME = 'collections';
 // Database connection (IDBDatabase)
 let db;
+const localStorage = window.localStorage;
 
 // initialize tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -235,6 +236,10 @@ const sendPendingRequests = async () => {
   const storedRequests = await getAllItems(COLLECTIONS_STORE_NAME);
   const storedRequestsKeys = await getAllKeys(COLLECTIONS_STORE_NAME);
   if (storedRequests && storedRequestsKeys) {
+
+    // Revoke local database last-update
+    localStorage.removeItem('last-update');
+
     // New csrf token
     const csrftoken = getCookie('csrftoken');
 
@@ -272,7 +277,6 @@ const sendPendingRequests = async () => {
 const synchronizeLocalDatabase = async () => {
   fetchAPI(URL, 'GET', 'application/json').then(async (res) => {
     if (res) {
-      const localStorage = window.localStorage;
       // I get the value of last-update to check if have been changes since the last update
       const lastUpdate = await localStorage.getItem('last-update');
       if (!lastUpdate || res.last_update != lastUpdate) {
@@ -346,4 +350,8 @@ const init = () => {
 
 init();
 
-export { addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem, COLLECTIONS_STORE_NAME, db };
+export {
+  addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem,
+  synchronizeLocalDatabase, sendPendingRequests,
+  COLLECTIONS_STORE_NAME, db
+};

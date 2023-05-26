@@ -24,7 +24,7 @@
 
 <div class="data-container">
   <div class="accordion accordion-flush create-collection">
-    <form action="{% url 'create-collection' %}" method="post">
+    <form action="{% url 'create-collection' %}" method="post" id="create-collection">
       {% csrf_token %}
       {{formset.management_form}}
       <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>

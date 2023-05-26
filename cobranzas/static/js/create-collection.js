@@ -1,7 +1,7 @@
 //// IMPORTS ////
 
 import { fetchAPI } from "./utils.js";
-import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems } from "./sync.js";
+import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems, synchronizeLocalDatabase, sendPendingRequests } from "./sync.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -29,8 +29,10 @@ const selectedCustomerInput = document.querySelector('.create-collection input.s
 const formsetTotalForms = document.querySelector('.create-collection input[name="collection-TOTAL_FORMS"]');
 // Total tag to keep the total amount
 const totalTag = document.getElementById('total');
+// Create collection form
+const createCollectionForm = document.getElementById('create-collection');
 // Submit button
-const submitButton = document.querySelector('#submit-collection');
+const submitButton = document.getElementById('submit-collection');
 
 
 //// FUNCTIONS ////
@@ -260,6 +262,16 @@ const updateTotal = amount => {
   });
 };
 
+const clearForm = () => {
+  // Remove data from the previous customer if it exists
+  salesContainer.innerHTML = "";
+  // Set total to 0
+  totalTag.innerText = "0,00";
+  total = 0.00;
+  // Disable submit button
+  submitButton.disabled = true;
+}
+
 
 //// EVENTS ////
 
@@ -287,11 +299,7 @@ installmentsForm.addEventListener('select', (e) => {
 
 filterCustomerForm.addEventListener('submit', event => {
   event.preventDefault();
-  // Remove data from the previous customer if it exists
-  salesContainer.innerHTML = "";
-  // Set total to 0
-  totalTag.innerText = "0,00";
-  total = 0.00;
+  clearForm();
 
   const url = `/collections/create/?select-customer=${selectCustomer.value}`;
   fetchAPI(url, 'GET', 'application/json').then(async (res) => {
@@ -337,5 +345,32 @@ filterCustomerForm.addEventListener('submit', event => {
         createSale(item, installments.installments[item.id], storedInstallments);
       });
     }
+  });
+});
+
+createCollectionForm.addEventListener('submit', event => {
+  event.preventDefault();
+
+  // Send request by hand instead of traditional submit event to intercept the response and
+  // update the local database if the request was successful
+  fetch(event.target.action, {
+    method: 'POST',
+    body: new URLSearchParams(new FormData(event.target))
+  }).then(async res => {
+    if (res.status != 200) {
+      console.log('Error saving collection!');
+      return false;
+    }
+
+    // Empty form and customer select field
+    clearForm();
+    selectCustomer.selectedIndex = 0;
+
+    // Send pending request and update local database
+    sendPendingRequests();
+    synchronizeLocalDatabase();
+  }).catch(err => {
+    console.log('Error! Server is offline?');
+    console.log(err);
   });
 });
