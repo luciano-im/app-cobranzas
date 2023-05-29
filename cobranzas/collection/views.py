@@ -249,7 +249,11 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                             print(f_form.errors)
                 if check_total == 0:
                     raise ValidationError('El total pagado debe ser mayor a cero')
-        return self.render_to_response(context)
+
+        response_data = {}
+        response_data['collection_id'] = collection.pk
+
+        return JsonResponse(response_data)
 
 
 class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):

@@ -362,9 +362,17 @@ createCollectionForm.addEventListener('submit', event => {
       return false;
     }
 
+    // Get collection ID from response
+    const result = await res.json();
+    const collectionID = result.collection_id;
+
     // Empty form and customer select field
     clearForm();
     selectCustomer.selectedIndex = 0;
+
+    // Print receipt
+    const urlPrintReceipt = `/collections/print/${collectionID}`;
+    window.open(urlPrintReceipt, '_blank');
 
     // Send pending request and update local database
     sendPendingRequests();
