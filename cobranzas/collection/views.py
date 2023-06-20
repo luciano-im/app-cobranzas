@@ -349,3 +349,7 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
         data['last_update'] = KeyValueStore.get('sync')
 
         return JsonResponse(data)
+
+
+class PendingCollectionView(LoginRequiredMixin, TemplateView):
+    template_name = 'pending_collection.html'

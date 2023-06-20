@@ -21,7 +21,7 @@ from app.views import HomeView, UserCreationView, UserListView, CustomerCreation
 from app.views import CustomerListView, SaleCreationView, SaleListView
 from app.views import ProductCreationView, ProductListView, LoginView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
-from collection.views import CollectionDataView
+from collection.views import CollectionDataView, PendingCollectionView
 
 
 urlpatterns = [
@@ -41,6 +41,7 @@ urlpatterns = [
     path('collections/list/', CollectionListView.as_view(), name='list-collection'),
     path('collections/print/<int:id>/', CollectionPrintView.as_view(), name='print-collection'),
     path('collections/data/', CollectionDataView.as_view(), name='collections-data'),
+    path('collections/pending/', PendingCollectionView.as_view(), name='pending-collection'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # Include SW views

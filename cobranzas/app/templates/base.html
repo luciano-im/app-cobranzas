@@ -119,6 +119,7 @@
                   <li><a class="dropdown-item" href="{% url 'create-collection' %}">Nueva Cobranza</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="{% url 'list-collection' %}">Listado de Cobranzas</a></li>
+                  <li><a class="dropdown-item" href="{% url 'pending-collection' %}">Cobranzas sin Sincronizar</a></li>
                 </ul>
               </li>
             </ul>
@@ -140,7 +141,7 @@
           <button id="sync-button" type="button" class="btn btn-primary">
             Sincronizar <i class="bi bi-arrow-repeat"></i>
           </button>
-          <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cobranza pendiente de sincronizar!">
+          <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cobranzas pendientes de sincronizar!">
             <button type="button" class="btn btn-sm btn-danger" disabled>
               <i class="bi bi-exclamation-lg"></i>
             </button>
