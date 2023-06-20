@@ -378,6 +378,10 @@ createCollectionForm.addEventListener('submit', event => {
     sendPendingRequests();
     synchronizeLocalDatabase();
   }).catch(err => {
+    // Empty form and customer select field
+    clearForm();
+    selectCustomer.selectedIndex = 0;
+
     console.log('Error! Server is offline?');
     console.log(err);
   });
