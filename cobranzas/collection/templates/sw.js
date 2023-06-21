@@ -120,7 +120,8 @@ const manageCreateCollection = async (postRequest) => {
     const payload = {
       'customer': customer,
       'installments': installments,
-      'request': blob
+      'request': blob,
+      'date': Date.now()
     }
 
     const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(payload);

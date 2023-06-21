@@ -49,7 +49,7 @@ const openDatabase = () => {
     const salesStore = db.createObjectStore('sales', { keyPath: 'customer' });
     const installmentsStore = db.createObjectStore('installments', { keyPath: 'customer' });
     const customersStore = db.createObjectStore('customers', { keyPath: 'pk' });
-    const postRequests = db.createObjectStore('collections', { autoIncrement: true });
+    const postRequests = db.createObjectStore(COLLECTIONS_STORE_NAME, { autoIncrement: true });
   };
 }
 
@@ -225,7 +225,7 @@ const updateOnlineStatus = (status = null) => {
 
 // Shows a badge when there are collections pending to be sent to the server
 const showPendingRequestsBadge = async () => {
-  const storedRequests = await getAllItems('collections');
+  const storedRequests = await getAllItems(COLLECTIONS_STORE_NAME);
   if (storedRequests.length > 0) {
     pendingRequests.classList.add('show');
   }
@@ -352,6 +352,6 @@ init();
 
 export {
   addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem,
-  synchronizeLocalDatabase, sendPendingRequests,
+  synchronizeLocalDatabase, sendPendingRequests, getAllKeys,
   COLLECTIONS_STORE_NAME, db
 };

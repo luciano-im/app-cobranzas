@@ -329,3 +329,7 @@ form.filterset-form input[type="submit"] {
 .offline.show {
   display: block;
 }
+
+.unsynchronized-collection-table .empty-row {
+  display: none;
+}
