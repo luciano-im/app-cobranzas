@@ -334,6 +334,10 @@ class CollectionPrintView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 
+class LocalCollectionPrintView(LoginRequiredMixin, TemplateView):
+    template_name = 'print_local_collection.html'
+
+
 class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View):
 
     def get(self, request, *args, **kwargs):
