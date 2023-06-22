@@ -40,4 +40,8 @@ const getCookie = name => {
   return cookieValue;
 }
 
-export { fetchAPI, getCookie };
+const formatNumber = number => {
+  return number.toLocaleString("es-AR", { minimumFractionDigits: 2 });
+}
+
+export { fetchAPI, getCookie, formatNumber };

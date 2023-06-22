@@ -1,6 +1,7 @@
 //// IMPORTS ////
 
 import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems, getAllKeys } from "./sync.js";
+import { formatNumber } from "./utils.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -28,7 +29,6 @@ const createTable = async (collections, collectionsId) => {
 }
 
 const createRow = async (data, id, numRow) => {
-  console.log(id, data);
   // Clone the empty form and update its index
   const newRow = emptyRow.cloneNode(true);
   newRow.classList.remove('empty-row');
@@ -36,12 +36,13 @@ const createRow = async (data, id, numRow) => {
   const customer = await getItem(parseInt(data.customer), 'customers');
   const installments = Object.values(data.installments);
   const date = dayjs(data.date).format('DD/MM/YYYY');
+  const paidAmount = calculatePaidAmount(installments);
 
   // Data for sale header
   newRow.querySelector('.id').innerText = numRow;
   newRow.querySelector('.date').innerText = date;
   newRow.querySelector('.customer').innerText = customer.name;
-  newRow.querySelector('.paid-amount').innerText = calculatePaidAmount(installments);
+  newRow.querySelector('.paid-amount').innerText = formatNumber(paidAmount);
   newRow.querySelector('.receipt-button').href = `/collections/print/local/${id}`;
   unsynchronizedCollectionTable.appendChild(newRow);
 }

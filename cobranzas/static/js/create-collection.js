@@ -1,6 +1,6 @@
 //// IMPORTS ////
 
-import { fetchAPI } from "./utils.js";
+import { fetchAPI, formatNumber } from "./utils.js";
 import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems, synchronizeLocalDatabase, sendPendingRequests } from "./sync.js";
 
 //// CONSTANTS & HELPERS ////
@@ -207,11 +207,11 @@ const checkboxChangeEventHandler = checkbox => {
   // 2. the total is updated
   if (checkbox.checked) {
     const payment = paidAmount > 0 ? totalAmount - paidAmount : totalAmount;
-    paymentInput.value = payment.toFixed(2);
+    paymentInput.value = formatNumber(payment);
     updateTotal(payment);
   } else {
     updateTotal(-parseFloat(paymentInput.value));
-    paymentInput.value = 0.0.toFixed(2);
+    paymentInput.value = formatNumber(0.0);
   }
 };
 
