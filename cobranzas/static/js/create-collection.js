@@ -179,6 +179,7 @@ const createInstallmentForm = (parent, installments) => {
     newForm.querySelector(`input[name="collection-${numForm}-sale_id"]`).setAttribute('value', installments[i]['sale_id']);
     newForm.querySelector(`input[name="collection-${numForm}-group"]`).setAttribute('value', installments[i]['group']);
     newForm.querySelector('.installment span').innerText = installments[i]['installment'];
+    // TODO: format numbers in input fields
     newForm.querySelector('.installment-amount input').setAttribute('value', installmentAmount.toFixed(2));
     newForm.querySelector('.paid-amount input').setAttribute('value', paidAmount.toFixed(2));
     newForm.querySelector('.amount input').setAttribute('value', "0.00");
