@@ -4,6 +4,7 @@
 
 const VERSION = '{{ version }}';
 const CACHE_NAME = 'collection-{{ version }}';
+// TODO: Update urls to cache
 const URLS_TO_CACHE = [
   "{% url 'offline' %}",
   "{% url 'manifest' %}",
