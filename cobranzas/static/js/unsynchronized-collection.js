@@ -1,6 +1,8 @@
+'use strict';
+
 //// IMPORTS ////
 
-import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems, getAllKeys } from "./sync.js";
+import { db, COLLECTIONS_STORE_NAME } from "./sync.js";
 import { formatNumber } from "./utils.js";
 
 //// CONSTANTS & HELPERS ////
@@ -13,11 +15,11 @@ const emptyRow = unsynchronizedCollectionTable.querySelector('.empty-row');
 //// FUNCTIONS ////
 
 const getStoredRequests = async () => {
-  return await getAllItems(COLLECTIONS_STORE_NAME);
+  return await db.getAll(COLLECTIONS_STORE_NAME);
 }
 
 const getStoredRequestsKeys = async () => {
-  return await getAllKeys(COLLECTIONS_STORE_NAME);
+  return await db.getAllKeys(COLLECTIONS_STORE_NAME);
 }
 
 const createTable = async (collections, collectionsId) => {
@@ -33,7 +35,7 @@ const createRow = async (data, id, numRow) => {
   const newRow = emptyRow.cloneNode(true);
   newRow.classList.remove('empty-row');
 
-  const customer = await getItem(parseInt(data.customer), 'customers');
+  const customer = await db.get(parseInt(data.customer), 'customers');
   const installments = Object.values(data.installments);
   const date = dayjs(data.date).format('DD/MM/YYYY');
   const paidAmount = calculatePaidAmount(installments);

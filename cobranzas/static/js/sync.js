@@ -1,6 +1,9 @@
+'use strict';
+
 //// IMPORTS ////
 
 import { fetchAPI, getCookie } from "./utils.js";
+import { IndexedDB, IndexedDBNotSupportedError } from './IndexedDB.js'
 
 
 //// CONSTANTS & HELPERS ////
@@ -9,6 +12,12 @@ const URL = `/collections/data/`;
 const COLLECTIONS_STORE_NAME = 'collections';
 // Database connection (IDBDatabase)
 let db;
+const stores = [
+  { name: 'sales', options: { keyPath: 'customer' } },
+  { name: 'installments', options: { keyPath: 'customer' } },
+  { name: 'customers', options: { keyPath: 'pk' } },
+  { name: COLLECTIONS_STORE_NAME, options: { autoIncrement: true } }
+];
 const localStorage = window.localStorage;
 
 // initialize tooltips
@@ -26,183 +35,6 @@ const offline = document.querySelector('.offline');
 
 //// FUNCTIONS ////
 
-const openDatabase = () => {
-  const request = window.indexedDB.open('cobranzas', 1);
-
-  request.onerror = (e) => {
-    console.error(`IndexedDB error: ${request.errorCode}`);
-  };
-
-  request.onsuccess = (e) => {
-    console.info('Successful database connection');
-    db = request.result;
-
-    // Show badge if there are pending requests stored
-    showPendingRequestsBadge();
-  };
-
-  request.onupgradeneeded = (e) => {
-    // Create database if needed
-    console.info('Database created');
-    const db = request.result;
-
-    const salesStore = db.createObjectStore('sales', { keyPath: 'customer' });
-    const installmentsStore = db.createObjectStore('installments', { keyPath: 'customer' });
-    const customersStore = db.createObjectStore('customers', { keyPath: 'pk' });
-    const postRequests = db.createObjectStore(COLLECTIONS_STORE_NAME, { autoIncrement: true });
-  };
-}
-
-const addItem = (item, storeName) => {
-  const request = db.transaction(storeName, 'readwrite')
-    .objectStore(storeName)
-    .add(item);
-
-  request.onsuccess = () => {
-    console.log(`New item added with key: ${request.result}`);
-  }
-
-  request.onerror = (err) => {
-    console.error(`Error to add new item: ${err}`)
-  }
-}
-
-const addItems = (items, storeName) => {
-  const transaction = db.transaction(storeName, 'readwrite');
-
-  transaction.oncomplete = function (event) {
-    console.log('All the items added successfully')
-  };
-
-  transaction.onerror = function (event) {
-    console.error('Error to add items');
-  };
-
-  const objectStore = transaction.objectStore(storeName);
-
-  for (const item of items) {
-    const request = objectStore.add(item);
-
-    request.onsuccess = () => {
-      console.log(`New item added with key: ${request.result}`);
-    }
-
-    request.onerror = (err) => {
-      console.error(`Error to add new item: ${err}`)
-    }
-  }
-}
-
-const removeItem = (key, storeName) => {
-  const request = db.transaction(storeName, 'readwrite')
-    .objectStore(storeName)
-    .delete(key);
-
-  request.onsuccess = () => {
-    console.log(`Item deleted with key: ${key}`);
-  }
-
-  request.onerror = (err) => {
-    console.error(`Error to delete item: ${err}`)
-  }
-}
-
-const emptyStore = storeName => {
-  const request = db.transaction(storeName, 'readwrite')
-    .objectStore(storeName)
-    .clear();
-
-  request.onsuccess = () => {
-    console.log(`Object Store "${storeName}" emptied`);
-  }
-
-  request.onerror = (err) => {
-    console.error(`Error to empty Object Store: ${storeName}`)
-  }
-}
-
-const getItem = (key, storeName) => {
-  return new Promise((res, rej) => {
-    const request = db.transaction(storeName)
-      .objectStore(storeName)
-      .get(key);
-
-    request.onsuccess = (event) => {
-      const items = request.result;
-      res(items);
-    };
-
-    request.onerror = (err) => {
-      rej(`Error to get item information: ${err}`);
-    };
-  });
-}
-
-const getAllItems = storeName => {
-  return new Promise((res, rej) => {
-    const request = db.transaction(storeName)
-      .objectStore(storeName)
-      .getAll();
-
-    request.onsuccess = (event) => {
-      const items = request.result;
-      res(items);
-    };
-
-    request.onerror = (err) => {
-      rej(`Error to get all items: ${err}`);
-    };
-  });
-}
-
-const getAllKeys = storeName => {
-  return new Promise((res, rej) => {
-    const request = db.transaction(storeName)
-      .objectStore(storeName)
-      .getAllKeys();
-
-    request.onsuccess = (event) => {
-      const keys = request.result;
-      res(keys);
-    };
-
-    request.onerror = (err) => {
-      rej(`Error to get all keys: ${err}`);
-    };
-  });
-}
-
-const updateItem = (key, storeName) => {
-  const objectStore = db.transaction(storeName)
-    .objectStore(storeName);
-
-  const request = objectStore.get(key);
-
-  request.onsuccess = () => {
-    const item = request.result;
-
-    // Create a request to update
-    const updateRequest = objectStore.update(item);
-
-    updateRequest.onsuccess = () => {
-      console.log(`Item updated with key: ${key}`)
-    }
-  }
-}
-
-// Check indexedDB support
-const idbSupport = () => {
-  // Check for indexedDB support
-  if (!('indexedDB' in window)) {
-    syncContainer.classList.remove('show');
-    console.log("This browser doesn't support IndexedDB");
-    return false;
-  } else {
-    syncContainer.classList.add('show');
-    return true;
-  }
-}
-
 // Show message when app is offline
 const updateOnlineStatus = (status = null) => {
   let condition = null;
@@ -215,7 +47,7 @@ const updateOnlineStatus = (status = null) => {
     // Hide message when network is available and check if there is support
     // for indexedDB to show sync button
     offline.classList.remove('show');
-    idbSupport();
+    syncContainer.classList.add('show');
   } else {
     // Show a message if network is not available
     offline.classList.add('show');
@@ -225,7 +57,7 @@ const updateOnlineStatus = (status = null) => {
 
 // Shows a badge when there are collections pending to be sent to the server
 const showPendingRequestsBadge = async () => {
-  const storedRequests = await getAllItems(COLLECTIONS_STORE_NAME);
+  const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
   if (storedRequests.length > 0) {
     pendingRequests.classList.add('show');
   }
@@ -233,8 +65,8 @@ const showPendingRequestsBadge = async () => {
 
 // Send pending POST requests to the server
 const sendPendingRequests = async () => {
-  const storedRequests = await getAllItems(COLLECTIONS_STORE_NAME);
-  const storedRequestsKeys = await getAllKeys(COLLECTIONS_STORE_NAME);
+  const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
+  const storedRequestsKeys = await db.getAllKeys(COLLECTIONS_STORE_NAME);
   if (storedRequests && storedRequestsKeys) {
 
     // Revoke local database last-update
@@ -263,7 +95,7 @@ const sendPendingRequests = async () => {
       })
         .then(response => {
           if (response.status == 200) {
-            removeItem(storedRequestsKeys[idx], COLLECTIONS_STORE_NAME);
+            db.remove(storedRequestsKeys[idx], COLLECTIONS_STORE_NAME);
           }
         })
         .catch(err => {
@@ -283,7 +115,7 @@ const synchronizeLocalDatabase = async () => {
         // If last-update value doesn't exists or has changed
         localStorage.setItem('last-update', res.last_update);
         // Check if there are pending request
-        const checkStoredRequests = await getAllKeys(COLLECTIONS_STORE_NAME);
+        const checkStoredRequests = await db.getAllKeys(COLLECTIONS_STORE_NAME);
         if (checkStoredRequests.length > 0) {
           // If there are pending requests, then show a notification to the user
           console.log('Hay requests pendientes');
@@ -300,7 +132,7 @@ const synchronizeLocalDatabase = async () => {
               'customer': key,
               'sales': res.sales[key]
             }
-            addItem(data, 'sales');
+            db.add(data, 'sales');
           }
           // Insert installments
           const installments_keys = Object.keys(res.installments);
@@ -309,11 +141,11 @@ const synchronizeLocalDatabase = async () => {
               'customer': key,
               'installments': res.installments[key]
             }
-            addItem(data, 'installments');
+            db.add(data, 'installments');
           }
           // Insert customers
           const customers = Object.values(res.customers);
-          addItems(customers, 'customers');
+          db.add(customers, 'customers');
         }
       }
     }
@@ -342,16 +174,22 @@ document.addEventListener('served-offline-page', (e) => {
 })
 
 // Init app
-const init = () => {
-  if (idbSupport()) {
-    openDatabase();
+const init = async () => {
+  try {
+    db = await IndexedDB.create('cobranzas', 1, stores);
+    await db.open();
+    // Show badge if there are pending requests stored
+    showPendingRequestsBadge();
+
+    syncContainer.classList.add('show');
+  } catch (err) {
+    if (err instanceof IndexedDBNotSupportedError) {
+      console.error(err.message);
+      syncContainer.classList.remove('show');
+    }
   }
 }
 
 init();
 
-export {
-  addItem, addItems, removeItem, emptyStore, getItem, getAllItems, updateItem,
-  synchronizeLocalDatabase, sendPendingRequests, getAllKeys,
-  COLLECTIONS_STORE_NAME, db
-};
+export { db, COLLECTIONS_STORE_NAME, synchronizeLocalDatabase, sendPendingRequests };

@@ -1,7 +1,9 @@
+'use strict';
+
 //// IMPORTS ////
 
 import { fetchAPI, formatNumber } from "./utils.js";
-import { db, COLLECTIONS_STORE_NAME, getItem, getAllItems, synchronizeLocalDatabase, sendPendingRequests } from "./sync.js";
+import { db, COLLECTIONS_STORE_NAME } from "./sync.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -314,7 +316,7 @@ filterCustomerForm.addEventListener('submit', event => {
       });
     } else {
       // If app is offline, then load data from indexedDB
-      const storedCollections = await getAllItems(COLLECTIONS_STORE_NAME);
+      const storedCollections = await db.getAll(COLLECTIONS_STORE_NAME);
       // Create a variable to store an array of installments for each sale
       // An object like this  {saleID: [installment, installment, installment], ...}
       let pendingCollectionsBySale = {};
@@ -337,8 +339,8 @@ filterCustomerForm.addEventListener('submit', event => {
       });
 
       // Get sales and installments stored in indexedDB
-      const sales = await getItem(selectCustomer.value, 'sales');
-      const installments = await getItem(selectCustomer.value, 'installments');
+      const sales = await db.get(selectCustomer.value, 'sales');
+      const installments = await db.get(selectCustomer.value, 'installments');
       sales.sales.forEach(item => {
         // Get installments for the current sale
         const storedInstallments = pendingCollectionsBySale[item.id] || [];
