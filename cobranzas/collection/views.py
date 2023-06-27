@@ -28,40 +28,17 @@ class CollectionData:
             if not data.get(s['customer']):
                 data[s['customer']] = dict()
 
-            partial_installment = SaleInstallment.objects.\
-                filter(status='PARTIAL', sale=s['pk']).\
-                annotate(group=Value('due')).\
-                order_by('sale', 'group', 'status', 'installment').\
-                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
-
-            filter = SaleInstallment.objects.\
-                filter(status='PENDING', sale=s['pk']).\
-                values('sale').\
-                annotate(next_installment=Min('installment'))
-            q_filter = Q()
-            for pair in filter:
-                q_filter |= (Q(sale=pair['sale']) & Q(installment=pair['next_installment']))
-            next_installment = SaleInstallment.objects.\
-                filter(q_filter, sale=s['pk']).\
-                annotate(group=Value('due')).\
-                order_by('sale', 'group', 'status', 'installment').\
-                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
-
-            pending_installments = SaleInstallment.objects.\
-                filter(status='PENDING', sale=s['pk']).\
-                exclude(q_filter).\
-                annotate(group=Value('future')).\
-                order_by('sale', 'group', 'status', 'installment').\
-                values('pk', 'sale_id', 'group', 'status', 'installment', 'installment_amount', 'paid_amount')
+            installments = SaleInstallment.objects.\
+                filter(sale=s['pk']).\
+                filter(Q(status=SaleInstallment.PARTIAL) | Q(status=SaleInstallment.PENDING)).\
+                order_by('sale', 'installment', 'status').\
+                values('pk', 'sale_id', 'status', 'installment', 'installment_amount', 'paid_amount')
 
             data[s['customer']][s['pk']] = {
                 'id': s['pk'],
-                'installments': {
-                    'partial': list(partial_installment),
-                    'next': list(next_installment),
-                    'pending': list(pending_installments)
-                }
+                'installments': list(installments)
             }
+
         return data
 
     def get_sales_with_pending_balance(self, customer=None):
