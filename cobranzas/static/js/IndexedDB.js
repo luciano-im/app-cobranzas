@@ -5,9 +5,9 @@ export class IndexedDB {
   /**
   * Creates an instance of an IndexedDB database
   *
-  * @param {string} name The name of the database
-  * @param {int} version The database version number
-  * @param {Object} stores Stores (with name and options) to be created
+  * @param {String} name The name of the database
+  * @param {Number} version The database version number
+  * @param {Array} stores Stores (with name and options) to be created
   */
   constructor(name, version, stores) {
     this.db;
@@ -30,8 +30,8 @@ export class IndexedDB {
   /**
   * Validate indexedDB support and create a new instance of IndexedDB
   *
-  * @param {string} name The name of the database
-  * @param {int} version The database version number
+  * @param {String} name The name of the database
+  * @param {Number} version The database version number
   * @param {Array} stores An array of store objects with name and options
   *                       [{name: xx, options: {keyPath: xx, ...}}, ...]
   */
@@ -77,7 +77,7 @@ export class IndexedDB {
   * Add an item to an Object Store
   *
   * @param {Object} item The item to add
-  * @param {string} store The store where the item will be added
+  * @param {String} store The store where the item will be added
   */
   add(item, store) {
     return new Promise((res, rej) => {
@@ -98,7 +98,7 @@ export class IndexedDB {
   * Add more than one item to an Object Store
   *
   * @param {Array} items The items to add
-  * @param {string} store The store where the items will be added
+  * @param {String} store The store where the items will be added
   */
   addMany(items, store) {
     return new Promise((res, rej) => {
@@ -133,7 +133,7 @@ export class IndexedDB {
   * Get an item from an Object Store
   *
   * @param {Object} key The item to get
-  * @param {string} store The store where the item will be searched
+  * @param {String} store The store where the item will be searched
   */
   get(key, store) {
     return new Promise((res, rej) => {
@@ -153,7 +153,7 @@ export class IndexedDB {
   /**
   * Get all items from an Object Store
   *
-  * @param {string} store The store to get all items
+  * @param {String} store The store to get all items
   */
   getAll(store) {
     return new Promise((res, rej) => {
@@ -173,7 +173,7 @@ export class IndexedDB {
   /**
   * Get all keys from an Object Store
   *
-  * @param {string} store The store to get all keys
+  * @param {String} store The store to get all keys
   */
   getAllKeys(store) {
     return new Promise((res, rej) => {
@@ -194,7 +194,7 @@ export class IndexedDB {
   * Update an item from an Object Store
   *
   * @param {Object} key The item to update
-  * @param {string} store The store where the item will be updated
+  * @param {String} store The store where the item will be updated
   */
   update(key, store) {
     return new Promise((res, rej) => {
@@ -225,7 +225,7 @@ export class IndexedDB {
   * Remove an item from an Object Store
   *
   * @param {Object} key The item to remove
-  * @param {string} store The store where the item will be removed
+  * @param {String} store The store where the item will be removed
   */
   remove(key, store) {
     return new Promise((res, rej) => {
@@ -245,7 +245,7 @@ export class IndexedDB {
   /**
   * Delete all items from an Object Store
   *
-  * @param {string} store The store to empty
+  * @param {String} store The store to empty
   */
   emptyStore(store) {
     return new Promise((res, rej) => {
@@ -263,7 +263,15 @@ export class IndexedDB {
   }
 }
 
+
+/** @class Exception to return if IndexedDB is not supported */
+
 export class IndexedDBNotSupportedError extends Error {
+  /**
+  * Instantiate a new IndexedDBNotSupportedError exception
+  *
+  * @param {String} message The message of the exception
+  */
   constructor(message) {
     super(message)
     this.name = 'IndexedDBNotSupportedError'
