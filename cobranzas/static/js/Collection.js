@@ -18,6 +18,13 @@ export class Collection {
   addSale(sale) {
     this.sales.push(sale);
   }
+
+  /**
+  * Return sales array
+  */
+  getSales() {
+    return this.sales;
+  }
 }
 
 
