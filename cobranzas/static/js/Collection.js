@@ -25,6 +25,15 @@ export class Collection {
   getSales() {
     return this.sales;
   }
+
+  /**
+  * Returns the count of installments for the Collection
+  */
+  installmentsCount() {
+    return this.sales.reduce((accumulator, sale) => {
+      return accumulator + sale.installmentsCount();
+    }, 0);
+  }
 }
 
 
@@ -110,6 +119,13 @@ export class Sale {
       current: current,
       next: next
     }
+  }
+
+  /**
+  * Returns the amount of installments
+  */
+  installmentsCount() {
+    return this.installments.length;
   }
 }
 

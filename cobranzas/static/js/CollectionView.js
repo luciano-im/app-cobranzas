@@ -17,6 +17,7 @@ export class CollectionView {
   */
   render() {
     const salesContainer = document.querySelector('.data-container .sales-container');
+    const formsetTotalForms = document.querySelector('.create-collection input[name="collection-TOTAL_FORMS"]');
 
     const sales = this.collection.getSales();
 
@@ -24,6 +25,9 @@ export class CollectionView {
       const saleComponent = new SaleComponent(sale);
       salesContainer.insertAdjacentHTML("beforeend", saleComponent.render());
     });
+
+    // Sets the value of the total forms field with the number of installments
+    formsetTotalForms.setAttribute('value', this.collection.installmentsCount());
   }
 }
 
