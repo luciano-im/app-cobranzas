@@ -28,11 +28,7 @@
       {% csrf_token %}
       {{formset.management_form}}
       <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>
-      <div class="sales-container"></div>
-      <div class="totals d-flex flex-column align-items-end mb-5">
-        <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
-        <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary" disabled>
-      </div>
+      <div class="collection-container"></div>
     </form>
   </div>
 </div>

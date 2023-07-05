@@ -14,17 +14,26 @@ export class CollectionView {
 
   /**
   * Renders each sale from the collection
+  * 
+  * @param {object} rootElement A DOM element where the collection will be displayed
   */
-  render() {
-    const salesContainer = document.querySelector('.data-container .sales-container');
+  render(rootElement) {
     const formsetTotalForms = document.querySelector('.create-collection input[name="collection-TOTAL_FORMS"]');
 
     const sales = this.collection.getSales();
-
+    let salesContent = '';
     sales.forEach(sale => {
       const saleComponent = new SaleComponent(sale);
-      salesContainer.insertAdjacentHTML("beforeend", saleComponent.render());
+      salesContent += saleComponent.render();
     });
+
+    let template = `<div class="sales-container">${salesContent}</div>
+                    <div class="totals d-flex flex-column align-items-end mb-5">
+                      <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+                      <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary" disabled>
+                    </div>`;
+
+    rootElement.innerHTML = template;
 
     // Sets the value of the total forms field with the number of installments
     formsetTotalForms.setAttribute('value', this.collection.installmentsCount());
