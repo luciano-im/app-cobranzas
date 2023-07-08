@@ -118,7 +118,6 @@ export class CollectionView {
     // Get the form ID from checkbox name attribute
     // const formID = checkbox.name.split('-')[2];
     const { saleID, formID } = { ...this._extractSaleFormID(checkbox.name) };
-    console.log(saleID, formID);
     // Get amount input, installment amount and paid amount values
     const paymentInput = this.rootElement.querySelector(`#id_collection-${saleID}-${formID}-amount`);
     const totalAmount = parseFloat(this.rootElement.querySelector(`#id_collection-${saleID}-${formID}-installment_amount`).value);

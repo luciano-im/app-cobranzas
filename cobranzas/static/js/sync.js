@@ -122,9 +122,9 @@ const synchronizeLocalDatabase = async () => {
         } else {
           // If there are no pending requests, then update the database
           // Empty database
-          emptyStore('sales');
-          emptyStore('installments');
-          emptyStore('customers');
+          db.emptyStore('sales');
+          db.emptyStore('installments');
+          db.emptyStore('customers');
           // Insert sales
           const sales_keys = Object.keys(res.sales);
           for (var key of sales_keys) {
