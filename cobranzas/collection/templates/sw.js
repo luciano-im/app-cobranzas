@@ -118,17 +118,40 @@ const manageCreateCollection = async (postRequest) => {
     // Transform request to a blob object
     const blob = await postRequest.blob();
 
-    const payload = {
-      'customer': customer,
-      'installments': installments,
-      'request': blob,
-      'date': Date.now()
+    const collectionRecord = db.transaction('collections', 'readwrite').objectStore('collections').get(customer);
+
+    collectionRecord.onsuccess = e => {
+      const collections = e.target.result;
+      const installment = {
+        'installments': installments,
+        'request': blob,
+        'date': Date.now()
+      };
+
+      if (collections) {
+        const payload = {
+          'customer': customer,
+          'data': [...collections.data, installment]
+        }
+        const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').put(payload);
+        saveRequest.onsuccess = () => {
+          db.close();
+        };
+      } else {
+        const payload = {
+          'customer': customer,
+          'data': [installment]
+        }
+        const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(payload);
+        saveRequest.onsuccess = () => {
+          db.close();
+        };
+      }
     }
 
-    const saveRequest = db.transaction('collections', 'readwrite').objectStore('collections').add(payload);
-    saveRequest.onsuccess = () => {
-      db.close();
-    };
+    collectionRecord.onerror = e => {
+      console.log(e.target.error);
+    }
   };
 
   const responseCollection = await caches.match("{% url 'create-collection' %}");;

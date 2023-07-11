@@ -16,7 +16,7 @@ const stores = [
   { name: 'sales', options: { keyPath: 'customer' } },
   { name: 'installments', options: { keyPath: 'customer' } },
   { name: 'customers', options: { keyPath: 'pk' } },
-  { name: COLLECTIONS_STORE_NAME, options: { autoIncrement: true } }
+  { name: COLLECTIONS_STORE_NAME, options: { keyPath: 'customer' } }
 ];
 const localStorage = window.localStorage;
 
@@ -145,11 +145,34 @@ const synchronizeLocalDatabase = async () => {
           }
           // Insert customers
           const customers = Object.values(res.customers);
-          db.add(customers, 'customers');
+          db.addMany(customers, 'customers');
         }
       }
     }
   });
+}
+
+// TODO: Move this code to the class Sale
+const storedCollectionsByCustomer = async customer => {
+  let collections = {};
+  const storedCollections = await db.get(customer, COLLECTIONS_STORE_NAME);
+  if (storedCollections) {
+    storedCollections.data.map(el => {
+      const keys = Object.keys(el.installments);
+      keys.map(key => {
+        // Get the sale ID
+        const sale = el.installments[key].sale;
+        // Check if sale already exists in pendingCollectionsBySale
+        if (!collections.hasOwnProperty(sale)) {
+          collections[sale] = [];
+        }
+        // Store installments in the sale ID position
+        collections[sale].push(el.installments[key]);
+      });
+    });
+  }
+
+  return collections;
 }
 
 //// EVENTS ////
@@ -192,4 +215,4 @@ const init = async () => {
 
 init();
 
-export { db, COLLECTIONS_STORE_NAME, synchronizeLocalDatabase, sendPendingRequests };
+export { db, COLLECTIONS_STORE_NAME, synchronizeLocalDatabase, sendPendingRequests, storedCollectionsByCustomer };
