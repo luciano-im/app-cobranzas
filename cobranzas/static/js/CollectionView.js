@@ -357,7 +357,7 @@ class SaleInstallmentFormComponent {
     // <input type="hidden" name="collection-__prefix__-group" value="" id="id_collection-__prefix__-group">
     let template = `<tr>
                       <input type="hidden" name="collection-__prefix__-installment" value="${this.props.installment}" id="id_collection-__prefix__-installment">
-                      <input type="hidden" name="collection-__prefix__-sale_id" value="${this.props.saleID}" id="id_collection-__prefix__-sale_id">
+                      <input type="hidden" name="collection-__prefix__-sale_id" value="${this.saleID}" id="id_collection-__prefix__-sale_id">
                       <th scope="row" class="installment">
                         <input type="checkbox" name="collection-__prefix__-checked" id="id_collection-__prefix__-checked"> <span>${this.props.installment}</span>
                       </th>
