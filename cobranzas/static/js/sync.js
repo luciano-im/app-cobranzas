@@ -157,17 +157,18 @@ const storedCollectionsByCustomer = async customer => {
   let collections = {};
   const storedCollections = await db.get(customer, COLLECTIONS_STORE_NAME);
   if (storedCollections) {
-    storedCollections.data.map(el => {
-      const keys = Object.keys(el.installments);
+    storedCollections.data.map(collection => {
+      const keys = Object.keys(collection.installments);
       keys.map(key => {
-        // Get the sale ID
-        const sale = el.installments[key].sale;
+        // Installment data
+        const { sale, installment, amount } = { ...collection.installments[key] };
+
         // Check if sale already exists in pendingCollectionsBySale
         if (!collections.hasOwnProperty(sale)) {
-          collections[sale] = [];
+          collections[sale] = {};
         }
         // Store installments in the sale ID position
-        collections[sale].push(el.installments[key]);
+        collections[sale][installment] = { amount: amount };
       });
     });
   }
