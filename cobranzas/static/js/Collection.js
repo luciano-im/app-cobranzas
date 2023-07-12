@@ -76,20 +76,44 @@ export class Sale {
   * @param {Number} price Sale price
   * @param {Array} products List of sold products
   * @param {Array} installments List of installment objects
+  * @param {Object} paidInstallments List of already paid installments to merge with the content of the "installments" attribute
   */
-  static create(id, date, installmentsQty, paidAmount, pendingBalance, price, products, installments) {
+  static create(id, date, installmentsQty, paidAmount, pendingBalance, price, products, installments, paidInstallments = {}) {
     if (id == null) {
       throw new ValidationError(this.ID_ERROR);
     }
 
-    let saleInstallments = [];
+    // Calculate amount of paidInstallments
+    let amountPaidInstallments = 0.0;
+    if (paidInstallments) {
+      Object.keys(paidInstallments).map(installment => {
+        amountPaidInstallments += parseFloat(paidInstallments[installment].amount);
+      });
+    }
 
+    // Calculate sale paid amount and pending balance
+    let calculatedPaidAmount = parseFloat(paidAmount) + amountPaidInstallments;
+    let calculatedPendingBalance = parseFloat(pendingBalance) - amountPaidInstallments;
+
+    // Create installments
+    let saleInstallments = [];
     installments.installments.map(item => {
-      const installment = new Installment(item.pk, item.installment, item.installment_amount, item.paid_amount, item.status);
-      saleInstallments.push(installment);
+      // If the installment is not in paidInstallments, then create the installment instance with
+      // the data from item
+      if (!(item.installment in paidInstallments)) {
+        saleInstallments.push(new Installment(item.pk, item.installment, item.installment_amount, item.paid_amount, item.status));
+      } else {
+        // If the installment is present in paidInstallments
+        // Filter installment without an outstanding balance, and calculate the paid amount and status
+        if (item.installment_amount - item.paid_amount - paidInstallments[item.installment].amount !== 0) {
+          const calculatedInstallmentPaidAmount = item.paid_amount + paidInstallments[item.installment].amount;
+          const calculatedStatus = paidInstallments[item.installment].amount > 0 ? 'PARTIAL' : item.status;
+          saleInstallments.push(new Installment(item.pk, item.installment, item.installment_amount, calculatedInstallmentPaidAmount, calculatedStatus));
+        }
+      }
     });
 
-    return new Sale(id, date, installmentsQty, paidAmount, pendingBalance, price, products, saleInstallments);
+    return new Sale(id, date, installmentsQty, calculatedPaidAmount, calculatedPendingBalance, price, products, saleInstallments);
   }
 
   /**
