@@ -14,6 +14,7 @@ export class CollectionView {
     this.total = 0;
     this.totalTag = null;
     this.submitButton = null;
+    this.fromFormID = 0;
 
     // UNBIND EVENTS
     // After re-rendering the after the event listeners attached to 'root-element' still exists
@@ -36,8 +37,11 @@ export class CollectionView {
     const sales = this.collection.getSales();
     let salesContent = '';
     sales.forEach(sale => {
-      const saleComponent = new SaleComponent(sale);
+      const saleComponent = new SaleComponent(sale, this.fromFormID);
       salesContent += saleComponent.render();
+
+      // Update fromFormID
+      this.fromFormID += sale.installmentsCount();
     });
 
     let template = `<div class="sales-container">${salesContent}</div>
@@ -116,12 +120,11 @@ export class CollectionView {
   */
   _handleCheckboxChangeEvent(checkbox) {
     // Get the form ID from checkbox name attribute
-    // const formID = checkbox.name.split('-')[2];
-    const { saleID, formID } = { ...this._extractSaleFormID(checkbox.name) };
+    const formID = this._extractFormID(checkbox.name);
     // Get amount input, installment amount and paid amount values
-    const paymentInput = this.rootElement.querySelector(`#id_collection-${saleID}-${formID}-amount`);
-    const totalAmount = parseFloat(this.rootElement.querySelector(`#id_collection-${saleID}-${formID}-installment_amount`).value);
-    const paidAmount = parseFloat(this.rootElement.querySelector(`#id_collection-${saleID}-${formID}-paid_amount`).value);
+    const paymentInput = this.rootElement.querySelector(`#id_collection-${formID}-amount`);
+    const totalAmount = parseFloat(this.rootElement.querySelector(`#id_collection-${formID}-installment_amount`).value);
+    const paidAmount = parseFloat(this.rootElement.querySelector(`#id_collection-${formID}-paid_amount`).value);
 
     // Preserves old value in the data attribute "data-old-value"
     paymentInput.dataset.oldValue = paymentInput.value || 0.0;
@@ -146,10 +149,9 @@ export class CollectionView {
   */
   _handlePaymentInputChangeEvent(input) {
     // Get form ID
-    // const formID = input.name.split('-')[2];
-    const { saleID, formID } = { ...this._extractSaleFormID(input.name) };
+    const formID = this._extractFormID(input.name);
     // Check the checkbox field
-    this.rootElement.querySelector(`input[name=collection-${saleID}-${formID}-checked]`).checked = true;
+    this.rootElement.querySelector(`input[name=collection-${formID}-checked]`).checked = true;
 
     // The change event in amount inputs updates values and totals
     const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
@@ -199,13 +201,12 @@ export class CollectionView {
 
 
   /**
-  * Extracts and returns the ID's of sale and form
+  * Extracts and returns the form ID
   * 
-  * @param {String} text Receives a string with format xxxx-saleID-formID-xxxx
+  * @param {String} text Receives a string with format xxxx-formID-xxxx
   */
-  _extractSaleFormID(text) {
-    const splitedText = text.split('-');
-    return { saleID: splitedText[1], formID: splitedText[2] };
+  _extractFormID(text) {
+    return text.split('-')[1];
   }
 }
 
@@ -217,9 +218,11 @@ class SaleComponent {
   * Creates the layout for a sale
   *
   * @param {Sale} sale Receives an instance of Sale.
+  * @param {Number} fromFormID The ID from which the installments should be numbered
   */
-  constructor(sale) {
+  constructor(sale, fromFormID) {
     this.sale = sale;
+    this.fromFormID = fromFormID;
   }
 
   /**
@@ -233,7 +236,7 @@ class SaleComponent {
     }
 
     // Sale installments
-    const saleInstallments = new SaleInstallmentsComponent(this.sale.getBundledInstallments(), this.sale.id);
+    const saleInstallments = new SaleInstallmentsComponent(this.sale.getBundledInstallments(), this.sale.id, this.fromFormID);
 
     // Generates the template
     let template = `<div class="sale">
@@ -267,13 +270,14 @@ class SaleInstallmentsComponent {
   *
   * @param {object} props Receives the result returned by the method getBundledInstallments() of a sale object
   * @param {Number} saleID The ID of the current sale
+  * @param {Number} fromFormID The ID from which the installments should be numbered
   */
-  constructor(props, saleID) {
+  constructor(props, saleID, fromFormID) {
     this.partial = props.partial;
     this.current = props.current;
     this.next = props.next;
     this.saleID = saleID;
-    this.formID = 0;
+    this.formID = fromFormID;
   }
 
   /**
@@ -354,7 +358,6 @@ class SaleInstallmentFormComponent {
     const installmentAmount = this.props.installmentAmount;
     const payment = paidAmount > 0 ? installmentAmount - paidAmount : installmentAmount;
 
-    // <input type="hidden" name="collection-__prefix__-group" value="" id="id_collection-__prefix__-group">
     let template = `<tr>
                       <input type="hidden" name="collection-__prefix__-installment" value="${this.props.installment}" id="id_collection-__prefix__-installment">
                       <input type="hidden" name="collection-__prefix__-sale_id" value="${this.saleID}" id="id_collection-__prefix__-sale_id">
@@ -373,7 +376,7 @@ class SaleInstallmentFormComponent {
                         </div>
                       </td>
                     </tr>`
-      .replace(/__prefix__/g, `${this.saleID}-${this.formID}`);
+      .replace(/__prefix__/g, `${this.formID}`);
 
     return template;
   }
