@@ -222,6 +222,37 @@ export class IndexedDB {
   }
 
   /**
+  * Replace an item from an Object Store
+  *
+  * @param {Object} key The index of the item to replace
+  * @param {Object} data The data to store at key index
+  * @param {String} store The store where the item will be updated
+  */
+  replace(key, data, store) {
+    return new Promise((res, rej) => {
+      const objectStore = this.db.transaction(store, 'readwrite').objectStore(store);
+      const request = objectStore.get(key);
+
+      request.onerror = e => {
+        rej(`Item not found: ${e.target.error}`);
+      };
+
+      request.onsuccess = e => {
+        const updateRequest = objectStore.put(data);
+
+        updateRequest.onsuccess = ue => {
+          console.log(`Item updated with key: ${ue.target.result}`);
+          res();
+        }
+
+        updateRequest.onerror = ue => {
+          rej(`Error updating item: ${ue.target.error}`);
+        }
+      }
+    });
+  }
+
+  /**
   * Remove an item from an Object Store
   *
   * @param {Object} key The item to remove

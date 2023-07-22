@@ -66,41 +66,54 @@ const showPendingRequestsBadge = async () => {
 // Send pending POST requests to the server
 const sendPendingRequests = async () => {
   const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
-  const storedRequestsKeys = await db.getAllKeys(COLLECTIONS_STORE_NAME);
-  if (storedRequests && storedRequestsKeys) {
-
+  if (storedRequests) {
     // Revoke local database last-update
     localStorage.removeItem('last-update');
 
     // New csrf token
     const csrftoken = getCookie('csrftoken');
 
-    storedRequests.map(async (reqBlob, idx) => {
-      // Convert blob to text
-      const reqText = await new Response(reqBlob.request).text();
-      // Convert text to Params
-      const params = new URLSearchParams(reqText);
-      // Update old csrf token with new csrf token
-      params.set('csrfmiddlewaretoken', csrftoken);
-      fetch('/collections/create/', {
-        method: 'POST',
-        // Convert params to text again
-        body: params.toString(),
-        // Send form content type and csrf token headers
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': csrftoken,
-        },
-        mode: 'same-origin',
-      })
-        .then(response => {
-          if (response.status == 200) {
-            db.remove(storedRequestsKeys[idx], COLLECTIONS_STORE_NAME);
-          }
-        })
-        .catch(err => {
-          alert(err)
+    await storedRequests.map(async requestsByCustomer => {
+      // Stores failed requests to update indexedDB record
+      let failedRequests = [];
+      // Iterate over each request
+      for (const request of requestsByCustomer.data) {
+        // Convert blob request to text
+        const reqText = await new Response(request.request).text();
+        // Convert text to Params
+        const params = new URLSearchParams(reqText);
+        // Update old csrf token with new csrf token
+        params.set('csrfmiddlewaretoken', csrftoken);
+
+        const response = await fetch('/collections/create/', {
+          method: 'POST',
+          // Convert params to text again
+          body: params.toString(),
+          // Send form content type and csrf token headers
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrftoken,
+          },
+          mode: 'same-origin',
         });
+
+        if (!response || response.status !== 200) {
+          console.error('Request error!', request);
+          failedRequests.push(request);
+        }
+      }
+
+      // If there are failed requests update indexedDB record
+      // If requests were successful then delete indexedDB record
+      if (failedRequests.length > 0) {
+        let collectionData = {
+          customer: requestsByCustomer.customer,
+          data: failedRequests
+        }
+        db.replace(requestsByCustomer.customer, collectionData, COLLECTIONS_STORE_NAME);
+      } else {
+        db.remove(requestsByCustomer.customer, COLLECTIONS_STORE_NAME);
+      }
     });
   }
 }
@@ -180,7 +193,7 @@ const storedCollectionsByCustomer = async customer => {
 
 syncButton.addEventListener('click', async (e) => {
   // 1 - SEND PENDING REQUESTS TO THE SERVER
-  sendPendingRequests();
+  await sendPendingRequests();
   // 2 - FETCH DATA FROM THE SERVER AND STORE IT IN THE DATABASE
   synchronizeLocalDatabase();
 });
