@@ -18,34 +18,32 @@ const getStoredRequests = async () => {
   return await db.getAll(COLLECTIONS_STORE_NAME);
 }
 
-const getStoredRequestsKeys = async () => {
-  return await db.getAllKeys(COLLECTIONS_STORE_NAME);
-}
-
-const createTable = async (collections, collectionsId) => {
+const createTable = async (collectionsByCustomer) => {
   let numRow = 0;
-  collectionsId.map((id, idx) => {
-    numRow++;
-    createRow(collections[idx], id, numRow);
+  collectionsByCustomer.map(customerCollection => {
+    customerCollection.data.map(collection => {
+      numRow++;
+      createRow(collection, customerCollection.customer, numRow);
+    });
   })
 }
 
-const createRow = async (data, id, numRow) => {
+const createRow = async (data, customer, numRow) => {
   // Clone the empty form and update its index
   const newRow = emptyRow.cloneNode(true);
   newRow.classList.remove('empty-row');
 
-  const customer = await db.get(parseInt(data.customer), 'customers');
-  const installments = Object.values(data.installments);
+  const customerRecord = await db.get(parseInt(customer), 'customers');
   const date = dayjs(data.date).format('DD/MM/YYYY');
+  const installments = Object.values(data.installments);
   const paidAmount = calculatePaidAmount(installments);
 
-  // Data for sale header
+  // // Data for sale header
   newRow.querySelector('.id').innerText = numRow;
   newRow.querySelector('.date').innerText = date;
-  newRow.querySelector('.customer').innerText = customer.name;
+  newRow.querySelector('.customer').innerText = customerRecord.name;
   newRow.querySelector('.paid-amount').innerText = formatNumber(paidAmount);
-  newRow.querySelector('.receipt-button').href = `/collections/print/local/${id}`;
+  newRow.querySelector('.receipt-button').href = `/collections/print/local/${customer}/${data.date}`;
   unsynchronizedCollectionTable.appendChild(newRow);
 }
 
@@ -59,6 +57,5 @@ const calculatePaidAmount = installments => {
 
 window.addEventListener('load', async () => {
   const storedRequests = await getStoredRequests();
-  const storedRequestsKeys = await getStoredRequestsKeys();
-  createTable(storedRequests, storedRequestsKeys);
+  createTable(storedRequests);
 });
