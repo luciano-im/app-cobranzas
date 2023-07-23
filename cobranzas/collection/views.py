@@ -320,9 +320,9 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
     def get(self, request, *args, **kwargs):
         # If the user is not an admin then filter collections by loggued user
         if request.user.is_admin:
-            customers = Customer.objects.values('pk', 'name')
+            customers = Customer.objects.values('pk', 'name', 'address', 'telephone', 'city')
         else:
-            customers = Customer.objects.filter(collector=self.request.user).values('pk', 'name')
+            customers = Customer.objects.filter(collector=self.request.user).values('pk', 'name', 'address', 'telephone', 'city')
 
         # get_data return sales and installments data
         data = self.get_data()
