@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comprobante de Pago</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static "css/styles.css" %}">
+    <link rel="stylesheet" href="{% static "css/receipt.css" %}" media="print">
+  </head>
+  <body class="receipt">
+    <h1>Comprobante de Pago</h1>
+    <h6>*** sin sincronizar ***</h6>
+    <h3>Leiva Equipamientos</h3>
+    {% comment %}<p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>{% endcomment %}
+    <table class="receipt-header">
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Nro. Tran.</th>
+      </tr>
+      <tr>
+        <td class="date"></td>
+        <td class="hour"></td>
+        <td class="id">-</td>
+      </tr>
+    </table>
+    <hr>
+    <div class="customer details">
+      <p class="customer-name">{{collection.customer.name}}</p>
+      <p class="city">{{collection.customer.address}} - {{collection.customer.get_city_display}}</p>
+      <p class="telephone">{{collection.customer.telephone}}</p>
+    </div>
+    <hr>
+    {% comment %} <div class="collector details">
+      <p>COBRADOR: <span>{{collection.collector.first_name}} {{collection.collector.last_name}}</span></p>
+    </div>
+    <hr> {% endcomment %}
+    <div class="details installments"></div>
+    <hr>
+    <div class="total details">
+      <table>
+        <tr>
+          <td>TOTAL:</td>
+          <td class="total-value"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div class="disclaimer details">
+      <p>*** Conserve este comprobante de pago ***</p>
+    </div>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.8/dayjs.min.js" integrity="sha512-af90l7+r/ujCury3kqomcoZ4aNuC4JP0xUUU682bqlRCLLvGJrc9L82zONFccLWmxcMXSqO9d6C7Rr39EkbT3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/print-unsynchronized-collection.js' %}" type="module"></script>
+  </body>
+</html>

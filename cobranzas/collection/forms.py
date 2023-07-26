@@ -12,7 +12,6 @@ class CollectionForm(forms.Form):
     paid_amount = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True, 'class': 'form-control-plaintext'}))
     amount = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'payment-input'}))
     sale_id = forms.IntegerField(widget=forms.NumberInput(attrs={'disabled': True}))
-    group = forms.CharField(widget=forms.TextInput(attrs={'disabled': True}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

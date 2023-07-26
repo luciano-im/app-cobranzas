@@ -184,6 +184,11 @@ form.filterset-form input[type="submit"] {
   text-align: center;
 }
 
+.receipt h6 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 .receipt table {
   text-align: center;
   width: 100%;
