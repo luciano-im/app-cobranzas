@@ -4,15 +4,22 @@
 
 const VERSION = '{{ version }}';
 const CACHE_NAME = 'collection-{{ version }}';
-// TODO: Update urls to cache
 const URLS_TO_CACHE = [
   "{% url 'offline' %}",
   "{% url 'manifest' %}",
   "{% url 'create-collection' %}",
+  "{% url 'pending-collection' %}",
+  "{% url 'print-local-collection' %}",
   "{% static 'css/styles.css' %}",
+  "{% static 'css/receipt.css' %}",
   "{% static 'js/utils.js' %}",
   "{% static 'js/sync.js' %}",
   "{% static 'js/create-collection.js' %}",
+  "{% static 'js/unsynchronized-collection.js' %}",
+  "{% static 'js/print-unsynchronized-collection.js' %}",
+  "{% static 'js/IndexedDB.js' %}",
+  "{% static 'js/Collection.js' %}",
+  "{% static 'js/CollectionView.js' %}",
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js',
