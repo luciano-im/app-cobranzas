@@ -1,8 +1,9 @@
 import math
 import time
+from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from app.models import Sale, SaleInstallment, Customer, Collection, KeyValueStore
+from app.models import Sale, SaleInstallment, Customer, Collection, KeyValueStore, LoginLog
 
 
 @receiver(post_save, sender=Sale, dispatch_uid='app.signals.postSave_Sale')
@@ -51,3 +52,8 @@ def postSave_User(sender, instance, created, **kwargs):
 def update_sync_value(sender, instance, created, **kwargs):
     epoc = int(time.time())
     KeyValueStore.set('sync', epoc)
+
+
+@receiver(user_logged_in)
+def userLogged_In(sender, request, user, **kwargs):
+    LoginLog.objects.create(user=user)
