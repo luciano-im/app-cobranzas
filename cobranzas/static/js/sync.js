@@ -2,7 +2,7 @@
 
 //// IMPORTS ////
 
-import { fetchAPI, getCookie } from "./utils.js";
+import { fetchAPI, getCookie, formatDate } from "./utils.js";
 import { IndexedDB, IndexedDBNotSupportedError } from './IndexedDB.js'
 
 
@@ -67,8 +67,8 @@ const showPendingRequestsBadge = async () => {
 const sendPendingRequests = async () => {
   const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
   if (storedRequests) {
-    // Revoke local database last-update
-    localStorage.removeItem('last-update');
+    // Revoke local database app-last-update
+    localStorage.removeItem('app-last-update');
 
     // New csrf token
     const csrftoken = getCookie('csrftoken');
@@ -122,11 +122,11 @@ const sendPendingRequests = async () => {
 const synchronizeLocalDatabase = async () => {
   fetchAPI(URL, 'GET', 'application/json').then(async (res) => {
     if (res) {
-      // I get the value of last-update to check if have been changes since the last update
-      const lastUpdate = await localStorage.getItem('last-update');
+      // I get the value of app-last-update to check if have been changes since the last update
+      const lastUpdate = await localStorage.getItem('app-last-update');
       if (!lastUpdate || res.last_update != lastUpdate) {
-        // If last-update value doesn't exists or has changed
-        localStorage.setItem('last-update', res.last_update);
+        // If app-last-update value doesn't exists or has changed
+        localStorage.setItem('app-last-update', res.last_update);
         // Check if there are pending request
         const checkStoredRequests = await db.getAllKeys(COLLECTIONS_STORE_NAME);
         if (checkStoredRequests.length > 0) {
@@ -161,6 +161,13 @@ const synchronizeLocalDatabase = async () => {
           db.addMany(customers, 'customers');
         }
       }
+
+      // TODO: Use relative time (10 minutes ago, 2 hours ago)
+      // Update last fetch date/time
+      const lastSyncDate = formatDate(new Date());
+      localStorage.setItem('client-last-update', lastSyncDate);
+      // Update last sync in view
+      syncLastUpdate.innerText = lastSyncDate;
     }
   });
 }
@@ -225,6 +232,9 @@ const init = async () => {
       syncContainer.classList.remove('show');
     }
   }
+
+  // Update last sync in view
+  syncLastUpdate.innerText = localStorage.getItem('client-last-update');
 }
 
 init();

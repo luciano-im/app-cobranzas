@@ -44,4 +44,15 @@ const formatNumber = number => {
   return number.toLocaleString("es-AR", { minimumFractionDigits: 2 });
 }
 
-export { fetchAPI, getCookie, formatNumber };
+const formatDate = date => {
+  const dayNames = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+  const dayName = dayNames[date.getDay()];
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear());
+  const hour = String(date.getHours());
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  return dayName + " " + day + "/" + month + "/" + year + " " + hour + ":" + minute;
+}
+
+export { fetchAPI, getCookie, formatNumber, formatDate };
