@@ -66,7 +66,7 @@ const showPendingRequestsBadge = async () => {
 // Send pending POST requests to the server
 const sendPendingRequests = async () => {
   const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
-  if (storedRequests) {
+  if (storedRequests.length > 0) {
     // Revoke local database app-last-update
     localStorage.removeItem('app-last-update');
 
