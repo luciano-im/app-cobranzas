@@ -154,7 +154,8 @@ form.filterset-form {
   max-width: 100%;
 }
 
-form.filterset-form input[type="submit"] {
+form.filterset-form input[type="submit"],
+form.filterset-form .erase-filters {
   margin-top: .5rem;
 }
 
