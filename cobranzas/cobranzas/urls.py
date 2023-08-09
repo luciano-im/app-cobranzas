@@ -17,9 +17,9 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
-from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView
+from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerUpdateView
 from app.views import CustomerListView, SaleCreationView, SaleListView
-from app.views import ProductCreationView, ProductListView, LoginView
+from app.views import ProductCreationView, ProductUpdateView, ProductListView, LoginView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
 
@@ -32,8 +32,10 @@ urlpatterns = [
     path('accounts/signup/', UserCreationView.as_view(), name='signup'),
     path('accounts/list/', UserListView.as_view(), name='list-users'),
     path('customers/create/', CustomerCreationView.as_view(), name='create-customer'),
+    path('customers/update/<pk>/', CustomerUpdateView.as_view(), name='update-customer'),
     path('customers/list/', CustomerListView.as_view(), name='list-customers'),
     path('products/create/', ProductCreationView.as_view(), name='create-product'),
+    path('products/update/<pk>/', ProductUpdateView.as_view(), name='update-product'),
     path('products/list/', ProductListView.as_view(), name='list-product'),
     path('sales/create/', SaleCreationView.as_view(), name='create-sale'),
     path('sales/list/', SaleListView.as_view(), name='list-sales'),

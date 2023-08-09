@@ -3,8 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import Q, Count
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView
+from django.views.generic.edit import UpdateView
 
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
 from app.forms import SaleProductFormSet, ProductCreationForm
@@ -13,7 +15,6 @@ from app.forms import CustomAuthenticationForm
 from app.models import User, Customer, Sale, Product
 
 from app.permissions import AdminPermission
-
 
 
 class FilterSetView:
@@ -79,6 +80,15 @@ class CustomerCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     success_url = '/'
 
 
+class CustomerUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
+    model = Customer
+    form_class = CustomerCreationForm
+    template_name = 'update_customer.html'
+
+    def get_success_url(self):
+        return reverse('list-customers')
+
+
 class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
@@ -118,6 +128,15 @@ class ProductCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     form_class = ProductCreationForm
     template_name = 'create_product.html'
     success_url = '/'
+
+
+class ProductUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
+    model = Product
+    form_class = ProductCreationForm
+    template_name = 'update_product.html'
+
+    def get_success_url(self):
+        return reverse('list-product')
 
 
 class ProductListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
@@ -213,4 +232,3 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         context = super().get_context_data(**kwargs)
         context['filter_form'] = SaleFilterForm(self.request.GET)
         return context
-
