@@ -238,6 +238,7 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_collection.html'
     context_object_name = 'collections'
     filterset = [
+        ('collector', 'collector', 'exact'),
         ('customer', 'customer', 'exact'),
         ('date_from', 'date', 'gte'),
         ('date_to', 'date', 'lte'),

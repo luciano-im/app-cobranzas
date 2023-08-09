@@ -2,7 +2,8 @@ from django import forms
 from django.forms import formset_factory
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
-from app.models import Customer
+from app.models import Customer, User
+from app.forms import UserModelChoiceField
 
 
 class CollectionForm(forms.Form):
@@ -32,3 +33,4 @@ class CollectionFilterForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
+    collector = UserModelChoiceField(queryset=User.objects.filter(), required=False, label=_('Collector'))

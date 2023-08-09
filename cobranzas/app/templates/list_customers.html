@@ -8,7 +8,13 @@
   <form action="{% url 'list-customers' %}" method="get" class="filterset-form">
     <div class="row">
       <div class="col-3">
+        {{ filter_form.name|as_crispy_field }}
+      </div>
+      <div class="col-3">
         {{ filter_form.city|as_crispy_field }}
+      </div>
+      <div class="col-3">
+        {{ filter_form.address|as_crispy_field }}
       </div>
       {% if request.user.is_admin %}
         <div class="col-3">

@@ -4,12 +4,17 @@
 {% load mathfilters %}
 {% load crispy_forms_tags %}
 
+{% block extra_header %}
+  <link rel="stylesheet" href="https://unpkg.com/@jarstone/dselect/dist/css/dselect.css">
+  <script src="https://unpkg.com/@jarstone/dselect/dist/js/dselect.js"></script>
+{% endblock %}
+
 {% block content %}
   <h2>Lista de Ventas</h2>
 
   <form action="{% url 'list-sales' %}" method="get" class="filterset-form">
     <div class="row">
-      <div class="col-3">
+      <div class="col-1">
         {{ filter_form.id|as_crispy_field }}
       </div>
       <div class="col-3">
@@ -107,4 +112,18 @@
       {% endfor %}
     </tbody>
   </table>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: false, // Creatable selection. Default: false
+    clearable: false, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: '', // Can be "sm" or "lg". Default ''
+  };
+  dselect(document.querySelector('#id_customer'), config);
+  dselect(document.querySelector('#id_product'), config);
+</script>
 {% endblock %}

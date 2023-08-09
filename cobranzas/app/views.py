@@ -87,15 +87,13 @@ class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     def get_queryset(self):
         # If the user is an admin then enable filter by collector
         user = self.request.user
+        self.filterset = [
+            ('name', 'name', 'icontains'),
+            ('city', 'city', 'exact'),
+            ('address', 'address', 'icontains'),
+        ]
         if user.is_admin:
-            self.filterset = [
-                ('city', 'city', 'exact'),
-                ('collector', 'collector', 'exact'),
-            ]
-        else:
-            self.filterset = [
-                ('city', 'city', 'exact'),
-            ]
+            self.filterset.append(('collector', 'collector', 'exact'))
 
         filters = self.get_filters(self.request)
         if filters:

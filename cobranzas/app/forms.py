@@ -8,6 +8,11 @@ from crispy_forms.layout import Submit
 from app.models import User, Customer, Sale, SaleProduct, Product
 
 
+class UserModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.get_full_name()
+
+
 class CustomAuthenticationForm(AuthenticationForm):
     error_messages = {
         'invalid_login': _('The user or password is invalid'),
@@ -79,8 +84,10 @@ SaleProductFormSet = inlineformset_factory(
 
 
 class CustomerFilterForm(forms.Form):
+    name = forms.CharField(required=False, label=_('Name'))
     city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False, label=_('City'))
-    collector = forms.ModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
+    address = forms.CharField(required=False, label=_('Address'))
+    collector = UserModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
 
 
 class ProductFilterForm(forms.Form):
