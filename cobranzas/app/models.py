@@ -56,6 +56,7 @@ class Sale(models.Model):
     )
     date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
+    collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='collector', verbose_name=_('Collector'))
 
     def __str__(self):
         return f'{self.date} - {self.customer.name} - {self.pk}'

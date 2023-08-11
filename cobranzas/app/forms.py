@@ -53,10 +53,11 @@ class ProductCreationForm(forms.ModelForm):
 
 class SaleCreationForm(forms.ModelForm):
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
+    collector = UserModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
 
     class Meta:
         model = Sale
-        fields = ['customer', 'price', 'installment_amount', 'installments']
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments']
 
 
 class SaleProductCreationForm(forms.ModelForm):
