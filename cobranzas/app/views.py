@@ -162,7 +162,6 @@ class ProductListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetVi
         return context
 
 
-# TODO: Save logged user when creting a new sale
 class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     model = Sale
     template_name = 'create_sale.html'
@@ -193,6 +192,8 @@ class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
         return self.form_invalid(form)
 
     def form_valid(self, form, formset):
+        # Add the user to the form
+        form.instance.user = self.request.user
         products = formset
         with transaction.atomic():
             self.object = form.save()

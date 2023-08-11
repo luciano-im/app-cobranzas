@@ -56,7 +56,7 @@ class SaleCreationForm(forms.ModelForm):
 
     class Meta:
         model = Sale
-        fields = '__all__'
+        fields = ['customer', 'price', 'installment_amount', 'installments']
 
 
 class SaleProductCreationForm(forms.ModelForm):
