@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Min, Value, Q, Count, Sum, F
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, ListView
@@ -42,25 +42,32 @@ class CollectionData:
 
         return data
 
-    def get_sales_with_pending_balance(self, customer=None):
-        if customer:
-            q_filter = Q(customer=customer)
+    def set_sales_with_pending_balance(self, customer=None):
+        user = self.request.user
+        # If user is admin get all sales (no filter)
+        if user.is_admin:
+            q_filter = Q()
         else:
-            user = self.request.user
-            if user.is_admin:
-                q_filter = Q()
+            # If user is not an admin, and customer is not None
+            if customer:
+                customer_record = Customer.objects.get(id=customer)
+                # If customer collector is the current user then get all customer sales
+                # If customer collector is not the current user then get all customer sales whose collector
+                # is the current user
+                if customer_record.collector == user:
+                    q_filter = Q(customer=customer)
+                else:
+                    q_filter = Q(customer=customer, collector=user)
             else:
-                q_filter = Q(customer__collector=self.request.user)
+                # If customer is None then get sales of customers whose collector is the current user
+                # and get whose collector is the current user but the customer collector is not the current user
+                q_filter = Q(customer__collector=user) | Q(~Q(customer__collector=user), collector=user)
 
-        self.sales_with_pending_balance = Sale.objects.\
-            filter(q_filter).\
-            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-            exclude(installments=F('paid_installments')).\
-            values('pk', 'customer')
+        self.sales_with_pending_balance = self.get_pending_sales(q_filter, ['pk', 'customer'])
 
     def get_sales_detail(self, customer=None):
         data = dict()
-        self.get_sales_with_pending_balance(customer)
+        self.set_sales_with_pending_balance(customer)
 
         for s in self.sales_with_pending_balance:
             if not data.get(s['customer']):
@@ -93,6 +100,48 @@ class CollectionData:
 
         return data
 
+    def get_customers(self, user):
+        # If the user is not an admin then filter collections by loggued user
+        if not user.is_admin:
+            # Customers assigned to the current user
+            collector_customers = Customer.objects.filter(collector=user)
+            # Sales whose collection is assigned to the current collector
+            sales_id = self.get_pending_sales(Q(collector=user), ['customer'])
+
+            filters = Q()
+            for id in sales_id:
+                filters |= Q(id=id['customer'])
+            sales_customers = Customer.objects.filter(filters)
+            # Join customer querysets and discard repeated
+            customers = collector_customers.union(sales_customers).values('pk', 'name')
+        else:
+            customers = Customer.objects.values('pk', 'name')
+
+        return customers
+
+    def get_pending_sales(self, filters, fields):
+        return Sale.objects.\
+            filter(filters).\
+            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            exclude(installments=F('paid_installments')).\
+            values(*fields)
+
+    def collector_validation(self, customer, user):
+        # Valid customer validation
+        customer_record = Customer.objects.get(id=customer)
+        if not customer_record:
+            raise Http404
+
+        # If the current collector is not an admin
+        # Raise a 403 error if the selected customer is not assigned to the collector
+        if not user.is_admin:
+            if customer_record.collector != user:
+                sales_whose_collector_is_user = self.get_pending_sales(Q(customer=customer, collector=user), ['pk'])
+                if sales_whose_collector_is_user.count() == 0:
+                    raise PermissionDenied
+
+        return True
+
 
 class ServiceWorkerView(TemplateView):
     template_name = 'sw.js'
@@ -119,12 +168,8 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # If the user is not an admin then filter collections by loggued user
         self.collector = self.request.user
-        if not self.collector.is_admin:
-            context['customers'] = Customer.objects.filter(collector=self.collector).values('pk', 'name')
-        else:
-            context['customers'] = Customer.objects.values('pk', 'name')
+        context['customers'] = self.get_customers(self.collector)
         context['formset'] = CollectionFormset(prefix='collection')
         return context
 
@@ -133,21 +178,19 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         context = self.get_context_data(**kwargs)
         selected_customer_param = self.request.GET.get('select-customer', None)
         selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
-        context['selected_customer'] = selected_customer
+
         if selected_customer:
-            # If the current collector is not an admin
-            # Raise a 403 error if the selected customer is not assigned to the collector
-            if not self.collector.is_admin:
-                customer = Customer.objects.get(id=selected_customer)
-                if customer.collector != self.collector:
-                    raise PermissionDenied
+            if self.collector_validation(selected_customer, self.collector):
+                # get_data return sales and installments data
+                data = self.get_data(selected_customer)
+                data['customers'] = list(context['customers'])
+                data['selected_customer'] = selected_customer
+                context['selected_customer'] = selected_customer
 
-            # get_data return sales and installments data
-            data = self.get_data(selected_customer)
-            data['customers'] = list(context['customers'])
-            data['selected_customer'] = selected_customer
-
-            return JsonResponse(data)
+                return JsonResponse(data)
+            else:
+                # Add this exception as a default behavior if collector_validation didn't catch any error
+                raise PermissionDenied
         else:
             return self.render_to_response(context)
 

@@ -97,6 +97,8 @@ filterCustomerForm.addEventListener('submit', event => {
       sales = res.sales[selectCustomer.value];
       installments = res.installments[selectCustomer.value];
     } else {
+      // TODO: Catch 403 status code (PermissionDenied exception)
+
       // If app is offline, then load data from indexedDB
       // Get sales and installments stored in indexedDB
       const storedSales = await db.get(selectCustomer.value, 'sales');
