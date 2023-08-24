@@ -2,7 +2,7 @@
 
 //// IMPORTS ////
 
-import { fetchAPI, getCookie, formatDate } from "./utils.js";
+import { getCookie, formatDate } from "./utils.js";
 import { IndexedDB, IndexedDBNotSupportedError } from './IndexedDB.js'
 
 
@@ -120,13 +120,23 @@ const sendPendingRequests = async () => {
 
 // Fetch server for updated data and update local database
 const synchronizeLocalDatabase = async () => {
-  fetchAPI(URL, 'GET', 'application/json').then(async (res) => {
-    if (res) {
+  const response = await fetch(URL, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (response.ok) {
+    // Parse json response
+    const result = await response.json();
+
+    if (result) {
       // I get the value of app-last-update to check if have been changes since the last update
       const lastUpdate = await localStorage.getItem('app-last-update');
-      if (!lastUpdate || res.last_update != lastUpdate) {
+      if (!lastUpdate || result.last_update != lastUpdate) {
         // If app-last-update value doesn't exists or has changed
-        localStorage.setItem('app-last-update', res.last_update);
+        localStorage.setItem('app-last-update', result.last_update);
         // Check if there are pending request
         const checkStoredRequests = await db.getAllKeys(COLLECTIONS_STORE_NAME);
         if (checkStoredRequests.length > 0) {
@@ -139,25 +149,25 @@ const synchronizeLocalDatabase = async () => {
           db.emptyStore('installments');
           db.emptyStore('customers');
           // Insert sales
-          const sales_keys = Object.keys(res.sales);
+          const sales_keys = Object.keys(result.sales);
           for (var key of sales_keys) {
             const data = {
               'customer': key,
-              'sales': res.sales[key]
+              'sales': result.sales[key]
             }
             db.add(data, 'sales');
           }
           // Insert installments
-          const installments_keys = Object.keys(res.installments);
+          const installments_keys = Object.keys(result.installments);
           for (var key of installments_keys) {
             const data = {
               'customer': key,
-              'installments': res.installments[key]
+              'installments': result.installments[key]
             }
             db.add(data, 'installments');
           }
           // Insert customers
-          const customers = Object.values(res.customers);
+          const customers = Object.values(result.customers);
           db.addMany(customers, 'customers');
         }
       }
@@ -169,7 +179,7 @@ const synchronizeLocalDatabase = async () => {
       // Update last sync in view
       syncLastUpdate.innerText = lastSyncDate;
     }
-  });
+  }
 }
 
 // TODO: Move this code to the class Sale

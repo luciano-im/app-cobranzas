@@ -2,7 +2,6 @@
 
 //// IMPORTS ////
 
-import { fetchAPI } from "./utils.js";
 import { db, storedCollectionsByCustomer, sendPendingRequests, synchronizeLocalDatabase, COLLECTIONS_STORE_NAME } from "./sync.js";
 import { Collection, Sale } from './Collection.js';
 import { CollectionView } from './CollectionView.js';
@@ -77,13 +76,29 @@ function getStoredCollectionsDifference(oldStoredCollections, newStoredCollectio
 
 //// EVENTS ////
 
-filterCustomerForm.addEventListener('submit', event => {
+filterCustomerForm.addEventListener('submit', async event => {
   event.preventDefault();
   // Create new collection instance
   collection = new Collection;
 
   const url = `/collections/create/?select-customer=${selectCustomer.value}`;
-  fetchAPI(url, 'GET', 'application/json').then(async (res) => {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  console.log(response);
+  console.log(response.ok);
+  console.log(response.status);
+  // response.ok;     // => false
+  // response.status; // => 404
+
+  if (response.ok) {
+    // Parse json response
+    const result = await response.json();
+
     // Save customer to hidden input
     selectedCustomerInput.setAttribute('value', selectCustomer.value);
     // Stores sales and installment objects
@@ -92,10 +107,10 @@ filterCustomerForm.addEventListener('submit', event => {
     // Get pending collections stored in indexedDB
     const storedCollections = await storedCollectionsByCustomer(selectCustomer.value) || {};
 
-    if (res) {
+    if (result) {
       // App is online
-      sales = res.sales[selectCustomer.value];
-      installments = res.installments[selectCustomer.value];
+      sales = result.sales[selectCustomer.value];
+      installments = result.installments[selectCustomer.value];
     } else {
       // TODO: Catch 403 status code (PermissionDenied exception)
 
@@ -116,7 +131,7 @@ filterCustomerForm.addEventListener('submit', event => {
     // Create a collection view and render content in the page
     let collectionView = new CollectionView(collection, document.querySelector(".collection-container"));
     collectionView.render();
-  });
+  }
 });
 
 

@@ -1,29 +1,3 @@
-const fetchAPI = async (url, method, content_type, headers = {}) => {
-  try {
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": content_type,
-        ...headers
-      },
-    });
-
-    // Parse json response
-    const result = await response.json();
-
-    const status_code = response.status;
-    if (status_code != 200) {
-      console.log("Error in getting brand info!");
-      return false;
-    }
-
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
 const getCookie = name => {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -55,4 +29,4 @@ const formatDate = date => {
   return dayName + " " + day + "/" + month + "/" + year + " " + hour + ":" + minute;
 }
 
-export { fetchAPI, getCookie, formatNumber, formatDate };
+export { getCookie, formatNumber, formatDate };
