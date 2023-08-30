@@ -94,9 +94,6 @@ filterCustomerForm.addEventListener('submit', async event => {
   });
 
   if (response.ok) {
-    // Parse json response
-    const result = await response.json();
-
     // Save customer to hidden input
     selectedCustomerInput.setAttribute('value', selectCustomer.value);
     // Stores sales and installment objects
@@ -105,11 +102,14 @@ filterCustomerForm.addEventListener('submit', async event => {
     // Get pending collections stored in indexedDB
     const storedCollections = await storedCollectionsByCustomer(selectCustomer.value) || {};
 
-    if (result) {
+    try {
+      // Parse json response
+      const result = await response.json();
+
       // App is online
       sales = result.sales[selectCustomer.value];
       installments = result.installments[selectCustomer.value];
-    } else {
+    } catch (err) {
       // If app is offline, then load data from indexedDB
       // Get sales and installments stored in indexedDB
       const storedSales = await db.get(selectCustomer.value, 'sales');
