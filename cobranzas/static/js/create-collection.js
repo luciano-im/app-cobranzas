@@ -5,6 +5,7 @@
 import { db, storedCollectionsByCustomer, sendPendingRequests, synchronizeLocalDatabase, COLLECTIONS_STORE_NAME } from "./sync.js";
 import { Collection, Sale } from './Collection.js';
 import { CollectionView } from './CollectionView.js';
+import { appendAlert } from "./utils.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -21,6 +22,7 @@ const selectedCustomerInput = document.querySelector('.create-collection input.s
 // Create collection form
 const createCollectionForm = document.getElementById('create-collection');
 const collectionContainer = document.querySelector(".collection-container");
+const alertErrors = document.querySelector('.alert-errors');
 
 
 //// FUNCTIONS ////
@@ -80,6 +82,8 @@ filterCustomerForm.addEventListener('submit', async event => {
   event.preventDefault();
   // Create new collection instance
   collection = new Collection;
+  // Delete alert messages
+  alertErrors.innerHTML = '';
 
   const url = `/collections/create/?select-customer=${selectCustomer.value}`;
   const response = await fetch(url, {
@@ -88,12 +92,6 @@ filterCustomerForm.addEventListener('submit', async event => {
       'Content-Type': 'application/json',
     },
   });
-
-  console.log(response);
-  console.log(response.ok);
-  console.log(response.status);
-  // response.ok;     // => false
-  // response.status; // => 404
 
   if (response.ok) {
     // Parse json response
@@ -112,8 +110,6 @@ filterCustomerForm.addEventListener('submit', async event => {
       sales = result.sales[selectCustomer.value];
       installments = result.installments[selectCustomer.value];
     } else {
-      // TODO: Catch 403 status code (PermissionDenied exception)
-
       // If app is offline, then load data from indexedDB
       // Get sales and installments stored in indexedDB
       const storedSales = await db.get(selectCustomer.value, 'sales');
@@ -131,6 +127,17 @@ filterCustomerForm.addEventListener('submit', async event => {
     // Create a collection view and render content in the page
     let collectionView = new CollectionView(collection, document.querySelector(".collection-container"));
     collectionView.render();
+  } else {
+    // Empty current collection view
+    collectionContainer.innerHTML = '';
+    if (response.status == 500) {
+      appendAlert(alertErrors, 'Error en el servidor!', 'warning');
+    }
+    if (response.status == 403) {
+      appendAlert(alertErrors, 'No tienes los permisos necesarios para el cliente seleccionado!', 'warning');
+    } else {
+      appendAlert(alertErrors, 'Ha ocurrido un problema!', 'warning');
+    }
   }
 });
 

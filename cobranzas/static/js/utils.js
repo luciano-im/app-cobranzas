@@ -29,4 +29,16 @@ const formatDate = date => {
   return dayName + " " + day + "/" + month + "/" + year + " " + hour + ":" + minute;
 }
 
-export { getCookie, formatNumber, formatDate };
+const appendAlert = (root, message, type) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('');
+
+  root.append(wrapper);
+}
+
+export { getCookie, formatNumber, formatDate, appendAlert };

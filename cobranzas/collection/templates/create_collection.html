@@ -28,6 +28,7 @@
       {% csrf_token %}
       {{formset.management_form}}
       <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>
+      <div class="alert-errors"></div>
       <div class="collection-container"></div>
     </form>
   </div>

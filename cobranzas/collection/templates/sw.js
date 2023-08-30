@@ -68,10 +68,12 @@ const networkFirst = async (request, url, callback = null) => {
   // After calling fetch(request), I can't call text() because request was already read
   // That's the reason I create a copy of the request at the beginning
   const requestCopy = request.clone();
-  try {
-    const responseFromNetwork = await fetch(request);
-    return responseFromNetwork;
-  } catch (err) {
+
+  return fetch(request).then(response => {
+    return response;
+  }).catch(async error => {
+    console.warn('Fallback response due to an error while fetching the real response:', error);
+
     // If received callback then call it
     if (callback) {
       // send a copy of the request to the callback function
@@ -80,7 +82,7 @@ const networkFirst = async (request, url, callback = null) => {
     // If error, get from cache
     const responseFromCache = await getFromCache(request);
     return offlineResponse(responseFromCache);
-  }
+  });
 };
 
 const manageCreateCollection = async (postRequest) => {
