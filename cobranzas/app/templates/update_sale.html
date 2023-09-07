@@ -76,16 +76,26 @@
     <p class="title">Detalles:</p>
     <table class="table">
       <tbody>
-        <tr id="payment-scheme-row-1" class="payment-scheme-row">
-          <th scope="row" id="i"></th>
-          <td>cuotas de</td>
-          <td id="i_amount"></td>
-        </tr>
-        <tr id="payment-scheme-row-2" class="payment-scheme-row">
-          <th scope="row">1</th>
-          <td>cuota de</td>
-          <td id="rest_amount"></td>
-        </tr>
+        {% if installments_scheme %}
+          <tr id="payment-scheme-row-1" class="payment-scheme-row">
+            <th scope="row" id="i" style="visibility:visible;">{{installments_scheme.0.installments}}</th>
+            <td style="visibility:visible;">cuotas de</td>
+            <td id="i_amount" style="visibility:visible;">{{installments_scheme.0.installment_amount}}</td>
+          </tr>
+          {% if installments_scheme|length == 2 %}
+            <tr id="payment-scheme-row-2" class="payment-scheme-row">
+              <th scope="row" style="visibility:visible;">1</th>
+              <td style="visibility:visible;">cuota de</td>
+              <td id="rest_amount" style="visibility:visible;">{{installments_scheme.1.installment_amount}}</td>
+            </tr>
+          {% else %}
+            <tr id="payment-scheme-row-2" class="payment-scheme-row">
+              <th scope="row">1</th>
+              <td>cuota de</td>
+              <td id="rest_amount"></td>
+            </tr>
+          {% endif %}
+        {% endif %}
       </tbody>
     </table>
   </div>

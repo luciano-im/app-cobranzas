@@ -225,6 +225,27 @@ class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
         context = super().get_context_data(**kwargs)
         context['products'] = create_saleproduct_formset(0, form=self.add_product_formset, data=self.request.POST or None, files=self.request.FILES or None, instance=self.object)
         context['add_product_button_disabled'] = self.add_product_button_disabled
+
+        calculated_price = self.object.installment_amount * self.object.installments
+        price = self.object.price
+        if(calculated_price == price):
+            context['installments_scheme'] = [
+                {
+                    'installments': self.object.installments,
+                    'installment_amount': self.object.installment_amount
+                }
+            ]
+        else:
+            context['installments_scheme'] = [
+                {
+                    'installments': self.object.installments - 1,
+                    'installment_amount': self.object.installment_amount
+                },
+                {
+                    'installments': 1,
+                    'installment_amount': round(price - ((self.object.installments - 1) * self.object.installment_amount), 2)
+                }
+            ]
         return context
 
     def post(self, request, *args, **kwargs):
