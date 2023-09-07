@@ -71,7 +71,7 @@
           <td>{{sale.paid_amount|floatformat:2|intcomma}}</td>
           <td>{{sale.pending_balance|floatformat:2|intcomma}}</td>
           <td>
-            <a href="#" class="btn btn-primary">Editar</a>
+            <a href="{% url 'update-sale' sale.pk %}" class="btn btn-primary">Editar</a>
           </td>
         </tr>
         <tr>

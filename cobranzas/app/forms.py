@@ -60,6 +60,18 @@ class SaleCreationForm(forms.ModelForm):
         fields = ['customer', 'collector', 'price', 'installment_amount', 'installments']
 
 
+class SaleWithPaymentsUpdateForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.all(), label=_('Customer'))
+    collector = UserModelChoiceField(disabled=True, queryset=User.objects.all(), required=False, label=_('Collector'))
+    price = forms.FloatField(disabled=True, label=_('Price'))
+    installment_amount = forms.FloatField(disabled=True, label=_('Installment Amount'))
+    installments = forms.IntegerField(disabled=True, label=_('Installments'))
+
+    class Meta:
+        model = Sale
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments']
+
+
 class SaleProductCreationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -72,16 +84,31 @@ class SaleProductCreationForm(forms.ModelForm):
         fields = '__all__'
 
 
-SaleProductFormSet = inlineformset_factory(
-    Sale,
-    SaleProduct,
-    form=SaleProductCreationForm,
-    fields='__all__',
-    extra=1,
-    can_delete=False,
-    absolute_max=50,
-    max_num=50
-)
+class SaleWithPaymentsProductUpdateForm(forms.ModelForm):
+    price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
+    class Meta:
+        model = SaleProduct
+        fields = '__all__'
+
+
+def create_saleproduct_formset(extra_forms, form, **kwargs):
+    SaleProductFormSet = inlineformset_factory(
+        Sale,
+        SaleProduct,
+        form=form,
+        fields='__all__',
+        extra=extra_forms,
+        can_delete=False,
+        absolute_max=50,
+        max_num=50
+    )
+    return SaleProductFormSet(**kwargs)
 
 
 class CustomerFilterForm(forms.Form):

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Modificación de Venta</h2>
+<form action="" method="post" class="sale-creation">
+  {% csrf_token %}
+  {{ form.customer|as_crispy_field }}
+  {{ form.collector|as_crispy_field }}
+  <hr>
+  <div class="products-list">
+    <h3 class="title">Lista de Productos</h3>
+    {{products.management_form|crispy}}
+    <div id="empty_form" style="display: none;">
+      {% with products.empty_form as emptyform %}
+      <div class="form-row" data-form-index="">
+        <div class="row">
+          {{ emptyform.id|as_crispy_field }}
+          {{ emptyform.sale|as_crispy_field }}
+          <div class="col-6">
+            {{ emptyform.product|as_crispy_field }}
+          </div>
+          <div class="col-4">
+            {{ emptyform.price|as_crispy_field }}
+          </div>
+          <div class="col-2">
+            <button id="delete-form" type="button" class="btn btn-secondary remove-form-row" data-form-index="">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    </div>
+    <div class="product-forms">
+      <div class="row">
+        <div class="col-6">
+          <p style="margin-bottom: .5rem;">Producto</p>
+        </div>
+        <div class="col-4">
+          <p style="margin-bottom: .5rem;">Precio</p>
+        </div>
+      </div>
+      {% for productform in products %}
+      <div class="form-row" data-form-index="0">
+        <div class="row">
+          {{ productform.id|as_crispy_field }}
+          {{ productform.sale|as_crispy_field }}
+          <div class="col-6">
+            {{ productform.product|as_crispy_field }}
+          </div>
+          <div class="col-4">
+            {{ productform.price|as_crispy_field }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button id="add-form" type="button" class="btn btn-outline-primary add-form-row" {% if add_product_button_disabled %}disabled{% endif %}>Agregar Producto</button>
+  </div>
+  <hr>
+  <h3 class="title">Esquema de Pago</h3>
+  <div class="row">
+    <div class="col-4">
+      {{ form.price|as_crispy_field }}
+    </div>
+    <div class="col-4">
+      {{ form.installments|as_crispy_field }}
+    </div>
+    <div class="col-4">
+      {{ form.installment_amount|as_crispy_field }}
+    </div>
+  </div>
+  <div class="col-6" id="payment-scheme">
+    <p class="title">Detalles:</p>
+    <table class="table">
+      <tbody>
+        <tr id="payment-scheme-row-1" class="payment-scheme-row">
+          <th scope="row" id="i"></th>
+          <td>cuotas de</td>
+          <td id="i_amount"></td>
+        </tr>
+        <tr id="payment-scheme-row-2" class="payment-scheme-row">
+          <th scope="row">1</th>
+          <td>cuota de</td>
+          <td id="rest_amount"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <input type="submit" value="Guardar Venta" class="btn btn-primary">
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/create-sale.js' %}" type="text/javascript"></script>
+{% endblock %}

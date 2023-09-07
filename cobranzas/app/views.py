@@ -1,6 +1,7 @@
 from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q, Count
 from django.urls import reverse
@@ -8,11 +9,12 @@ from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView
 from django.views.generic.edit import UpdateView
 
-from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm
-from app.forms import SaleProductFormSet, ProductCreationForm
+from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleWithPaymentsUpdateForm
+from app.forms import SaleProductCreationForm, SaleWithPaymentsProductUpdateForm, ProductCreationForm
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
 from app.forms import CustomAuthenticationForm
-from app.models import User, Customer, Sale, Product
+from app.forms import create_saleproduct_formset
+from app.models import User, Customer, Sale, Product, SaleProduct
 
 from app.permissions import AdminPermission
 
@@ -171,16 +173,16 @@ class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['products'] = SaleProductFormSet(self.request.POST)
+            context['products'] = create_saleproduct_formset(1, form=SaleProductCreationForm, data=self.request.POST)
         else:
-            context['products'] = SaleProductFormSet()
+            context['products'] = create_saleproduct_formset(1, form=SaleProductCreationForm)
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        product_formset = SaleProductFormSet(self.request.POST)
+        product_formset = create_saleproduct_formset(1, form=SaleProductCreationForm, data=self.request.POST)
         if form.is_valid() and product_formset.is_valid():
             # Check if the sum of each product price is equal to the price of the sale
             total_price = 0.0
@@ -199,6 +201,63 @@ class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
             self.object = form.save()
             if products.is_valid():
                 products.instance = self.object
+                products.save()
+        return super().form_valid(form)
+
+
+class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
+    model = Sale
+    template_name = 'update_sale.html'
+    add_product_button_disabled = False
+    add_product_formset = SaleProductCreationForm
+
+    def get_form_class(self):
+        if self.object.paid_amount > 0:
+            self.add_product_button_disabled = True
+            self.add_product_formset = SaleWithPaymentsProductUpdateForm
+            return SaleWithPaymentsUpdateForm
+        return SaleCreationForm
+
+    def get_success_url(self):
+        return reverse('list-sales')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = create_saleproduct_formset(0, form=self.add_product_formset, data=self.request.POST or None, files=self.request.FILES or None, instance=self.object)
+        context['add_product_button_disabled'] = self.add_product_button_disabled
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        product_formset = create_saleproduct_formset(0, form=self.add_product_formset, data=self.request.POST, instance=self.object)
+
+        # If sale has already paid installments
+        if self.object.paid_amount > 0:
+            # If formset is valid then update each product
+            if product_formset.is_valid():
+                return self.form_valid(form, product_formset)
+            else:
+                return ValidationError(product_formset.errors)
+        else:
+            # If form and product formset are valid, calculate total price and continue with form_valid
+            if form.is_valid() and product_formset.is_valid():
+                # Check if the sum of each product price is equal to the price of the sale
+                total_price = 0.0
+                for formset in product_formset:
+                    total_price += formset.cleaned_data.get('price', 0.0)
+                if form.cleaned_data.get('price') == total_price:
+                    return self.form_valid(form, product_formset)
+
+    def form_valid(self, form, formset):
+        # Add the user to the form
+        form.instance.user = self.request.user
+        products = formset
+        with transaction.atomic():
+            self.object = form.save()
+            if products.is_valid():
+                products.sale = self.object
                 products.save()
         return super().form_valid(form)
 
