@@ -27,9 +27,34 @@ const paymentSchemeRow1 = document.getElementById("payment-scheme-row-1");
 const paymentSchemeRow2 = document.getElementById("payment-scheme-row-2");
 // Input fields for product price
 let productPriceInputs = productFormsContainer.querySelectorAll('input[id$="price"]');
-
+// Attach the click event listener to the remove button in products already rendered in the page
+// This is specifically for the update sale page
+const initialRemoveFormButtons = document.querySelectorAll(".remove-form-existing-instance");
+initialRemoveFormButtons.forEach((button) => {
+  button.addEventListener("click", removeExistingForm);
+});
 
 //// FUNCTIONS ////
+
+// Manage deletion of existing forms in the update sale page
+function removeExistingForm(e) {
+  e.preventDefault();
+
+  // Get the form index and remove the form
+  const indexFormToDelete = getDataFormIndex(e.target);
+  const form = document.querySelector(
+    `.form-row[data-form-index="${indexFormToDelete}"]`
+  );
+  form.style.display = 'none';
+  form.classList.add('hidden-form');
+
+  // Check delete form checkbox
+  const deleteFormCheckbox = document.querySelector(`input[type=checkbox][name=saleproduct_set-${indexFormToDelete}-DELETE]`);
+  deleteFormCheckbox.checked = true;
+
+  // Update total input value
+  updateTotalPrice();
+}
 
 // Manage the form deletion process
 function removeForm(e) {
@@ -48,7 +73,7 @@ function removeForm(e) {
 
   // Update forms index value. Django validate that the forms in the post request have a subsequent value
   // starting from 0, eg: saleproduct_set-0, saleproduct_set-1, saleproduct_set-2, etc.
-  const formRow = productFormsContainer.querySelectorAll(".form-row");
+  const formRow = productFormsContainer.querySelectorAll(".product-forms .form-row:not(.hidden-form)");
   for (var i = 1; i < formRow.length; i++) {
     // Get every element which has an id, name or for attribute that includes the formset name
     const elementsToUpdateIndex = formRow[i].querySelectorAll(
@@ -58,7 +83,7 @@ function removeForm(e) {
     updateFormElementsIndex(elementsToUpdateIndex, i);
     formRow[i].dataset.formIndex = i;
     // Update remove button form index attribute or delete will not work anymore
-    const removeButton = formRow[i].querySelector("button");
+    const removeButton = formRow[i].querySelector("button.remove-form-row");
     removeButton.dataset.formIndex = i;
     // Attach the click event listener again because after updating formRow[i].innerHTML, the DOM recreates
     // the node and the event is lost.
@@ -72,7 +97,7 @@ function removeForm(e) {
 // Update the value of total price input
 function updateTotalPrice() {
   productPriceInputs =
-    productFormsContainer.querySelectorAll('input[id$="price"]');
+    productFormsContainer.querySelectorAll('.form-row:not(.hidden-form) input[id$="price"]');
   // Convert a NodeList to an array with Array.from so I can use map()
   // Create an array of input values and sum each value to get the total
   let prices = Array.from(productPriceInputs).map((el) => {

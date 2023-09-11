@@ -167,6 +167,10 @@ form.filterset-form .erase-filters {
   display: none;
 }
 
+.existing-formset-delete-button {
+  display: none;
+}
+
 
 /* Collection Receipt */
 

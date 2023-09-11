@@ -104,7 +104,7 @@ def create_saleproduct_formset(extra_forms, form, **kwargs):
         form=form,
         fields='__all__',
         extra=extra_forms,
-        can_delete=False,
+        can_delete=True,
         absolute_max=50,
         max_num=50
     )

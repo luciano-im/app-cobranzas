@@ -264,12 +264,9 @@ class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
         else:
             # If form and product formset are valid, calculate total price and continue with form_valid
             if form.is_valid() and product_formset.is_valid():
-                # Check if the sum of each product price is equal to the price of the sale
-                total_price = 0.0
-                for formset in product_formset:
-                    total_price += formset.cleaned_data.get('price', 0.0)
-                if form.cleaned_data.get('price') == total_price:
-                    return self.form_valid(form, product_formset)
+                return self.form_valid(form, product_formset)
+
+            return self.form_invalid(form)
 
     def form_valid(self, form, formset):
         # Add the user to the form

@@ -24,11 +24,13 @@
           <div class="col-4">
             {{ emptyform.price|as_crispy_field }}
           </div>
-          <div class="col-2">
-            <button id="delete-form" type="button" class="btn btn-secondary remove-form-row" data-form-index="">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+          {% if add_product_button_disabled == False %}
+            <div class="col-2">
+              <button id="delete-form" type="button" class="btn btn-secondary remove-form-row" data-form-index="">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          {% endif %}
         </div>
       </div>
       {% endwith %}
@@ -43,18 +45,32 @@
         </div>
       </div>
       {% for productform in products %}
-      <div class="form-row" data-form-index="0">
-        <div class="row">
-          {{ productform.id|as_crispy_field }}
-          {{ productform.sale|as_crispy_field }}
-          <div class="col-6">
-            {{ productform.product|as_crispy_field }}
-          </div>
-          <div class="col-4">
-            {{ productform.price|as_crispy_field }}
+        {% if add_product_button_disabled == False %}
+          {% if forloop.counter0 > 0 %}
+            <span class="existing-formset-delete-button">{{ productform.DELETE|as_crispy_field }}</span>
+          {% endif %}
+        {% endif %}
+        <div class="form-row" data-form-index="{{ forloop.counter0 }}">
+          <div class="row">
+            {{ productform.id|as_crispy_field }}
+            {{ productform.sale|as_crispy_field }}
+            <div class="col-6">
+              {{ productform.product|as_crispy_field }}
+            </div>
+            <div class="col-4">
+              {{ productform.price|as_crispy_field }}
+            </div>
+            {% if add_product_button_disabled == False %}
+              {% if forloop.counter0 > 0 %}
+                <div class="col-2">
+                  <button id="delete-form" type="button" class="btn btn-secondary remove-form-existing-instance" data-form-index="{{ forloop.counter0 }}">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              {% endif %}
+            {% endif %}
           </div>
         </div>
-      </div>
       {% endfor %}
     </div>
     <button id="add-form" type="button" class="btn btn-outline-primary add-form-row" {% if add_product_button_disabled %}disabled{% endif %}>Agregar Producto</button>
