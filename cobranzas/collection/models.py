@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from app.models import Customer, SaleInstallment
+from app.models import Customer, SaleInstallment, User
 
 
 class Collection(models.Model):
@@ -37,3 +37,14 @@ class CollectionInstallment(models.Model):
                 fields=['sale_installment', 'collection'], name='unique_collection'
             ),
         ]
+
+
+class CollectorSyncLog(models.Model):
+    user = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE, verbose_name=_('User'))
+    sync_datetime = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
+
+    def __str__(self):
+        return self.sync_datetime.strftime('%m/%d/%Y %I:%M %p')
+
+    class Meta:
+        verbose_name = _('Collector Synchronization Log')

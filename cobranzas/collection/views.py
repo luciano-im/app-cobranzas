@@ -11,9 +11,9 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from app.models import Customer, Sale, SaleProduct, SaleInstallment
-from app.models import KeyValueStore, CollectorSyncLog
+from app.models import KeyValueStore
 from app.views import FilterSetView
-from collection.models import Collection, CollectionInstallment
+from collection.models import Collection, CollectionInstallment, CollectorSyncLog
 
 from collection.forms import CollectionFormset, CollectionFilterForm
 

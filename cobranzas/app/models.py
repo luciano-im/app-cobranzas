@@ -112,17 +112,6 @@ class SaleInstallment(models.Model):
         ]
 
 
-class CollectorSyncLog(models.Model):
-    user = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE, verbose_name=_('User'))
-    sync_datetime = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
-
-    def __str__(self):
-        return self.sync_datetime.strftime('%m/%d/%Y %I:%M %p')
-
-    class Meta:
-        verbose_name = _('Collector Synchronization Log')
-
-
 class LoginLog(models.Model):
     user = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE, verbose_name=_('User'))
     login_datetime = models.DateTimeField(auto_now_add=True, verbose_name=_('Login Date/Time'))
