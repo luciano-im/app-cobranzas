@@ -10,9 +10,10 @@ from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.models import Customer, Sale, SaleProduct, SaleInstallment, Collection
-from app.models import CollectionInstallment, KeyValueStore, CollectorSyncLog
+from app.models import Customer, Sale, SaleProduct, SaleInstallment
+from app.models import KeyValueStore, CollectorSyncLog
 from app.views import FilterSetView
+from collection.models import Collection, CollectionInstallment
 
 from collection.forms import CollectionFormset, CollectionFilterForm
 

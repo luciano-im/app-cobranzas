@@ -3,7 +3,8 @@ import time
 from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from app.models import Sale, SaleInstallment, Customer, Collection, KeyValueStore, LoginLog
+from app.models import Sale, SaleInstallment, Customer, KeyValueStore, LoginLog
+from collection.models import Collection
 
 
 @receiver(pre_save, sender=Sale, dispatch_uid='app.signals.preSave_Sale')
