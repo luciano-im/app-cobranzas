@@ -85,7 +85,7 @@ class ReceivableSalesView:
 
     def get_pending_sales(self, filters, fields):
         return Sale.objects.\
-            filter(filters).\
+            filter(filters, uncollectible=False).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
             exclude(installments=F('paid_installments')).\
             values(*fields)

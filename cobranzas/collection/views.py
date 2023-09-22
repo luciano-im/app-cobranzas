@@ -186,7 +186,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                             # Check that the sale corresponds to the selected customer
                             if not data['sale_id'] in sales_check_collection:
                                 sale = Sale.objects.get(id=data['sale_id'])
-                                if sale.customer != customer:
+                                if sale.customer != customer or sale.uncollectible is True:
                                     raise PermissionDenied
                                 # Add the sale to the list to prevent check it again if there are
                                 # more than one paid installment
