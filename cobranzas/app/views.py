@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q, Count, F
 from django.urls import reverse
@@ -412,5 +412,22 @@ class UncollectibleSaleCreateView(LoginRequiredMixin, AdminPermission, ContextMi
             # data['selected_customer'] = selected_customer
             context['selected_customer'] = selected_customer
             context['data'] = data
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        selected_customer = request.POST.get('customer', None)
+        customer = Customer.objects.get(id=selected_customer)
+        if customer:
+            checkboxes = request.POST.getlist('uncollectible-sale', None)
+            if checkboxes:
+                for sale in checkboxes:
+                    try:
+                        Sale.objects.filter(customer=customer, id=sale).update(uncollectible=True)
+                    except:
+                        raise ValidationError('Error al establecer estado incobrable a una venta')
+        else:
+            raise PermissionDenied
 
         return self.render_to_response(context)
