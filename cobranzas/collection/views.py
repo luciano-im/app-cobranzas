@@ -3,16 +3,16 @@ from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Min, Value, Q, Count, Sum, F
+from django.db.models import Q, Sum, F
 from django.http import JsonResponse, Http404
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.models import Customer, Sale, SaleProduct, SaleInstallment
+from app.models import Customer, Sale, SaleInstallment
 from app.models import KeyValueStore
-from app.views import FilterSetView
+from app.views import FilterSetView, ReceivableSalesView
 from collection.models import Collection, CollectionInstallment, CollectorSyncLog
 
 from collection.forms import CollectionFormset, CollectionFilterForm
@@ -20,21 +20,16 @@ from collection.forms import CollectionFormset, CollectionFilterForm
 from silk.profiling.profiler import silk_profile
 
 
-class CollectionData:
-    sales_with_pending_balance = None
+class CollectionData(ReceivableSalesView):
 
-    def get_installments_detail(self):
+    def __get_data_installments_detail(self):
         data = dict()
 
         for s in self.sales_with_pending_balance:
             if not data.get(s['customer']):
                 data[s['customer']] = dict()
 
-            installments = SaleInstallment.objects.\
-                filter(sale=s['pk']).\
-                filter(Q(status=SaleInstallment.PARTIAL) | Q(status=SaleInstallment.PENDING)).\
-                order_by('sale', 'installment', 'status').\
-                values('pk', 'sale_id', 'status', 'installment', 'installment_amount', 'paid_amount')
+            installments = self.get_installments(s['pk'])
 
             data[s['customer']][s['pk']] = {
                 'id': s['pk'],
@@ -43,56 +38,23 @@ class CollectionData:
 
         return data
 
-    def set_sales_with_pending_balance(self, customer=None):
-        user = self.request.user
-        # If user is admin get all sales (no filter)
-        if user.is_admin:
-            q_filter = Q()
-        else:
-            # If user is not an admin, and customer is not None
-            if customer:
-                customer_record = Customer.objects.get(id=customer)
-                # If customer collector is the current user then get all customer sales
-                # If customer collector is not the current user then get all customer sales whose collector
-                # is the current user
-                if customer_record.collector == user:
-                    q_filter = Q(customer=customer)
-                else:
-                    q_filter = Q(customer=customer, collector=user)
-            else:
-                # If customer is None then get sales of customers whose collector is the current user
-                # and get whose collector is the current user but the customer collector is not the current user
-                q_filter = Q(customer__collector=user) | Q(~Q(customer__collector=user), collector=user)
-
-        self.sales_with_pending_balance = self.get_pending_sales(q_filter, ['pk', 'customer'])
-
-    def get_sales_detail(self, customer=None):
+    def __get_data_sales_detail(self):
         data = dict()
-        self.set_sales_with_pending_balance(customer)
 
         for s in self.sales_with_pending_balance:
             if not data.get(s['customer']):
                 data[s['customer']] = []
 
-            sale = Sale.objects.get(pk=s['pk'])
-            products = SaleProduct.objects.filter(sale=s['pk']).values('product__name')
-
-            temp = {
-                'id': sale.pk,
-                'installments': sale.installments,
-                'date': sale.date,
-                'price': sale.price,
-                'paid_amount': sale.paid_amount,
-                'pending_balance': sale.pending_balance,
-                'products': [p['product__name'] for p in products]
-            }
+            temp = self.get_sale(s['pk'])
 
             data[s['customer']].append(temp)
+
         return data
 
     def get_data(self, customer=None):
-        sales = self.get_sales_detail(customer)
-        installments = self.get_installments_detail()
+        self.set_sales_with_pending_balance(customer)
+        sales = self.__get_data_sales_detail()
+        installments = self.__get_data_installments_detail()
 
         data = {
             'sales': sales,
@@ -119,13 +81,6 @@ class CollectionData:
             customers = Customer.objects.values('pk', 'name')
 
         return customers
-
-    def get_pending_sales(self, filters, fields):
-        return Sale.objects.\
-            filter(filters).\
-            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-            exclude(installments=F('paid_installments')).\
-            values(*fields)
 
     def collector_validation(self, customer, user):
         # Valid customer validation
