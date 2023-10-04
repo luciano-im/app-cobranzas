@@ -5,17 +5,20 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q, Sum, F
 from django.http import JsonResponse, Http404
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.models import Customer, Sale, SaleInstallment
+from app.models import Customer, Sale, SaleInstallment, SaleProduct
 from app.models import KeyValueStore
 from app.views import FilterSetView, ReceivableSalesView
 from collection.models import Collection, CollectionInstallment, CollectorSyncLog
 
 from collection.forms import CollectionFormset, CollectionFilterForm
+
+from app.permissions import AdminPermission
 
 from silk.profiling.profiler import silk_profile
 
@@ -231,6 +234,93 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         response_data['collection_id'] = collection.pk
 
         return JsonResponse(response_data)
+
+
+class CollectionUpdateView(LoginRequiredMixin, AdminPermission, TemplateView):
+    template_name = 'update_collection.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['collection_id'] = kwargs['pk']
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        data = []
+        collection_id = context['collection_id']
+
+        collection_installment = CollectionInstallment.objects.\
+            filter(collection=collection_id).\
+            values('amount', 'sale_installment__sale', 'sale_installment__installment', 'sale_installment__installment_amount', 'sale_installment__paid_amount').\
+            order_by('sale_installment__sale', 'sale_installment__installment')
+        sales_id = {installment['sale_installment__sale'] for installment in collection_installment}
+
+        for id in sales_id:
+            sale = dict()
+
+            sale_object = Sale.objects.get(pk=id)
+            products = SaleProduct.objects.filter(sale=id).values('product__name')
+            sale_data = {
+                'id': sale_object.pk,
+                'installments': sale_object.installments,
+                'date': sale_object.date,
+                'price': sale_object.price,
+                'paid_amount': sale_object.paid_amount,
+                'pending_balance': sale_object.pending_balance,
+                'products': [p['product__name'] for p in products]
+            }
+
+            sale['sale'] = sale_data
+            sale['installments'] = [installment for installment in collection_installment if installment['sale_installment__sale'] == id]
+            data.append(sale)
+
+        total = CollectionInstallment.objects.\
+            filter(collection=collection_id).\
+            aggregate(total=Sum('amount'))
+
+        context['collection_installment'] = data
+        context['collection_id'] = collection_id
+        context['total'] = total
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        installments_list = request.POST.getlist('collection-installment')
+        collection = Collection.objects.get(pk=context['collection_id'])
+        for i in installments_list:
+            sale_id, installment_id = i.split('-')
+            new_paid_amount = float(request.POST.get(f'amount-{i}'))
+            sale_installment = SaleInstallment.objects.get(
+                sale=sale_id,
+                installment=installment_id
+            )
+            collection_installment = CollectionInstallment.objects.get(
+                collection=collection,
+                sale_installment=sale_installment
+            )
+
+            if collection_installment.amount != new_paid_amount:
+                old_paid_amount = collection_installment.amount
+                collection_installment.amount = new_paid_amount
+
+                # Update the paid amount and the status from the sale installment record
+                # One installment can be paid in more than one collection
+                installment_amount = sale_installment.installment_amount
+                paid_amount = sale_installment.paid_amount - old_paid_amount
+                sale_installment.paid_amount = paid_amount + new_paid_amount
+                if installment_amount > sale_installment.paid_amount:
+                    sale_installment.status = SaleInstallment.PARTIAL
+                else:
+                    sale_installment.status = SaleInstallment.PAID
+
+                try:
+                    collection_installment.save()
+                    sale_installment.save()
+                except:
+                    raise ValidationError('No se pudo guardar la cobranza')
+
+        return redirect('list-collection')
 
 
 class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):

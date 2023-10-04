@@ -23,6 +23,7 @@ from app.views import ProductCreationView, ProductUpdateView, ProductListView, L
 from app.views import UncollectibleSaleCreateView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
+from collection.views import CollectionUpdateView
 
 
 urlpatterns = [
@@ -43,6 +44,7 @@ urlpatterns = [
     path('sales/list/', SaleListView.as_view(), name='list-sales'),
     path('sales/uncollectible/create', UncollectibleSaleCreateView.as_view(), name='create-uncollectible-sale'),
     path('collections/create/', CollectionCreationView.as_view(), name='create-collection'),
+    path('collections/update/<pk>/', CollectionUpdateView.as_view(), name='update-collection'),
     path('collections/list/', CollectionListView.as_view(), name='list-collection'),
     path('collections/print/<int:id>/', CollectionPrintView.as_view(), name='print-collection'),
     path('collections/print/local/<int:id>/<int:timestamp>', LocalCollectionPrintView.as_view(), name='print-local-collection'),
