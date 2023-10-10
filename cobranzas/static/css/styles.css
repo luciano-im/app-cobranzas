@@ -67,6 +67,11 @@
   border-bottom-color: transparent;
 }
 
+
+.content .sales-list .sale-detail.is-uncollectible {
+  color: red;
+}
+
 .content .sales-list .installments-detail {
   box-shadow: none !important;
   padding: 0 1.5rem 1rem 1.5rem;

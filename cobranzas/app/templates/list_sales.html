@@ -56,7 +56,7 @@
     </thead>
     <tbody>
       {% for sale in sales %}
-        <tr class="sale-detail">
+        <tr class="sale-detail {% if sale.uncollectible %}is-uncollectible{% endif %}">
           <th scope="row">{{sale.pk}}</th>
           <td>{{sale.date|date:"d/m/Y"}}</td>
           <td>{{sale.customer}}</td>
