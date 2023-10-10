@@ -57,7 +57,7 @@ class SaleCreationForm(forms.ModelForm):
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments']
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible']
 
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
@@ -69,7 +69,7 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments']
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible']
 
 
 class SaleProductCreationForm(forms.ModelForm):

@@ -115,6 +115,11 @@
       </tbody>
     </table>
   </div>
+  <hr>
+  <div class="alert alert-danger uncollectible-sale" role="alert">
+    {{ form.uncollectible|as_crispy_field }}
+  </div>
+  <hr>
   <input type="submit" value="Guardar Venta" class="btn btn-primary">
 </form>
 {% endblock %}

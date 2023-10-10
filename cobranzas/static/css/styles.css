@@ -55,6 +55,14 @@
   margin-top: 1rem;
 }
 
+.content .sale-creation .uncollectible-sale .mb-3 {
+  margin-bottom: 0 !important;
+}
+
+.content .sale-creation .uncollectible-sale label {
+  margin-left: .5rem;
+}
+
 .content .sales-list .sale-detail {
   border-bottom-color: transparent;
 }
