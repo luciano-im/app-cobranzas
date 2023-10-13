@@ -5,9 +5,9 @@ omit =
     /usr/*
     */migrations/*
     # omit files
-    *__init__.py
-    *settings.py
-    *manage.py
+    */__init__.py
+    */settings.py
+    */manage.py
 
 [report]
 exclude_lines =
