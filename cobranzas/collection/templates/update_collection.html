@@ -59,7 +59,6 @@
       <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
     </div>
   </form>
-  {{total}}
 </div>
 {% endblock %}
 
@@ -75,9 +74,7 @@
   * @param {Number} amount Receives a number to calculate the total amount
   */
   function updateTotal(amount) {
-    console.log(amount, total);
     total += amount;
-    console.log(total);
     totalTag.innerText = total.toLocaleString("es-AR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
@@ -109,8 +106,6 @@
     const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
     const currentValue = parseFloat(input.value) || 0.0;
     const maxValue = parseFloat(input.max) || 0.0;
-
-    console.log(oldValue, currentValue, maxValue);
 
     // If the value entered by the user is greater than the maximum value
     // then use maxValue as the currentValue

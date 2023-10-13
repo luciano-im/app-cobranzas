@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Rendición de Cobranza</h2>
+<form action="{% url 'collection-delivery' %}" method="get" id="filter-collector" name="filter-collector">
+  <div class="row">
+    <div class="col-8">
+      <select name="select-collector" id="select-collector" class="form-select" required>
+        <option disabled selected> -- Selecciona un Cobrador -- </option>
+        {% for c in collector %}
+          <option value="{{c.pk}}" {% if selected_collector == c.pk %}selected{% endif %}>{{c.first_name}} {{c.last_name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+  </div>
+</form>
+
+{% if collections %}
+<div class="data-container">
+  <div class="create-collection delivery-collection">
+    <form action="{% url 'collection-delivery' %}" method="post" id="delivery-collection">
+      {% csrf_token %}
+      <input type="hidden" name="selected-collector" value="{{selected_collector}}">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col"><input type="checkbox" id="check-all"> Cobranza</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Importe Pagado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in collections %}
+          <tr>
+            <th scope="row">
+              <input type="checkbox" name="collection" value="collection-{{c.id}}" data-amount="{{c.amount|default:0.0|stringformat:".2f"}}"> <span>{{c.id}}</span>
+            </th>
+            <td>{{c.customer.name}}</td>
+            <td>{{c.date|date:"l, d \d\e M \d\e Y"}}</td>
+            <td>{{c.amount|default:0.0|floatformat:2|intcomma}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="totals d-flex flex-column align-items-end mb-5">
+        <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+        <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  let total = 0.00;
+  let totalTag = document.querySelector('#total');
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(#check-all)');
+  const checkAllCheckbox = document.querySelector('#check-all');
+
+  /**
+  * Updates the total tag in the template.
+  * 
+  * @param {Number} amount Receives a number to calculate the total amount
+  */
+  function updateTotal(amount) {
+    total += amount;
+    totalTag.innerText = total.toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  /**
+  * Handles actions when a checkbox is clicked
+  * 
+  * @param {object} checkbox A checkbox element
+  */
+  function handleCheckboxChangeEvent(event) {
+    event.stopImmediatePropagation();
+    const checkbox = event.target;
+
+    const currentAmount = parseFloat(checkbox.dataset.amount);
+    // When checkbox change its state:
+    if (checkbox.checked) {
+      updateTotal(currentAmount);
+    } else {
+      updateTotal(-currentAmount);
+    }
+  };
+
+  /**
+  * Check or uncheck all checkboxes
+  * 
+  * @param {Boolean} action Check or uncheck
+  */
+  function checkUncheckAll(action) {
+    if(action == 'check') {
+      total = 0.00;
+      let customTotal = 0.00;
+      checkboxes.forEach(checkbox => {
+        customTotal += parseFloat(checkbox.dataset.amount);
+        checkbox.checked = true;
+      });
+      updateTotal(customTotal);
+    }
+
+    if(action == 'uncheck') {
+      total = 0.00;
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      updateTotal(0.00);
+    }
+  };
+
+  // Attach events to checkboxes inputs
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', e => handleCheckboxChangeEvent(e));
+  });
+
+  // Check all checkbox
+  checkAllCheckbox.addEventListener('change', e => {
+    const checkbox = e.target;
+    if (checkbox.checked) {
+      checkUncheckAll('check');
+    } else {
+      checkUncheckAll('uncheck');
+    }
+  })
+</script>
+{% endblock %}

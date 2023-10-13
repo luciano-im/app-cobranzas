@@ -11,10 +11,11 @@ from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from app.models import Customer, Sale, SaleInstallment, SaleProduct
+from app.models import Customer, Sale, SaleInstallment, SaleProduct, User
 from app.models import KeyValueStore
 from app.views import FilterSetView, ReceivableSalesView
 from collection.models import Collection, CollectionInstallment, CollectorSyncLog
+from collection.models import CollectionDelivery
 
 from collection.forms import CollectionFormset, CollectionFilterForm
 
@@ -368,6 +369,52 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
         context['filter_form'] = CollectionFilterForm(self.request.GET)
         return context
 
+
+class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
+    template_name = 'delivery_collection.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['collector'] = User.objects.filter(Q(is_collector=True) | Q(is_staff=True))
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        selected_collector_param = self.request.GET.get('select-collector', None)
+        selected_collector = int(selected_collector_param) if selected_collector_param is not None else selected_collector_param
+
+        if selected_collector:
+            context['selected_collector'] = selected_collector
+            context['collections'] = Collection.objects.\
+                filter(collector=selected_collector, delivered=False).\
+                annotate(amount=Sum('collectioninstallment__amount')).\
+                prefetch_related('customer').\
+                order_by('date')
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        selected_collector = request.POST.get('selected-collector', None)
+        if selected_collector:
+            collection_list = request.POST.getlist('collection')
+            date = datetime.now()
+            collector = User.objects.get(id=selected_collector)
+            with transaction.atomic():
+                for c in collection_list:
+                    collection_id = c.split('-')[1]
+                    collection = Collection.objects.get(pk=collection_id)
+                    collection_delivery = CollectionDelivery(
+                        collection=collection,
+                        collector=collector,
+                        date=date
+                    )
+                    collection_delivery.save()
+                    collection.delivered = True
+                    collection.save()
+        else:
+            raise ValidationError('No se ha indicado el Cobrador')
+
+        return redirect('collection-delivery')
 
 class CollectionPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'print_collection.html'

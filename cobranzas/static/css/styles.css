@@ -159,6 +159,10 @@
   margin: 0 .8rem;
 }
 
+.content .delivery-collection .totals {
+  margin-top: 4rem;
+}
+
 form.filterset-form {
   border-radius: 0.375rem;
   background: #EEE;
