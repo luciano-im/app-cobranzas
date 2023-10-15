@@ -58,7 +58,7 @@ class Sale(models.Model):
     uncollectible = models.BooleanField(default=False, verbose_name=_('Is uncollectible?'))
 
     def __str__(self):
-        return f'{self.date} - {self.customer.name} - {self.pk}'
+        return f"{self.date.strftime('%m/%d/%Y')} - {self.customer.name} - {self.pk}"
 
     @cached_property
     def pending_balance(self):
