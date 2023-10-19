@@ -14,7 +14,7 @@ class Collection(models.Model):
     delivered = models.BooleanField(default=False, verbose_name=_('Cobranza Rendida'))
 
     def __str__(self):
-        return f'{self.id}: {self.customer} - {self.date}'
+        return f"{self.id}: {self.customer} - {self.date.strftime('%m/%d/%Y')}"
 
 
 class CollectionInstallment(models.Model):
@@ -23,7 +23,7 @@ class CollectionInstallment(models.Model):
     amount = models.FloatField(verbose_name=_('Amount'))
 
     def __str__(self):
-        return f'{self.id}: {self.collection} - {self.sale_installment} - {self.amount}'
+        return f'{self.id}: {self.collection.id} - {self.sale_installment} - {self.amount}'
 
     # Validate SaleInstallment before saving a Collection
     def clean(self):

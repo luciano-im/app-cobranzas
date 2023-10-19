@@ -86,7 +86,9 @@ class SaleModelTest(TestCase):
         self.assertTrue(isinstance(self.sale, Sale))
 
     def test_sale_str(self):
-        self.assertEqual(str(self.sale), f"{self.today.strftime('%m/%d/%Y')} - Luciano - 1")
+        # Convert today to UTC because SQLite store date as UTC
+        utc_today = self.today.astimezone(timezone.utc)
+        self.assertEqual(str(self.sale), f"{utc_today.strftime('%m/%d/%Y')} - Luciano - 1")
 
     def test_sale_paid_amount(self):
         self.assertEqual(self.sale.paid_amount, 2000.00)
