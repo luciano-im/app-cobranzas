@@ -16,12 +16,12 @@ django-silk==5.0.2
 django-widget-tweaks==1.4.12
 Faker==12.0.1
 filelock==3.7.1
-flake8==4.0.1
+flake8==6.1.0
 gprof2dot==2022.7.29
 idna==3.4
 Jinja2==3.1.2
 MarkupSafe==2.1.1
-mccabe==0.6.1
+mccabe==0.7.0
 mixer==7.2.2
 mypy-extensions==0.4.3
 packaging==21.3
@@ -31,8 +31,8 @@ platformdirs==2.5.2
 pluggy==1.0.0
 psycopg2==2.9.3
 py==1.11.0
-pycodestyle==2.9.1
-pyflakes==2.4.0
+pycodestyle==2.11.1
+pyflakes==3.1.0
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-dotenv==0.20.0
