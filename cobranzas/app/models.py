@@ -42,6 +42,13 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.pk} - {self.name} {self.brand}'
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['brand', 'sku'], name='unique_product'
+            ),
+        ]
+
 
 class Sale(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('User'))
@@ -56,6 +63,7 @@ class Sale(models.Model):
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='collector', verbose_name=_('Collector'))
     uncollectible = models.BooleanField(default=False, verbose_name=_('Is uncollectible?'))
+    remarks = models.TextField(default="", verbose_name=_('Remarks'))
 
     def __str__(self):
         return f"{self.date.strftime('%m/%d/%Y')} - {self.customer.name} - {self.pk}"
