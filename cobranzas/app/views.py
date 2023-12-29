@@ -99,6 +99,7 @@ class ReceivableSalesView:
             'installments': sale.installments,
             'date': sale.date,
             'price': sale.price,
+            'remarks': sale.remarks,
             'paid_amount': sale.paid_amount,
             'pending_balance': sale.pending_balance,
             'products': [p['product__name'] for p in products]

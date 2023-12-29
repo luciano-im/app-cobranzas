@@ -248,6 +248,7 @@ class SaleComponent {
                           <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount">${this.sale.paidAmount}</span></span>
                           <span class="badge text-bg-primary">Pendiente: $<span class="pending-balance">${this.sale.pendingBalance}</span></span>
                         </div>
+                        <p class="text-secondary mt-2 fs-6 fst-italic">${this.sale.remarks}</p>
                       </div>
                       <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
                         <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">

@@ -121,7 +121,7 @@ filterCustomerForm.addEventListener('submit', async event => {
 
     // Add sales instances to collection
     sales.map(sale => {
-      collection.addSale(Sale.create(sale.id, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.products, installments[sale.id], storedCollections[sale.id]));
+      collection.addSale(Sale.create(sale.id, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.remarks, sale.products, installments[sale.id], storedCollections[sale.id]));
     });
 
     // Create a collection view and render content in the page

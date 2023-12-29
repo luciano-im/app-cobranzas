@@ -51,16 +51,18 @@ export class Sale {
   * @param {Number} paidAmount Amount paid for the sale
   * @param {Number} pendingBalance Balance due
   * @param {Number} price Sale price
+  * @param {String} remarks Sale's remarks
   * @param {Array} products List of sold products
   * @param {Array} installments List of installment objects
   */
-  constructor(id, date, installmentsQty, paidAmount, pendingBalance, price, products, installments) {
+  constructor(id, date, installmentsQty, paidAmount, pendingBalance, price, remarks, products, installments) {
     this.id = id;
     this.date = date;
     this.installmentsQty = installmentsQty;
     this.paidAmount = paidAmount;
     this.pendingBalance = pendingBalance;
     this.price = price;
+    this.remarks = remarks;
     this.products = products;
     this.installments = installments;
   }
@@ -74,11 +76,12 @@ export class Sale {
   * @param {Number} paidAmount Amount paid for the sale
   * @param {Number} pendingBalance Balance due
   * @param {Number} price Sale price
+  * @param {String} remarks Sale's remarks
   * @param {Array} products List of sold products
   * @param {Array} installments List of installment objects
   * @param {Object} paidInstallments List of already paid installments to merge with the content of the "installments" attribute
   */
-  static create(id, date, installmentsQty, paidAmount, pendingBalance, price, products, installments, paidInstallments = {}) {
+  static create(id, date, installmentsQty, paidAmount, pendingBalance, price, remarks, products, installments, paidInstallments = {}) {
     if (id == null) {
       throw new ValidationError(this.ID_ERROR);
     }
@@ -113,7 +116,7 @@ export class Sale {
       }
     });
 
-    return new Sale(id, date, installmentsQty, calculatedPaidAmount, calculatedPendingBalance, price, products, saleInstallments);
+    return new Sale(id, date, installmentsQty, calculatedPaidAmount, calculatedPendingBalance, price, remarks, products, saleInstallments);
   }
 
   /**
