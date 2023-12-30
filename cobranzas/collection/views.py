@@ -80,9 +80,9 @@ class CollectionData(ReceivableSalesView):
                 filters |= Q(id=id['customer'])
             sales_customers = Customer.objects.filter(filters)
             # Join customer querysets and discard repeated
-            customers = collector_customers.union(sales_customers).values('pk', 'name')
+            customers = collector_customers.union(sales_customers).order_by('name').values('pk', 'name')
         else:
-            customers = Customer.objects.values('pk', 'name')
+            customers = Customer.objects.order_by('name').values('pk', 'name')
 
         return customers
 
@@ -458,9 +458,9 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
     def get(self, request, *args, **kwargs):
         # If the user is not an admin then filter collections by loggued user
         if request.user.is_admin:
-            customers = Customer.objects.values('pk', 'name', 'address', 'telephone', 'city')
+            customers = Customer.objects.order_by('name').values('pk', 'name', 'address', 'telephone', 'city')
         else:
-            customers = Customer.objects.filter(collector=self.request.user).values('pk', 'name', 'address', 'telephone', 'city')
+            customers = Customer.objects.filter(collector=self.request.user).order_by('name').values('pk', 'name', 'address', 'telephone', 'city')
 
         # get_data return sales and installments data
         data = self.get_data()
