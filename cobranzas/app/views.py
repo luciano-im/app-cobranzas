@@ -1,3 +1,5 @@
+from dateutil.relativedelta import relativedelta
+
 from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -367,7 +369,9 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
                 all()
         else:
+            # Filter last month by default
             queryset = Sale.objects.\
+                filter(date__gte=timezone.now() - relativedelta(months=1)).\
                 prefetch_related('saleinstallment_set').\
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
                 all()
