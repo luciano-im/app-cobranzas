@@ -73,6 +73,7 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
 
 
 class SaleProductCreationForm(forms.ModelForm):
+    product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), required=False, label=_('Product'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -121,7 +122,7 @@ class CustomerFilterForm(forms.Form):
 class ProductFilterForm(forms.Form):
 
     def brand_choices():
-        return [('', '---------')] + [(c, c) for c in Product.objects.values_list('brand', flat=True).distinct()]
+        return [('', '---------')] + [(c, c) for c in Product.objects.exclude(id=0).values_list('brand', flat=True).distinct()]
 
     name = forms.CharField(required=False, label=_('Name'))
     brand = forms.ChoiceField(choices=brand_choices, required=False, label=_('Brand'))
@@ -133,4 +134,4 @@ class SaleFilterForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
-    product = forms.ModelChoiceField(queryset=Product.objects.all(), required=False, label=_('Product'))
+    product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), required=False, label=_('Product'))
