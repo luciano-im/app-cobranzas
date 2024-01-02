@@ -21,6 +21,8 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(required=True, label=_('First name'))
+    last_name = forms.CharField(required=True, label=_('Last name'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,7 +35,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = UserCreationForm.Meta.fields + ('is_collector',)
+        fields = ('first_name', 'last_name') + UserCreationForm.Meta.fields + ('is_collector', 'is_staff',)
 
 
 class CustomerCreationForm(forms.ModelForm):
