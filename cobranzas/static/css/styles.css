@@ -159,6 +159,23 @@
   margin: 0 .8rem;
 }
 
+.content .create-collection .sales-container {
+  margin-bottom: 10rem;
+}
+
+.content .create-collection .totals {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #fafafa;
+  padding: 20px;
+  margin-bottom: 4rem;
+  border-radius: 4px;
+  box-shadow: -12px 12px 20px -5px #eee;
+  min-width: 210px;
+}
+
 .content .delivery-collection .totals {
   margin-top: 4rem;
 }
