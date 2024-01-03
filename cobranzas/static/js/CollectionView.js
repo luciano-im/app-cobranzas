@@ -366,10 +366,10 @@ class SaleInstallmentFormComponent {
                         <input type="checkbox" name="collection-__prefix__-checked" id="id_collection-__prefix__-checked"> <span>${this.props.installment}</span>
                       </th>
                       <td class="installment-amount">
-                        <input type="number" name="collection-__prefix__-installment_amount" value="${installmentAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-installment_amount">
+                        <input type="number" name="collection-__prefix__-installment_amount" value="${installmentAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-installment_amount" tabindex="-1">
                       </td>
                       <td class="paid-amount">
-                        <input type="number" name="collection-__prefix__-paid_amount" value="${paidAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-paid_amount">
+                        <input type="number" name="collection-__prefix__-paid_amount" value="${paidAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-paid_amount" tabindex="-1">
                       </td>
                       <td class="amount">
                         <div id="div_id_collection-__prefix__-amount" class="mb-3">
