@@ -353,7 +353,7 @@ form.filterset-form .erase-filters {
 }
 
 .synchronization .last-sync {
-  margin-right: 1.5rem;
+  font-size: .95rem;
   margin-bottom: 0;
 }
 
@@ -376,6 +376,25 @@ form.filterset-form .erase-filters {
 
 .synchronization.in-progress .last-sync {
   display: none;
+}
+
+.synchronization .sync-date {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.synchronization .sync-date .sync-button-container {
+  margin-right: 1rem;
+  margin-top: 3px;
+}
+
+.synchronization .sync-date .sync-button-container > div {
+  line-height: 1rem;
+}
+
+.synchronization .sync-date .sync-button-container > span {
+  font-size: .85rem;
+  color: grey;
 }
 
 .offline {
