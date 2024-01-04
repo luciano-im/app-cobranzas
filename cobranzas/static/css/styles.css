@@ -366,6 +366,18 @@ form.filterset-form .erase-filters {
   display: inline-block;
 }
 
+.synchronization:not(.in-progress) .spinner-border {
+  display: none;
+}
+
+.synchronization.in-progress .spinner-border {
+  display: inline-block;
+}
+
+.synchronization.in-progress .last-sync {
+  display: none;
+}
+
 .offline {
   display: none;
 }

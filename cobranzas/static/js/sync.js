@@ -65,6 +65,8 @@ const showPendingRequestsBadge = async () => {
 
 // Send pending POST requests to the server
 const sendPendingRequests = async () => {
+  syncContainer.classList.add('in-progress');
+
   const storedRequests = await db.getAll(COLLECTIONS_STORE_NAME);
   if (storedRequests.length > 0) {
     // Revoke local database app-last-update
@@ -180,6 +182,8 @@ const synchronizeLocalDatabase = async () => {
       syncLastUpdate.innerText = lastSyncDate;
     }
   }
+
+  syncContainer.classList.remove('in-progress');
 }
 
 // TODO: Move this code to the class Sale
@@ -244,7 +248,8 @@ const init = async () => {
   }
 
   // Update last sync in view
-  syncLastUpdate.innerText = localStorage.getItem('client-last-update');
+  const clientLastUpdate = localStorage.getItem('client-last-update');
+  syncLastUpdate.innerText = clientLastUpdate ? clientLastUpdate : '-';
 }
 
 init();
