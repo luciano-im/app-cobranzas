@@ -45,7 +45,7 @@
                     <span>{{installment.sale_installment__installment_amount}}</span>
                   </td>
                   <td class="paid-amount">
-                    <input type="number" name="amount-{{sale.sale.id}}-{{installment.sale_installment__installment}}" class="payment-input numberinput form-control" step="any" max="{{installment.sale_installment__installment_amount|stringformat:".2f"}}" value="{{installment.sale_installment__paid_amount|stringformat:".2f"}}">
+                    <input type="number" name="amount-{{sale.sale.id}}-{{installment.sale_installment__installment}}" class="payment-input numberinput form-control" step="any" max="{{installment.sale_installment__installment_amount|stringformat:".2f"}}" value="{{installment.amount|stringformat:".2f"}}">
                   </td>
                 </tr>
               {% endfor %}
@@ -99,9 +99,19 @@
   * @param {Object} event Receives the event object when the change event is triggered
   */
   function handlePaymentInputChangeEvent(event) {
-    e.stopImmediatePropagation();
+    event.stopImmediatePropagation();
     
     const input = event.target;
+
+    // Get input value and remove spaces
+    const inputValue = input.value.trim();
+
+    // Check if inputValue is not null and entered value is not equal to zero
+    if (!inputValue || parseFloat(inputValue) == 0.0) {
+      // Update input value to zero
+      input.value = 0.00;
+    }
+
     // The change event in amount inputs updates values and totals
     const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
     const currentValue = parseFloat(input.value) || 0.0;

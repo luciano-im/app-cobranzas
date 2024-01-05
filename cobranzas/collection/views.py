@@ -252,7 +252,7 @@ class CollectionUpdateView(LoginRequiredMixin, AdminPermission, TemplateView):
 
         collection_installment = CollectionInstallment.objects.\
             filter(collection=collection_id).\
-            values('amount', 'sale_installment__sale', 'sale_installment__installment', 'sale_installment__installment_amount', 'sale_installment__paid_amount').\
+            values('amount', 'sale_installment__sale', 'sale_installment__installment', 'sale_installment__installment_amount', 'sale_installment__paid_amount', 'amount').\
             order_by('sale_installment__sale', 'sale_installment__installment')
         sales_id = {installment['sale_installment__sale'] for installment in collection_installment}
 
