@@ -150,8 +150,20 @@ export class CollectionView {
   _handlePaymentInputChangeEvent(input) {
     // Get form ID
     const formID = this._extractFormID(input.name);
-    // Check the checkbox field
-    this.rootElement.querySelector(`input[name=collection-${formID}-checked]`).checked = true;
+
+    // Get input value and remove spaces
+    const inputValue = input.value.trim();
+
+    // Check if inputValue is not null and entered value is not equal to zero
+    if (inputValue && parseFloat(inputValue) !== 0.0) {
+      // Check the checkbox field
+      this.rootElement.querySelector(`input[name=collection-${formID}-checked]`).checked = true;
+    } else {
+      // Update input value to zero
+      input.value = 0.00;
+      // Uncheck the collection
+      this.rootElement.querySelector(`input[name=collection-${formID}-checked]`).checked = false;
+    }
 
     // The change event in amount inputs updates values and totals
     const oldValue = parseFloat(input.dataset.oldValue) || 0.0;
