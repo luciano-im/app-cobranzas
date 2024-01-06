@@ -5,8 +5,8 @@
 {% load crispy_forms_tags %}
 
 {% block extra_header %}
-  <link rel="stylesheet" href="https://unpkg.com/@jarstone/dselect/dist/css/dselect.css">
-  <script src="https://unpkg.com/@jarstone/dselect/dist/js/dselect.js"></script>
+  <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
+  <script src="{% static 'library/dselect/dselect.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -50,6 +50,8 @@
     clearable: false, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
+    placeholder: 'Buscar',
+    noResults: 'Sin Resultados'
   };
   dselect(document.querySelector('#select-customer'), config);
 </script>
