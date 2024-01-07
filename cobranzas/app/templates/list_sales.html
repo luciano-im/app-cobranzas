@@ -127,5 +127,20 @@
   };
   dselect(document.querySelector('#id_customer'), config);
   dselect(document.querySelector('#id_product'), config);
+
+  // Set focus on search field when user opens the select element
+  const customerSelect = document.querySelector('#id_customer + div.dselect-wrapper');
+  const customerSearch = customerSelect.querySelector('.dropdown-menu input');
+
+  const productSelect = document.querySelector('#id_product + div.dselect-wrapper');
+  const productSearch = productSelect.querySelector('.dropdown-menu input');
+
+  customerSelect.addEventListener('shown.bs.dropdown', e => {
+    customerSearch.focus();
+  });
+
+  productSelect.addEventListener('shown.bs.dropdown', e => {
+    productSearch.focus();
+  });
 </script>
 {% endblock %}
