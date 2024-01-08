@@ -139,7 +139,9 @@ export class Sale {
     });
 
     // Deletes the first element from "next" and push it to "current"
-    current.push(next.shift());
+    if (next.length > 0) {
+      current.push(next.shift());
+    }
 
     return {
       partial: partial,
