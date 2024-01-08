@@ -9,7 +9,7 @@ const URLS_TO_CACHE = [
   "{% url 'manifest' %}",
   "{% url 'create-collection' %}",
   "{% url 'pending-collection' %}",
-  "{% url 'print-local-collection' %}",
+  //"{% url 'print-local-collection' %}",
   "{% static 'css/styles.css' %}",
   "{% static 'css/receipt.css' %}",
   "{% static 'js/utils.js' %}",
@@ -28,6 +28,8 @@ const URLS_TO_CACHE = [
   "{% static 'img/icon/icon-256x256.png' %}",
   "{% static 'img/icon/icon-384x384.png' %}",
   "{% static 'img/icon/icon-512x512.png' %}",
+  "{% static 'library/dselect/dselect.css' %}",
+  "{% static 'library/dselect/dselect.js' %}",
 ];
 
 // UTILS
