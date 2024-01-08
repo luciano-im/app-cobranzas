@@ -54,8 +54,9 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
-    collector = UserModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
+    collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
 
     class Meta:
         model = Sale
@@ -63,8 +64,8 @@ class SaleCreationForm(forms.ModelForm):
 
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
-    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.all(), label=_('Customer'))
-    collector = UserModelChoiceField(disabled=True, queryset=User.objects.all(), required=False, label=_('Collector'))
+    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.order_by('name'), label=_('Customer'))
+    collector = UserModelChoiceField(disabled=True, queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
     price = forms.FloatField(disabled=True, label=_('Price'))
     installment_amount = forms.FloatField(disabled=True, label=_('Installment Amount'))
     installments = forms.IntegerField(disabled=True, label=_('Installments'))
@@ -118,7 +119,7 @@ class CustomerFilterForm(forms.Form):
     name = forms.CharField(required=False, label=_('Name'))
     city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False, label=_('City'))
     address = forms.CharField(required=False, label=_('Address'))
-    collector = UserModelChoiceField(queryset=User.objects.all(), required=False, label=_('Collector'))
+    collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
 
 
 class ProductFilterForm(forms.Form):
@@ -133,7 +134,7 @@ class ProductFilterForm(forms.Form):
 
 class SaleFilterForm(forms.Form):
     id = forms.IntegerField(required=False, label=_('ID'))
-    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), required=False, label=_('Customer'))
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
     product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), required=False, label=_('Product'))
