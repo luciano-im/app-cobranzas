@@ -76,7 +76,7 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
 
 
 class SaleProductCreationForm(forms.ModelForm):
-    product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), required=False, label=_('Product'))
+    product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), widget=forms.Select(attrs={'data-dselect-search': 'true', 'data-dselect-max-height': '360px'}), required=False, label=_('Product'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

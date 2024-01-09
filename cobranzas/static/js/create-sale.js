@@ -208,6 +208,16 @@ addFormButton.addEventListener("click", (e) => {
 
   // Insert the form in the DOM
   productFormsContainer.appendChild(newForm);
+
+  // Transform product select to dselect library
+  const productSelect = newForm.querySelector('select');
+  dselect(productSelect);
+
+  // Set focus to search field when dselect opens
+  const dselectWrapper = productSelect.nextElementSibling;
+  dselectWrapper.addEventListener('shown.bs.dropdown', e => {
+    dselectWrapper.querySelector('.dropdown-menu input').focus();
+  });
 });
 
 // Update payment scheme on installments input value change
