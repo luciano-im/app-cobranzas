@@ -54,7 +54,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
-    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.order_by('name'), label=_('Customer'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
     collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
 
