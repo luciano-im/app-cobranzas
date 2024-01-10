@@ -13,6 +13,7 @@
   {% csrf_token %}
   {{ form.customer|as_crispy_field }}
   {{ form.collector|as_crispy_field }}
+  {{ form.remarks|as_crispy_field }}
   <hr>
   <div class="products-list">
     <h3 class="title">Lista de Productos</h3>

@@ -57,10 +57,11 @@ class SaleCreationForm(forms.ModelForm):
     customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
     collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
+    remarks = forms.CharField(required=False, label=_('Remarks'))
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible']
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
 
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
@@ -69,10 +70,11 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
     price = forms.FloatField(disabled=True, label=_('Price'))
     installment_amount = forms.FloatField(disabled=True, label=_('Installment Amount'))
     installments = forms.IntegerField(disabled=True, label=_('Installments'))
+    remarks = forms.CharField(required=False, label=_('Remarks'))
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible']
+        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
 
 
 class SaleProductCreationForm(forms.ModelForm):
