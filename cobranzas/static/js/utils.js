@@ -41,4 +41,9 @@ const appendAlert = (root, message, type) => {
   root.append(wrapper);
 }
 
-export { getCookie, formatNumber, formatDate, appendAlert };
+// Util function to clear selection of a dselect element
+const clearDselectSelection = el => {
+  dselectClear(el.nextElementSibling.querySelector('button'), 'dselect-wrapper');
+}
+
+export { getCookie, formatNumber, formatDate, appendAlert, clearDselectSelection };

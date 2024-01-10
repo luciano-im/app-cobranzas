@@ -5,7 +5,7 @@
 import { db, storedCollectionsByCustomer, sendPendingRequests, synchronizeLocalDatabase, COLLECTIONS_STORE_NAME } from "./sync.js";
 import { Collection, Sale } from './Collection.js';
 import { CollectionView } from './CollectionView.js';
-import { appendAlert } from "./utils.js";
+import { appendAlert, clearDselectSelection } from "./utils.js";
 
 //// CONSTANTS & HELPERS ////
 
@@ -34,6 +34,7 @@ const clearForm = () => {
   collection = undefined;
   // Reset customer select element
   selectCustomer.selectedIndex = 0;
+  clearDselectSelection(selectCustomer);
 }
 
 // Return the difference between two objects containing stored collections
