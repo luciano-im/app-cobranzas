@@ -9,7 +9,7 @@ const URLS_TO_CACHE = [
   "{% url 'manifest' %}",
   "{% url 'create-collection' %}",
   "{% url 'pending-collection' %}",
-  //"{% url 'print-local-collection' %}",
+  "{% url 'print-local-collection' %}",
   "{% static 'css/styles.css' %}",
   "{% static 'css/receipt.css' %}",
   "{% static 'js/utils.js' %}",

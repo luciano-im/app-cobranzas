@@ -43,7 +43,7 @@ const createRow = async (data, customer, numRow) => {
   newRow.querySelector('.date').innerText = date;
   newRow.querySelector('.customer').innerText = customerRecord.name;
   newRow.querySelector('.paid-amount').innerText = formatNumber(paidAmount);
-  newRow.querySelector('.receipt-button').href = `/collections/print/local/${customer}/${data.date}`;
+  newRow.querySelector('.receipt-button').href = `/collections/print/local?customer=${customer}&timestamp=${data.date}`;
   unsynchronizedCollectionTable.appendChild(newRow);
 }
 

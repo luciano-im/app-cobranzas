@@ -41,7 +41,8 @@ const totalTag = document.querySelector('.total-value');
 const getLocalCollectionID = () => {
   // split the pathname by slash character, remove empty strings and get the last two elements
   // [customerID, collectionTimestamp]
-  return window.location.pathname.split('/').filter(item => item.length > 0).slice(-2);
+  const urlParams = new URLSearchParams(window.location.search);
+  return [urlParams.get('customer'), urlParams.get('timestamp')];
 }
 
 const getStoredRequest = async customer => {
