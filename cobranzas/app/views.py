@@ -99,7 +99,7 @@ class ReceivableSalesView:
         data = {
             'id': sale.pk,
             'installments': sale.installments,
-            'date': sale.date,
+            'date': sale.date.strftime('%m/%d/%Y'),
             'price': sale.price,
             'remarks': sale.remarks,
             'paid_amount': sale.paid_amount,

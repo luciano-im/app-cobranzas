@@ -1,10 +1,10 @@
-.content {
-  padding: 2rem 3rem;
+.content-wrapper {
+  font-size: 1rem;
 }
 
 .content h2 {
   border-bottom: 1px solid #BBB;
-  margin-bottom: 2rem;
+  margin: 1.2rem 0 2rem 0;
 }
 
 .content form {
@@ -12,7 +12,7 @@
 }
 
 .content form:not(.filterset-form) input[type="submit"] {
-  margin-top: 1.5rem;
+  margin-top: .5rem;
 }
 
 .content table td,
@@ -127,20 +127,11 @@
   padding-top: .5rem;
 }
 
-.content .create-collection {
-  margin-top: 5rem;
-}
-
 .content .create-collection input[type="checkbox"] {
   margin-right: .5rem;
 }
 
-.content .create-collection input {
-  width: auto;
-}
-
 .content .create-collection .form-control-plaintext {
-  /* text-align: right; */
   outline: 0;
 }
 
@@ -154,12 +145,15 @@
   margin-bottom: 0 !important;
 }
 
+.content .create-collection .sales-container {
+  margin-bottom: 8rem;
+}
+
 .content .create-collection .sale {
   padding-bottom: 4rem;
 }
 
-.content .create-collection .sale-details span {
-  font-size: .85rem;
+.content .create-collection .sale-details .badge {
   font-weight: normal !important;
 }
 
@@ -167,17 +161,36 @@
   margin-right: .5rem;
 }
 
+.content .create-collection .sale-header .remarks {
+  font-size: .9rem;
+}
+
 .content .create-collection .products-list {
-  margin: 1.5rem 0;
+  margin: 1.2rem 0;
+}
+
+.content .create-collection .products-list .breadcrumb {
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .content .create-collection .products-list .breadcrumb-item::before {
   font-weight: 800;
-  margin: 0 .8rem;
+  margin: 0 .5rem;
 }
 
-.content .create-collection .sales-container {
-  margin-bottom: 10rem;
+.content .create-collection .accordion-button {
+  color: var(--bs-accordion-active-color);
+  font-size: .9rem;
+  padding: .7rem;
+}
+
+.content .create-collection .accordion-button::after {
+  background-size: 15px;
+}
+
+.content .create-collection table {
+  font-size: .9rem;
 }
 
 .content .create-collection .totals {
@@ -187,10 +200,15 @@
   z-index: 10;
   background-color: #fafafa;
   padding: 20px;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   border-radius: 4px;
   box-shadow: -12px 12px 20px -5px #eee;
   min-width: 210px;
+}
+
+.content .create-collection .totals p {
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .content .delivery-collection .totals {
@@ -425,3 +443,33 @@ form.filterset-form .erase-filters {
 .unsynchronized-collection-table .empty-row {
   display: none;
 }
+
+/* X-Small devices (portrait phones, less than 576px) */
+/* No media query for `xs` since this is the default in Bootstrap */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .content-wrapper {
+    font-size: 1.1rem;
+  }
+
+  .content .create-collection table {
+    font-size: 1rem;
+  }
+
+  .content .create-collection input {
+    width: auto;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+/* @media (min-width: 768px) { ... } */
+
+/* Large devices (desktops, 992px and up) */
+/* @media (min-width: 992px) { ... } */
+
+/* X-Large devices (large desktops, 1200px and up) */
+/* @media (min-width: 1200px) { ... } */
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+/* @media (min-width: 1400px) { ... } */

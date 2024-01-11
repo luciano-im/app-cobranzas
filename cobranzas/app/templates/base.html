@@ -138,7 +138,7 @@
         </div>
       </nav>
     </header>
-    <section class="content">
+    <section class="content container mt-4 mb-3">
       <div class="alert alert-danger offline" role="alert">
         <i class="bi bi-exclamation-circle-fill"></i> Estas offline!
       </div>
@@ -151,7 +151,7 @@
             <span class="sync-title">Ult. Sincronización</span>
           </div> 
           <button id="sync-button" type="button" class="btn btn-primary">
-            Sincronizar <i class="bi bi-arrow-repeat"></i>
+            <span class="d-none d-sm-inline">Sincronizar</span> <i class="bi bi-arrow-repeat"></i>
           </button>
           <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cobranzas pendientes de sincronizar!">
             <button type="button" class="btn btn-sm btn-danger" disabled>
@@ -160,7 +160,9 @@
           </span>
         </div>
       </div>
-      {% block content %}{% endblock %}
+      <div class="content-wrapper">
+        {% block content %}{% endblock %}
+      </div>
     </section>
     {% block extra_js %}{% endblock %}
     <!-- JavaScript Bundle with Popper -->

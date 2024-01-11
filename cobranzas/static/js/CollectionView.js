@@ -1,5 +1,7 @@
 'use strict';
 
+import { formatNumber } from "./utils.js";
+
 /** @class Renders the Collection template */
 
 export class CollectionView {
@@ -45,8 +47,8 @@ export class CollectionView {
     });
 
     let template = `<div class="sales-container">${salesContent}</div>
-                    <div class="totals d-flex flex-column align-items-end mb-5">
-                      <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p>
+                    <div class="totals d-flex flex-column align-items-end">
+                      <p class="p-0">Total: $<span id="total">0,00</span></p>
                       <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary" disabled>
                     </div>`;
 
@@ -257,13 +259,13 @@ class SaleComponent {
                           <span class="badge text-bg-primary">#<span class="id">${this.sale.id}</span></span>
                           <span class="badge text-bg-primary"><span class="date">${this.sale.date}</span></span>
                           <span class="badge text-bg-primary"><span class="installments">${this.sale.installmentsQty}</span> cuotas</span>
-                          <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount">${this.sale.paidAmount}</span></span>
-                          <span class="badge text-bg-primary">Pendiente: $<span class="pending-balance">${this.sale.pendingBalance}</span></span>
+                          <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount">${formatNumber(this.sale.paidAmount)}</span></span>
+                          <span class="badge text-bg-primary">Saldo: $<span class="pending-balance">${formatNumber(this.sale.pendingBalance)}</span></span>
                         </div>
-                        <p class="text-secondary mt-2 fs-6 fst-italic">${this.sale.remarks}</p>
+                        <p class="remarks text-secondary mt-2 fst-italic">${this.sale.remarks}</p>
                       </div>
                       <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
-                        <ol class="breadcrumb" style="font-weight: 700; font-size: 1.3rem;">
+                        <ol class="breadcrumb">
                           ${saleProducts}
                         </ol>
                       </div>
@@ -304,10 +306,10 @@ class SaleInstallmentsComponent {
     let template = `<table class="table table-hover next-installment">
                       <thead class="table-light">
                         <tr>
-                          <th scope="col">Cuota</th>
-                          <th scope="col">Importe Total</th>
-                          <th scope="col">Importe Pagado</th>
-                          <th scope="col">A Pagar</th>
+                          <th scope="col" class="col-2">Cuota</th>
+                          <th scope="col" class="col-3">Importe</th>
+                          <th scope="col" class="col-3">Pago</th>
+                          <th scope="col" class="col-4">A Pagar</th>
                         </tr>
                       </thead>
                       <tbody class="next-installment-tbody">
@@ -374,16 +376,16 @@ class SaleInstallmentFormComponent {
     let template = `<tr>
                       <input type="hidden" name="collection-__prefix__-installment" value="${this.props.installment}" id="id_collection-__prefix__-installment">
                       <input type="hidden" name="collection-__prefix__-sale_id" value="${this.saleID}" id="id_collection-__prefix__-sale_id">
-                      <th scope="row" class="installment">
+                      <th scope="row" class="installment col-2">
                         <input type="checkbox" name="collection-__prefix__-checked" id="id_collection-__prefix__-checked"> <span>${this.props.installment}</span>
                       </th>
-                      <td class="installment-amount">
+                      <td class="installment-amount col-3">
                         <input type="number" name="collection-__prefix__-installment_amount" value="${installmentAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-installment_amount" tabindex="-1">
                       </td>
-                      <td class="paid-amount">
+                      <td class="paid-amount col-3">
                         <input type="number" name="collection-__prefix__-paid_amount" value="${paidAmount}" readonly="" class="form-control-plaintext" step="any" id="id_collection-__prefix__-paid_amount" tabindex="-1">
                       </td>
-                      <td class="amount">
+                      <td class="amount col-4">
                         <div id="div_id_collection-__prefix__-amount" class="mb-3">
                           <input type="number" name="collection-__prefix__-amount" class="payment-input numberinput form-control" step="any" id="id_collection-__prefix__-amount" max="${payment}" value="0.00">
                         </div>

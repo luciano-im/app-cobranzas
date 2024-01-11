@@ -13,7 +13,7 @@
 <h2>Nuevo Cobro</h2>
 <form action="#" method="get" id="filter-customer" name="filter-customer">
   <div class="row">
-    <div class="col-8">
+    <div class="col">
       <select name="select-customer" id="select-customer" class="form-select" required>
         <option selected> -- Selecciona un Cliente -- </option>
         {% for customer in customers %}
@@ -21,14 +21,14 @@
         {% endfor %}
       </select>
     </div>
-    <div class="col-4">
-      <button type="submit" class="btn btn-primary">Buscar</button>
+    <div class="col-2 col-sm-3">
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
 
 <div class="data-container">
-  <div class="accordion accordion-flush create-collection">
+  <div class="accordion accordion-flush create-collection mt-5">
     <form action="{% url 'create-collection' %}" method="post" id="create-collection">
       {% csrf_token %}
       {{formset.management_form}}
