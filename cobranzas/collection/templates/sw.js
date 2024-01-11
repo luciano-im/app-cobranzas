@@ -7,6 +7,7 @@ const CACHE_NAME = 'collection-{{ version }}';
 const URLS_TO_CACHE = [
   "{% url 'offline' %}",
   "{% url 'manifest' %}",
+  "{% url 'home' %}",
   "{% url 'create-collection' %}",
   "{% url 'pending-collection' %}",
   "{% url 'print-local-collection' %}",
