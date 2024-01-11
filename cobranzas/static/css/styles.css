@@ -25,6 +25,23 @@
   font-size: 1.2rem;
 }
 
+.content .home {
+  padding-top: 5rem;
+}
+
+.content .home .main-actions-nav {
+  width: 400px;
+}
+
+.content .home .main-actions-nav a {
+  max-width: 280px;
+  width: 100%;
+}
+
+.content .home .main-actions-nav hr {
+  width: 100%;
+}
+
 .content .sale-creation hr {
   margin: 2rem 0;
 }

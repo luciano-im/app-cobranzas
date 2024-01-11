@@ -120,7 +120,7 @@ class ReceivableSalesView:
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'base.html'
+    template_name = 'home.html'
 
 
 class LoginView(LoginView):
