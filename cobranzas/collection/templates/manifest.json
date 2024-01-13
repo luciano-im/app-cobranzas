@@ -8,10 +8,10 @@
   "scope": "/",
   "start_url": "/",
   "name": "App Cobranzas",
-  "short_name": "cobranzas",
+  "short_name": "App Cobranzas",
   "description": "App de Cobranzas de Leiva Equipamientos",
   "dir": "ltr",
-  "lang": "en-US",
+  "lang": "es-AR",
   "orientation": "portrait-primary",
   "icons": [
     {
