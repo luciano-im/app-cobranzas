@@ -1,5 +1,5 @@
 .content-wrapper {
-  font-size: 1rem;
+  font-size: .9rem;
 }
 
 .content h2 {
@@ -20,9 +20,8 @@
   vertical-align: middle;
 }
 
-.content table td i,
-.content table th i {
-  font-size: 1.2rem;
+.content table .actions .btn {
+  padding: .15rem .35rem;
 }
 
 .content .home {
@@ -95,7 +94,7 @@
 }
 
 .content .table-with-installments-detail .installments-detail table {
-  font-size: .9rem;
+  /* font-size: .9rem; */
   max-width: 500px;
 }
 
@@ -189,9 +188,9 @@
   background-size: 15px;
 }
 
-.content .create-collection table {
+/* .content .create-collection table {
   font-size: .9rem;
-}
+} */
 
 .content .create-collection .totals {
   position: fixed;
@@ -444,16 +443,30 @@ form.filterset-form .erase-filters {
   display: none;
 }
 
+/* MEDIAQUERYS */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 400px) {
+  .content table .actions .btn {
+    padding: .25rem .55rem;
+  }
+}
+
 /* X-Small devices (portrait phones, less than 576px) */
 /* No media query for `xs` since this is the default in Bootstrap */
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
   .content-wrapper {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
-  .content .create-collection table {
+  .content table td i,
+  .content table th i {
+    font-size: 1.2rem;
+  }
+
+  .content table {
     font-size: 1rem;
   }
 

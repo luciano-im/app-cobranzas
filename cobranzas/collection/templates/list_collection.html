@@ -15,14 +15,14 @@
   <form action="{% url 'list-collection' %}" method="get" class="filterset-form">
     <div class="row">
       {% if request.user.is_admin %}
-        <div class="col-3">
+        <div class="col-sm-3">
           {{ filter_form.collector|as_crispy_field }}
         </div>
       {% endif %}
-      <div class="col-3">
+      <div class="col-sm-4">
         {{ filter_form.customer|as_crispy_field }}
       </div>
-      <div class="col-4">
+      <div class="col-sm-5">
         <label for="id_date_from" class="form-label">Fecha de Venta</label>
         <div class="input-group mb-3">
           <input type="date" name="date_from" class="dateinput form-control" id="id_date_from" value="{{filter_form.date_from.value}}">
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div>
-      <input type="submit" value="Filtrar" class="btn btn-secondary">
+      <input type="submit" value="Filtrar" class="btn btn-primary">
       <a href="{% url 'list-collection' %}" class="btn btn-secondary erase-filters">Borrar Filtros</a>
     </div>
   </form>
@@ -50,19 +50,19 @@
     <tbody>
       {% for collection in collections %}
         <tr class="collection-detail">
-          <th scope="row">{{collection.pk}}</th>
-          <td>{{collection.date|date:"d/m/Y"}}</td>
+          <td>{{collection.pk}}</td>
+          <td>{{collection.date|date:"d/m/y"}}</td>
           <td>{{collection.customer}}</td>
-          <td>{{collection.paid_amount|floatformat:2|intcomma}}</td>
-          <td>
+          <td>{{collection.paid_amount|floatformat:0|intcomma}}</td>
+          <td class="actions col-3 col-sm-4">
             <a href="{% url 'print-collection' collection.pk %}" class="btn btn-primary" target="_blank">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
-                <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51z"/>
-                <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
-              </svg>
-              Recibo
+              <i class="bi bi-receipt"></i>
+              <span class="d-none d-sm-inline">Recibo</span>
             </a>
-            <a href="{% url 'update-collection' collection.pk %}" class="btn btn-primary">Editar</a>
+            <a href="{% url 'update-collection' collection.pk %}" class="btn btn-primary">
+              <i class="bi bi-pencil-square"></i>
+              <span class="d-none d-sm-inline">Editar</span>
+            </a>
           </td>
         </tr>
         <tr>
@@ -87,9 +87,9 @@
                         {% for i in collection.collectioninstallment_set.all %}
                           <tr>
                             <td>{{i.sale_installment.sale.pk}}</td>
-                            <td>{{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
+                            <td>{{i.sale_installment.sale.date|date:"d/m/y"}}</td>
                             <td>{{i.sale_installment.installment}}</td>
-                            <td>{{i.amount|floatformat:2|intcomma}}</td>
+                            <td>{{i.amount|floatformat:0|intcomma}}</td>
                           </tr>
                           {% endfor %}
                       </tbody>
@@ -110,7 +110,7 @@
   const config = {
     search: true, // Toggle search feature. Default: false
     creatable: false, // Creatable selection. Default: false
-    clearable: false, // Clearable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
     placeholder: 'Buscar',

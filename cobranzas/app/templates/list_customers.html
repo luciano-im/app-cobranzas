@@ -52,7 +52,10 @@
             <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
           {% endif %}
           <td>
-            <a href="{% url 'update-customer' customer.pk %}" class="btn btn-primary">Editar</a>
+            <a href="{% url 'update-customer' customer.pk %}" class="btn btn-primary">
+              <i class="bi bi-pencil-square"></i>
+              <span class="d-none d-sm-inline">Editar</span>
+            </a>
           </td>
         </tr>
       {% endfor %}
