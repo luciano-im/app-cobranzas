@@ -259,7 +259,7 @@ class SaleComponent {
                           <span class="badge text-bg-primary">#<span class="id">${this.sale.id}</span></span>
                           <span class="badge text-bg-primary"><span class="date">${this.sale.date}</span></span>
                           <span class="badge text-bg-primary"><span class="installments">${this.sale.installmentsQty}</span> cuotas</span>
-                          <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount">${formatNumber(this.sale.paidAmount)}</span></span>
+                          <span class="badge text-bg-primary">Pago: $<span class="paid-amount">${formatNumber(this.sale.paidAmount)}</span></span>
                           <span class="badge text-bg-primary">Saldo: $<span class="pending-balance">${formatNumber(this.sale.pendingBalance)}</span></span>
                         </div>
                         <p class="remarks text-secondary mt-2 fst-italic">${this.sale.remarks}</p>

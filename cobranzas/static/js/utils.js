@@ -14,8 +14,8 @@ const getCookie = name => {
   return cookieValue;
 }
 
-const formatNumber = number => {
-  return number.toLocaleString("es-AR", { minimumFractionDigits: 2 });
+const formatNumber = (number, decimals = 0) => {
+  return number.toLocaleString("es-AR", { minimumFractionDigits: decimals });
 }
 
 const formatDate = date => {
