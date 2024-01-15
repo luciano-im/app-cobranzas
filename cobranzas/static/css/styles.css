@@ -126,7 +126,8 @@
   padding-top: .5rem;
 }
 
-.content .create-collection input[type="checkbox"] {
+.content .create-collection input[type="checkbox"],
+.content .delivery-collection input[type="checkbox"] {
   margin-right: .5rem;
 }
 
@@ -134,7 +135,8 @@
   outline: 0;
 }
 
-.content .create-collection form {
+.content .create-collection form,
+.content .delivery-collection form {
   max-width: 1200px;
   width: 100%;
 }
@@ -188,11 +190,8 @@
   background-size: 15px;
 }
 
-/* .content .create-collection table {
-  font-size: .9rem;
-} */
-
-.content .create-collection .totals {
+.content .create-collection .totals,
+.content .delivery-collection .totals {
   position: fixed;
   bottom: 0;
   right: 0;
@@ -205,13 +204,14 @@
   min-width: 210px;
 }
 
-.content .create-collection .totals p {
+.content .create-collection .totals p,
+.content .delivery-collection .totals p {
   font-size: 1.2rem;
   font-weight: 500;
 }
 
-.content .delivery-collection .totals {
-  margin-top: 4rem;
+.content .delivery-collection {
+  margin-bottom: 12rem;
 }
 
 form.filterset-form {
@@ -448,7 +448,7 @@ form.filterset-form .erase-filters {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 400px) {
   .content table .actions .btn {
-    padding: .25rem .55rem;
+    padding: .25rem .5rem;
   }
 }
 

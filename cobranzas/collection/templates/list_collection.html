@@ -50,10 +50,10 @@
     <tbody>
       {% for collection in collections %}
         <tr class="collection-detail">
-          <td>{{collection.pk}}</td>
-          <td>{{collection.date|date:"d/m/y"}}</td>
-          <td>{{collection.customer}}</td>
-          <td>{{collection.paid_amount|floatformat:0|intcomma}}</td>
+          <td class="col-1">{{collection.pk}}</td>
+          <td class="col-2 col-sm-1">{{collection.date|date:"d/m/y"}}</td>
+          <td class="col-4">{{collection.customer}}</td>
+          <td class="col-2 text-end">{{collection.paid_amount|floatformat:0|intcomma}}</td>
           <td class="actions col-3 col-sm-4">
             <a href="{% url 'print-collection' collection.pk %}" class="btn btn-primary" target="_blank">
               <i class="bi bi-receipt"></i>
@@ -88,8 +88,8 @@
                           <tr>
                             <td>{{i.sale_installment.sale.pk}}</td>
                             <td>{{i.sale_installment.sale.date|date:"d/m/y"}}</td>
-                            <td>{{i.sale_installment.installment}}</td>
-                            <td>{{i.amount|floatformat:0|intcomma}}</td>
+                            <td class="text-center">{{i.sale_installment.installment}}</td>
+                            <td class="text-end">{{i.amount|floatformat:0|intcomma}}</td>
                           </tr>
                           {% endfor %}
                       </tbody>
