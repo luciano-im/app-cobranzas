@@ -2,6 +2,11 @@
   font-size: .9rem;
 }
 
+#filter-customer,
+#filter-collector {
+  margin-bottom: 3rem;
+}
+
 .content h2 {
   border-bottom: 1px solid #BBB;
   margin: 1.2rem 0 2rem 0;

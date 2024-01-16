@@ -28,7 +28,7 @@
 </form>
 
 <div class="data-container">
-  <div class="accordion accordion-flush create-collection mt-5">
+  <div class="accordion accordion-flush create-collection">
     <form action="{% url 'create-collection' %}" method="post" id="create-collection">
       {% csrf_token %}
       {{formset.management_form}}
