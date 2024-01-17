@@ -63,7 +63,7 @@
   </div>
   <hr>
   <h3 class="title">Esquema de Pago</h3>
-  <div class="row">
+  <div class="row align-items-end">
     <div class="col-4">
       {{ form.price|as_crispy_field }}
     </div>
@@ -74,7 +74,7 @@
       {{ form.installment_amount|as_crispy_field }}
     </div>
   </div>
-  <div class="col-6" id="payment-scheme">
+  <div class="col-10 col-sm-6" id="payment-scheme">
     <p class="title">Detalles:</p>
     <table class="table">
       <tbody>
