@@ -29,12 +29,13 @@ const formatDate = date => {
   return dayName + " " + day + "/" + month + "/" + year + " " + hour + ":" + minute;
 }
 
-const appendAlert = (root, message, type) => {
+const appendAlert = (root, message, type, closeButton = true) => {
   const wrapper = document.createElement('div');
+  const closeButtonHTML = closeButton ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
   wrapper.innerHTML = [
     `<div class="alert alert-${type} alert-dismissible" role="alert">`,
     `   <div>${message}</div>`,
-    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    closeButtonHTML,
     '</div>'
   ].join('');
 

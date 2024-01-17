@@ -8,7 +8,7 @@
 <h2>Rendición de Cobranza</h2>
 <form action="{% url 'collection-delivery' %}" method="get" id="filter-collector" name="filter-collector">
   <div class="row">
-    <div class="col-8">
+    <div class="col col-sm-8">
       <select name="select-collector" id="select-collector" class="form-select" required>
         <option disabled selected> -- Selecciona un Cobrador -- </option>
         {% for c in collector %}
@@ -16,15 +16,15 @@
         {% endfor %}
       </select>
     </div>
-    <div class="col-4">
-      <button type="submit" class="btn btn-primary">Buscar</button>
+    <div class="col-2 col-sm-3">
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
 
-{% if collections %}
 <div class="data-container">
   <div class="delivery-collection">
+  {% if collections %}
     <form action="{% url 'collection-delivery' %}" method="post" id="delivery-collection">
       {% csrf_token %}
       <input type="hidden" name="selected-collector" value="{{selected_collector}}">
@@ -55,9 +55,15 @@
         <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
       </div>
     </form>
+  {% else %}
+    {% if selected_collector %}
+      <div class="alert alert-warning" role="alert">
+        No hay cobranzas pendientes!
+      </div>
+    {% endif %}
+  {% endif %}
   </div>
 </div>
-{% endif %}
 {% endblock %}
 
 

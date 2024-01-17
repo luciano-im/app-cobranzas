@@ -120,14 +120,20 @@ filterCustomerForm.addEventListener('submit', async event => {
       installments = storedInstallments.installments;
     }
 
-    // Add sales instances to collection
-    sales.map(sale => {
-      collection.addSale(Sale.create(sale.id, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.remarks, sale.products, installments[sale.id], storedCollections[sale.id]));
-    });
+    if (sales) {
+      // Add sales instances to collection
+      sales.map(sale => {
+        collection.addSale(Sale.create(sale.id, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.remarks, sale.products, installments[sale.id], storedCollections[sale.id]));
+      });
 
-    // Create a collection view and render content in the page
-    let collectionView = new CollectionView(collection, document.querySelector(".collection-container"));
-    collectionView.render();
+      // Create a collection view and render content in the page
+      let collectionView = new CollectionView(collection, document.querySelector(".collection-container"));
+      collectionView.render();
+    } else {
+      // Empty current collection view
+      collectionContainer.innerHTML = '';
+      appendAlert(alertErrors, 'No existen cuotas pendientes!', 'warning', false);
+    }
   } else {
     // Empty current collection view
     collectionContainer.innerHTML = '';
