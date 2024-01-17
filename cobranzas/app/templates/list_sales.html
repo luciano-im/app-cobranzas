@@ -14,18 +14,18 @@
 
   <form action="{% url 'list-sales' %}" method="get" class="filterset-form">
     <div class="row">
-      <div class="col-1">
+      <div class="col-sm-2 col-md-1">
         {{ filter_form.id|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-5 col-md-5">
         {{ filter_form.customer|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-5 col-md-5">
         {{ filter_form.product|as_crispy_field }}
       </div>
     </div>
     <div class="row">
-      <div class="col-4">
+      <div class="col-sm-8 col-md-6 col-lg-5">
         <label for="id_date_from" class="form-label">Fecha de Venta</label>
         <div class="input-group mb-3">
           <input type="date" name="date_from" class="dateinput form-control" id="id_date_from" value="{{filter_form.date_from.value}}">
@@ -46,31 +46,31 @@
         <th scope="col">ID</th>
         <th scope="col">Fecha</th>
         <th scope="col">Cliente</th>
-        <th scope="col">Productos</th>
+        {% comment %} <th scope="col" class="d-none d-sm-table-cell">Productos</th> {% endcomment %}
         <th scope="col">Importe</th>
-        <th scope="col">Cuotas</th>
-        <th scope="col">Cobrado</th>
-        <th scope="col">A Cobrar</th>
-        <th scope="col">Acciones</th>
+        <th scope="col" class="text-center d-none d-sm-table-cell">Cuotas</th>
+        <th scope="col" class="text-center d-none d-md-table-cell">Cobrado</th>
+        <th scope="col" class="text-center d-none d-md-table-cell">A Cobrar</th>
+        <th scope="col" class="text-center">Acciones</th>
       </tr>
     </thead>
     <tbody>
       {% for sale in sales %}
         <tr class="sale-detail {% if sale.uncollectible %}is-uncollectible{% endif %}">
-          <th scope="row">{{sale.pk}}</th>
-          <td>{{sale.date|date:"d/m/Y"}}</td>
-          <td>{{sale.customer}}</td>
-          <td>
+          <th scope="row" class="col-1">{{sale.pk}}</th>
+          <td class="col-2 col-sm-1">{{sale.date|date:"d/m/y"}}</td>
+          <td class="col-4 col-sm-3">{{sale.customer}}</td>
+          {% comment %} <td class="col-sm-1 d-none d-sm-table-cell">
             {% if sale.products_quantity == 1 %}
               {{sale.products_quantity}} producto
             {% else %}
               {{sale.products_quantity}} productos
-            {% endif %}</td>
-          <td>{{sale.price|floatformat:2|intcomma}}</td>
-          <td>{{sale.installments}}</td>
-          <td>{{sale.paid_amount|floatformat:2|intcomma}}</td>
-          <td>{{sale.pending_balance|floatformat:2|intcomma}}</td>
-          <td>
+            {% endif %}</td> {% endcomment %}
+          <td class="col-2 col-sm-1">{{sale.price|floatformat:0|intcomma}}</td>
+          <td class="text-center d-none d-sm-table-cell">{{sale.installments}}</td>
+          <td class="text-end d-none d-md-table-cell">{{sale.paid_amount|floatformat:0|intcomma}}</td>
+          <td class="text-end d-none d-md-table-cell">{{sale.pending_balance|floatformat:0|intcomma}}</td>
+          <td class="actions text-center col-2">
             <a href="{% url 'update-sale' sale.pk %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
               <span class="d-none d-sm-inline">Editar</span>
@@ -82,10 +82,40 @@
             <div class="accordion accordion-flush" id="accordion-flush-{{sale.pk}}">
               <div class="accordion-item">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-                  Detalle de Cuotas
+                  Más detalles
                 </button>
                 <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#accordion-flush-{{sale.pk}}">
                   <div class="accordion-body">
+                    <h6 class="d-md-none">Otros Datos</h6>
+                    <table class="table d-md-none">
+                      <thead class="table-light">
+                        <th scope="col" class="text-center d-sm-none">Cuotas</th>
+                        <th scope="col" class="text-center">Cobrado</th>
+                        <th scope="col" class="text-center">A Cobrar</th>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-center d-sm-none">{{sale.installments}}</td>
+                          <td class="text-center">{{sale.paid_amount|floatformat:0|intcomma}}</td>
+                          <td class="text-center">{{sale.pending_balance|floatformat:0|intcomma}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table class="table">
+                      <thead class="table-light">
+                        <th scope="col">Producto</th>
+                        <th scope="col">Precio</th>
+                      </thead>
+                      <tbody>
+                        {% for p in sale.saleproduct_set.all %}
+                          <tr>
+                            <td>{{p.product}}</td>
+                            <td>{{p.price|floatformat:0|intcomma}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <h6>Detalle de Cuotas</h6>
                     <table class="table">
                       <thead class="table-light">
                         <tr>
@@ -99,11 +129,11 @@
                         {% for i in sale.saleinstallment_set.all %}
                           <tr>
                             <td scope="row">{{i.installment}}</td>
-                            <td>{{i.installment_amount|floatformat:2|intcomma}}</td>
-                            <td>{{i.paid_amount|floatformat:2|intcomma}}</td>
+                            <td>{{i.installment_amount|floatformat:0|intcomma}}</td>
+                            <td>{{i.paid_amount|floatformat:0|intcomma}}</td>
                             <td>{{i.get_status_display}}</td>
                           </tr>
-                          {% endfor %}
+                        {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -122,7 +152,7 @@
   const config = {
     search: true, // Toggle search feature. Default: false
     creatable: false, // Creatable selection. Default: false
-    clearable: false, // Clearable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
     placeholder: 'Buscar',
