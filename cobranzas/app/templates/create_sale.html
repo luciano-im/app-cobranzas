@@ -22,13 +22,13 @@
       {% with products.empty_form as emptyform %}
       <div class="form-row" data-form-index="">
         <div class="row">
-          <div class="col-6">
+          <div class="col-7 col-sm-8">
             {{ emptyform.product|as_crispy_field }}
           </div>
-          <div class="col-4">
+          <div class="col-3">
             {{ emptyform.price|as_crispy_field }}
           </div>
-          <div class="col-2">
+          <div class="col-2 col-sm-1">
             <button id="delete-form" type="button" class="btn btn-secondary remove-form-row" data-form-index="">
               <i class="bi bi-trash"></i>
             </button>
@@ -39,20 +39,20 @@
     </div>
     <div class="product-forms">
       <div class="row">
-        <div class="col-6">
+        <div class="col-7 col-sm-8">
           <p style="margin-bottom: .5rem;">Producto</p>
         </div>
-        <div class="col-4">
+        <div class="col-3">
           <p style="margin-bottom: .5rem;">Precio</p>
         </div>
       </div>
       {% for productform in products %}
       <div class="form-row" data-form-index="0">
         <div class="row">
-          <div class="col-6">
+          <div class="col-7 col-sm-8">
             {{ productform.product|as_crispy_field }}
           </div>
-          <div class="col-4">
+          <div class="col-3">
             {{ productform.price|as_crispy_field }}
           </div>
         </div>

@@ -448,9 +448,8 @@ form.filterset-form .erase-filters {
   display: none;
 }
 
-/* MEDIAQUERYS */
+/* MEDIAQUERYS MIN-WIDTH */
 
-/* Small devices (landscape phones, 576px and up) */
 @media (min-width: 400px) {
   .content table .actions .btn {
     padding: .25rem .5rem;
@@ -491,3 +490,11 @@ form.filterset-form .erase-filters {
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 /* @media (min-width: 1400px) { ... } */
+
+/* MEDIAQUERYS MAX-WIDTH */
+
+@media (max-width: 575px) {
+  .content .sale-creation .products-list .row > * {
+    padding-right: 0 !important;
+  }
+}
