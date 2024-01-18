@@ -6,11 +6,16 @@
 {% load lookup_dict %}
 {% load get_sale_products %}
 
+{% block extra_header %}
+  <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
+  <script src="{% static 'library/dselect/dselect.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <h2>Ventas Incobrables</h2>
 <form action="{% url 'create-uncollectible-sale' %}" method="get" id="filter-customer" name="filter-customer">
   <div class="row">
-    <div class="col-8">
+    <div class="col col-sm-8">
       <select name="select-customer" id="select-customer" class="form-select" required>
         <option disabled selected> -- Selecciona un Cliente -- </option>
         {% for customer in customers %}
@@ -18,15 +23,15 @@
         {% endfor %}
       </select>
     </div>
-    <div class="col-4">
-      <button type="submit" class="btn btn-primary">Buscar</button>
+    <div class="col-2 col-sm-3">
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
 
-{% if data %}
-  <div class="data-container">
-    <div class="accordion accordion-flush create-collection">
+<div class="data-container">
+  {% if data %}
+    <div class="accordion accordion-flush uncollectible-sale">
       <form action="{% url 'create-uncollectible-sale' %}" method="post" id="create-uncollectible-sale">
         {% csrf_token %}
         <input type="hidden" class="selected-customer" name="customer" value={{selected_customer}}>
@@ -36,11 +41,10 @@
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">Productos</th>
               <th scope="col">Fecha</th>
               <th scope="col">Importe Total</th>
-              <th scope="col">Importe Pagado</th>
-              <th scope="col">Cuotas Pendientes</th>
+              <th scope="col" class="d-none d-md-table-cell">Importe Pagado</th>
+              <th scope="col" class="d-none d-sm-table-cell">Cuotas Pendientes</th>
               <th scope="col" style="color: red;">Saldo Deudor</th>
               <th scope="col">Incobrable?</th>
             </tr>
@@ -48,32 +52,56 @@
           <tbody>
             {% for sale in data %}
               <tr class="sale-detail">
-                <th scope="row">{{sale.id}}</th>
-                <td>
-                  {% for product in sale.products %}
-                  <span class="badge text-bg-primary">{{product}}</span>
-                  {% endfor %}
-                </td>
-                <td>{{sale.date|date:"d/m/Y"}}</td>
-                <td>{{sale.price|floatformat:2|intcomma}}</td>
-                <td>{{sale.paid_amount|floatformat:2|intcomma}}</td>
-                <td>{{sale.installments_data|length}}</td>
-                <td style="color: red;">{{sale.pending_balance|floatformat:2|intcomma}}</td>
-                <td><input type="checkbox" name="uncollectible-sale" value="{{sale.id}}"></td>
+                <th scope="row" class="col-1">{{sale.id}}</th>
+                <td class="col-2">{{sale.date}}</td>
+                <td class="text-end col-3 col-sm-2">{{sale.price|floatformat:0|intcomma}}</td>
+                <td class="text-end d-none d-md-table-cell col-md-2">{{sale.paid_amount|floatformat:0|intcomma}}</td>
+                <td class="text-center d-none d-sm-table-cell col-sm-2">{{sale.installments_data|length}}</td>
+                <td class="text-end col-3 col-sm-2" style="color: red;">{{sale.pending_balance|floatformat:0|intcomma}}</td>
+                <td class="text-center col-3 col-md-2"><input type="checkbox" name="uncollectible-sale" value="{{sale.id}}"></td>
               </tr>
               <tr>
                 <td colspan="9" class="installments-detail">
                   <div class="accordion accordion-flush" id="accordion-flush-{{sale.id}}">
                     <div class="accordion-item">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.id}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.id}}">
-                        Detalle de Cuotas Pendientes
+                        Más detalles
                       </button>
                       <div id="flush-collapse-{{sale.id}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.id}}" data-bs-parent="#accordion-flush-{{sale.id}}">
                         <div class="accordion-body">
+                          <h6 class="d-md-none">Otros Datos</h6>
+                          <table class="table d-md-none">
+                            <thead class="table-light">
+                              <th scope="col" class="text-center d-sm-none">Cuotas Pendientes</th>
+                              <th scope="col" class="text-center">Cobrado</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="text-center d-sm-none">{{sale.installments_data|length}}</td>
+                                <td class="text-center">{{sale.paid_amount|floatformat:0|intcomma}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <table class="table">
+                            <thead class="table-light">
+                              <th scope="col">Productos</th>
+                              {% comment %} <th scope="col">Precio</th> {% endcomment %}
+                            </thead>
+                            <tbody>
+                              {% for product in sale.products %}
+                                <tr>
+                                  <td>{{product}}</td>
+                                  {% comment %} <td>{{p.price|floatformat:0|intcomma}}</td> {% endcomment %}
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                          <br>
+                          <h6>Detalle de Cuotas</h6>
                           <table class="table">
                             <thead class="table-light">
                               <tr>
-                                <th scope="row">#</th>
+                                <th scope="row">Cuota</th>
                                 <th>Importe</th>
                                 <th>Pagado</th>
                                 <th>Estado</th>
@@ -106,6 +134,35 @@
         </div>
       </form>
     </div>
-  </div>
-{% endif %}
+  {% else %}
+    {% if selected_customer %}
+      <div class="alert alert-warning" role="alert">
+        No hay ventas pendientes!
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: false, // Creatable selection. Default: false
+    clearable: false, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: '', // Can be "sm" or "lg". Default ''
+    placeholder: 'Buscar',
+    noResults: 'Sin Resultados'
+  };
+  dselect(document.querySelector('#select-customer'), config);
+
+  // Set focus on search field when user opens the select element
+  const customerSelect = document.querySelector('#select-customer + div.dselect-wrapper');
+  const customerSearch = customerSelect.querySelector('.dropdown-menu input');
+
+  customerSelect.addEventListener('shown.bs.dropdown', e => {
+    customerSearch.focus();
+  });
+</script>
 {% endblock %}

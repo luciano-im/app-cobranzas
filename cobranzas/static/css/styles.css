@@ -141,7 +141,8 @@
 }
 
 .content .create-collection form,
-.content .delivery-collection form {
+.content .delivery-collection form,
+.content .uncollectible-sale form {
   max-width: 1200px;
   width: 100%;
 }
