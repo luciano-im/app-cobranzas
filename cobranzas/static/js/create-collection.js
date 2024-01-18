@@ -183,7 +183,7 @@ createCollectionForm.addEventListener('submit', async event => {
 
     // Send pending request and update local database
     sendPendingRequests();
-    synchronizeLocalDatabase();
+    //synchronizeLocalDatabase();
   }).catch(async err => {
     // Empty form and customer select field
     clearForm();
