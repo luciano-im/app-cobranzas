@@ -22,6 +22,8 @@ from app.models import User, Customer, Sale, Product, SaleProduct, SaleInstallme
 
 from app.permissions import AdminPermission
 
+from silk.profiling.profiler import silk_profile
+
 
 class FilterSetView:
 
@@ -247,6 +249,7 @@ class SaleCreationView(LoginRequiredMixin, AdminPermission, CreateView):
             context['products'] = create_saleproduct_formset(1, form=SaleProductCreationForm)
         return context
 
+    @silk_profile(name='SaleCreation post')
     def post(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
@@ -360,6 +363,7 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         ('product', 'saleproduct__product_id', 'exact'),
     ]
 
+    @silk_profile(name='SaleList get_queryset')
     def get_queryset(self):
         filters = self.get_filters(self.request)
         if filters:

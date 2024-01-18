@@ -334,6 +334,7 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
         ('date_to', 'date', 'lte'),
     ]
 
+    @silk_profile(name='CollectionList get_queryset')
     def get_queryset(self):
         filters = self.get_filters(self.request)
         if filters:
@@ -455,6 +456,7 @@ class LocalCollectionPrintView(LoginRequiredMixin, TemplateView):
 
 class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View):
 
+    @silk_profile(name='CollectionData get')
     def get(self, request, *args, **kwargs):
         # If the user is not an admin then filter collections by loggued user
         if request.user.is_admin:
