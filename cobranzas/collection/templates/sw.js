@@ -208,6 +208,16 @@ self.addEventListener('fetch', event => {
     if (event.request.method == "POST") {
       return event.respondWith(networkFirst(event.request, requestUrl.pathname, manageCreateCollection));
     }
+  } else if (requestUrl.pathname == "/sw-version") {
+    var data = {
+      version: VERSION
+    };
+
+    return event.respondWith(
+      new Response(JSON.stringify(data), {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    );
   }
 
   return event.respondWith(networkFirst(event.request, requestUrl.pathname));
