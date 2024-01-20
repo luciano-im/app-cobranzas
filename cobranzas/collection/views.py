@@ -3,8 +3,8 @@ from datetime import datetime, time
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Q, Sum, F
-from django.http import JsonResponse, Http404
+from django.db.models import Q, Sum, F, Count, Prefetch
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views import View
@@ -21,51 +21,67 @@ from collection.forms import CollectionFormset, CollectionFilterForm
 
 from app.permissions import AdminPermission
 
+from app.serializers import SalesByCustomerSerializer, InstallmentsByCustomerSerializer, CustomersSerializer
+from app.serializers import JsonISO88591EncodingRenderer
+
 from silk.profiling.profiler import silk_profile
+from rest_framework.renderers import JSONRenderer
 
 
 class CollectionData(ReceivableSalesView):
 
-    def __get_data_installments_detail(self):
-        data = dict()
+    def __get_data_installments_detail(self, filters):
+        # Prefetch() executes a filter on the Sale records
+        result = Customer.objects.\
+            filter(filters).\
+            prefetch_related(
+                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related('saleinstallment_set'))
+            )
 
-        for s in self.sales_with_pending_balance:
-            if not data.get(s['customer']):
-                data[s['customer']] = dict()
+        serializer = InstallmentsByCustomerSerializer(result, many=True)
+        # json = JSONRenderer().render(serializer.data)
+        return serializer.data
 
-            installments = self.get_installments(s['pk'])
+    def __get_data_sales_detail(self, filters):
+        # Prefetch() executes a filter on the Sale records
+        result = Customer.objects.\
+            filter(filters).\
+            prefetch_related(
+                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')))
+            )
 
-            data[s['customer']][s['pk']] = {
-                'id': s['pk'],
-                'installments': list(installments)
-            }
+        serializer = SalesByCustomerSerializer(result, many=True)
+        # json = JSONRenderer().render(serializer.data)
+        return serializer.data
 
-        return data
+    def __get_data_customers_detail(self):
+        # If the user is not an admin then filter collections by loggued user
+        if self.request.user.is_admin:
+            result = Customer.objects.order_by('name')
+        else:
+            result = Customer.objects.filter(collector=self.request.user).order_by('name')
 
-    def __get_data_sales_detail(self):
-        data = dict()
-
-        for s in self.sales_with_pending_balance:
-            if not data.get(s['customer']):
-                data[s['customer']] = []
-
-            temp = self.get_sale(s['pk'])
-
-            data[s['customer']].append(temp)
-
-        return data
+        serializer = CustomersSerializer(result, many=True)
+        # json = JSONRenderer().render(serializer.data)
+        return serializer.data
 
     def get_data(self, customer=None):
-        self.set_sales_with_pending_balance(customer)
-        sales = self.__get_data_sales_detail()
-        installments = self.__get_data_installments_detail()
-
+        filters = self.get_customers_filter(customer)
+        sales = self.__get_data_sales_detail(filters)
+        installments = self.__get_data_installments_detail(filters)
+        customers = self.__get_data_customers_detail()
+        last_update = KeyValueStore.get('sync')
         data = {
             'sales': sales,
-            'installments': installments
+            'installments': installments,
+            'customers': customers,
+            'last_update': last_update
         }
+        # data = JsonISO88591EncodingRenderer().render(f'"sales":{sales}, "installments":{installments}, "customers":{customers}, "last_update":"{last_update}"')
+        # data = JSONRenderer().render(f'"sales":{sales}, "installments":{installments}, "customers":{customers}, "last_update":"{last_update}"')
+        res = JSONRenderer().render(data)
 
-        return data
+        return res
 
     def get_customers(self, user):
         # If the user is not an admin then filter collections by loggued user
@@ -458,20 +474,12 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
 
     @silk_profile(name='CollectionData get')
     def get(self, request, *args, **kwargs):
-        # If the user is not an admin then filter collections by loggued user
-        if request.user.is_admin:
-            customers = Customer.objects.order_by('name').values('pk', 'name', 'address', 'telephone', 'city')
-        else:
-            customers = Customer.objects.filter(collector=self.request.user).order_by('name').values('pk', 'name', 'address', 'telephone', 'city')
-
         # get_data return sales and installments data
         data = self.get_data()
-        data['customers'] = list(customers)
-        data['last_update'] = KeyValueStore.get('sync')
 
-        CollectorSyncLog.objects.create(user=request.user)
+        # CollectorSyncLog.objects.create(user=request.user)
 
-        return JsonResponse(data)
+        return HttpResponse(data, content_type="application/json")
 
 
 class PendingCollectionView(LoginRequiredMixin, TemplateView):

@@ -151,20 +151,18 @@ const synchronizeLocalDatabase = async () => {
           db.emptyStore('installments');
           db.emptyStore('customers');
           // Insert sales
-          const sales_keys = Object.keys(result.sales);
-          for (var key of sales_keys) {
+          for (var s of result.sales) {
             const data = {
-              'customer': key,
-              'sales': result.sales[key]
+              'customer': s.pk,
+              'sales': s.sale_set
             }
             db.add(data, 'sales');
           }
           // Insert installments
-          const installments_keys = Object.keys(result.installments);
-          for (var key of installments_keys) {
+          for (var i of result.installments) {
             const data = {
-              'customer': key,
-              'installments': result.installments[key]
+              'customer': i.pk,
+              'installments': i.sale_set
             }
             db.add(data, 'installments');
           }
