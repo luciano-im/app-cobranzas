@@ -21,8 +21,7 @@ from collection.forms import CollectionFormset, CollectionFilterForm
 
 from app.permissions import AdminPermission
 
-from app.serializers import SalesByCustomerSerializer, InstallmentsByCustomerSerializer, CustomersSerializer
-from app.serializers import JsonISO88591EncodingRenderer
+from app.serializers import SalesByCustomerSerializer, CustomersSerializer
 
 from silk.profiling.profiler import silk_profile
 from rest_framework.renderers import JSONRenderer
@@ -30,55 +29,47 @@ from rest_framework.renderers import JSONRenderer
 
 class CollectionData(ReceivableSalesView):
 
-    def __get_data_installments_detail(self, filters):
-        # Prefetch() executes a filter on the Sale records
-        result = Customer.objects.\
-            filter(filters).\
-            prefetch_related(
-                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related('saleinstallment_set'))
-            )
-
-        serializer = InstallmentsByCustomerSerializer(result, many=True)
-        # json = JSONRenderer().render(serializer.data)
-        return serializer.data
-
     def __get_data_sales_detail(self, filters):
-        # Prefetch() executes a filter on the Sale records
+        # Prefetch() executes a filter on the Sale records to filter already paid sales
+        # Prefetch() executes a filter on SaleInstallment to filter PAID installments
         result = Customer.objects.\
-            filter(filters).\
             prefetch_related(
-                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')))
-            )
+                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
+                    Prefetch('saleinstallment_set', queryset=SaleInstallment.objects.filter(~Q(status='PAID')))
+                ))
+            ).\
+            filter(filters).distinct()
 
         serializer = SalesByCustomerSerializer(result, many=True)
-        # json = JSONRenderer().render(serializer.data)
         return serializer.data
 
-    def __get_data_customers_detail(self):
+    def __get_data_customers_detail(self, customer):
+        if customer:
+            filters = Q(id=customer)
+        else:
+            filters = Q()
+
         # If the user is not an admin then filter collections by loggued user
         if self.request.user.is_admin:
-            result = Customer.objects.order_by('name')
+            result = Customer.objects.filter(filters).order_by('name')
         else:
-            result = Customer.objects.filter(collector=self.request.user).order_by('name')
+            result = Customer.objects.filter(filters).filter(collector=self.request.user).order_by('name')
 
         serializer = CustomersSerializer(result, many=True)
-        # json = JSONRenderer().render(serializer.data)
         return serializer.data
 
     def get_data(self, customer=None):
         filters = self.get_customers_filter(customer)
         sales = self.__get_data_sales_detail(filters)
-        installments = self.__get_data_installments_detail(filters)
-        customers = self.__get_data_customers_detail()
+        customers = self.__get_data_customers_detail(customer)
         last_update = KeyValueStore.get('sync')
+
         data = {
             'sales': sales,
-            'installments': installments,
             'customers': customers,
             'last_update': last_update
         }
-        # data = JsonISO88591EncodingRenderer().render(f'"sales":{sales}, "installments":{installments}, "customers":{customers}, "last_update":"{last_update}"')
-        # data = JSONRenderer().render(f'"sales":{sales}, "installments":{installments}, "customers":{customers}, "last_update":"{last_update}"')
+
         res = JSONRenderer().render(data)
 
         return res
@@ -159,11 +150,9 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
             if self.collector_validation(selected_customer, self.collector):
                 # get_data return sales and installments data
                 data = self.get_data(selected_customer)
-                data['customers'] = list(context['customers'])
-                data['selected_customer'] = selected_customer
                 context['selected_customer'] = selected_customer
 
-                return JsonResponse(data)
+                return HttpResponse(data, content_type="application/json")
             else:
                 # Add this exception as a default behavior if collector_validation didn't catch any error
                 raise PermissionDenied

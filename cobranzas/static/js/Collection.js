@@ -100,7 +100,7 @@ export class Sale {
 
     // Create installments
     let saleInstallments = [];
-    installments.installments.map(item => {
+    installments.map(item => {
       // If the installment is not in paidInstallments, then create the installment instance with
       // the data from item
       if (!(item.installment in paidInstallments)) {

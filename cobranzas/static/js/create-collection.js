@@ -99,7 +99,6 @@ filterCustomerForm.addEventListener('submit', async event => {
     selectedCustomerInput.setAttribute('value', selectCustomer.value);
     // Stores sales and installment objects
     let sales;
-    let installments;
     // Get pending collections stored in indexedDB
     const storedCollections = await storedCollectionsByCustomer(selectCustomer.value) || {};
 
@@ -108,22 +107,19 @@ filterCustomerForm.addEventListener('submit', async event => {
       const result = await response.json();
 
       // App is online
-      sales = result.sales[selectCustomer.value];
-      installments = result.installments[selectCustomer.value];
+      sales = result.sales[0].sale_set;
     } catch (err) {
       // If app is offline, then load data from indexedDB
       // Get sales and installments stored in indexedDB
-      const storedSales = await db.get(selectCustomer.value, 'sales');
-      const storedInstallments = await db.get(selectCustomer.value, 'installments');
+      const storedSales = await db.get(parseInt(selectCustomer.value), 'sales');
 
       sales = storedSales.sales;
-      installments = storedInstallments.installments;
     }
 
     if (sales) {
       // Add sales instances to collection
       sales.map(sale => {
-        collection.addSale(Sale.create(sale.id, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.remarks, sale.products, installments[sale.id], storedCollections[sale.id]));
+        collection.addSale(Sale.create(sale.pk, sale.date, sale.installments, sale.paid_amount, sale.pending_balance, sale.price, sale.remarks, sale.products, sale.saleinstallment_set, storedCollections[sale.pk]));
       });
 
       // Create a collection view and render content in the page

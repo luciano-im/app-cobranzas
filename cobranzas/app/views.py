@@ -66,7 +66,7 @@ class ReceivableSalesView:
         # If user is admin get all sales
         if user.is_admin:
             if customer:
-                q_filter = Q(customer=customer)
+                q_filter = Q(id=customer)
             else:
                 q_filter = Q()
         else:
@@ -77,16 +77,17 @@ class ReceivableSalesView:
                 # If customer's collector is not the current user then get all customer sales whose collector
                 # is the current user
                 if customer_record.collector == user:
-                    q_filter = Q(customer=customer)
+                    q_filter = Q(id=customer)
                 else:
-                    q_filter = Q(customer=customer, collector=user)
+                    q_filter = Q(id=customer, sale_set__collector=user)
             else:
                 # If customer is None then get sales of customers whose collector is the current user
                 # and get those whose collector is the current user but the customer collector is not the current user
-                q_filter = Q(customer__collector=user) | Q(~Q(customer__collector=user), collector=user)
+                q_filter = Q(collector=user) | Q(~Q(collector=user), sale__collector=user)
 
         return q_filter
 
+    # TODO: Check if this method still works
     def set_sales_with_pending_balance(self, customer=None):
         filters = self.get_customers_filter(customer)
         self.sales_with_pending_balance = self.get_pending_sales(filters, ['pk', 'customer'])

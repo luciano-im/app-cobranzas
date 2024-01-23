@@ -158,14 +158,6 @@ const synchronizeLocalDatabase = async () => {
             }
             db.add(data, 'sales');
           }
-          // Insert installments
-          for (var i of result.installments) {
-            const data = {
-              'customer': i.pk,
-              'installments': i.sale_set
-            }
-            db.add(data, 'installments');
-          }
           // Insert customers
           const customers = Object.values(result.customers);
           db.addMany(customers, 'customers');
