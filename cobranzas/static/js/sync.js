@@ -118,10 +118,14 @@ const sendPendingRequests = async () => {
       }
     });
   }
+
+  syncContainer.classList.remove('in-progress');
 }
 
 // Fetch server for updated data and update local database
 const synchronizeLocalDatabase = async () => {
+  syncContainer.classList.add('in-progress');
+
   const response = await fetch(URL, {
     method: 'GET',
     headers: {
