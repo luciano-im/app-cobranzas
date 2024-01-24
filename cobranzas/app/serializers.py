@@ -40,8 +40,6 @@ class SalesByCustomerSerializer(serializers.ModelSerializer):
         fields = ['pk', 'sale_set']
 
 
-
-
 # CUSTOMER
 
 class CustomersSerializer(serializers.ModelSerializer):

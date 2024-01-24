@@ -31,7 +31,7 @@ class CustomUserCreationForm(UserCreationForm):
         self.helper.form_class = 'create-form'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('signup')
-        self.helper.add_input(Submit('submit', 'Crear Usuario'))
+        self.helper.add_input(Submit('submit', _('Create User')))
 
     class Meta(UserCreationForm.Meta):
         model = User

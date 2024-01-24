@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,67 +65,67 @@
           <div class="collapse navbar-collapse" id="navbar-content">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Inicio</a>
+                <a class="nav-link active" aria-current="page" href="{% url 'home' %}">{% translate "Home" %}</a>
               </li>
               {% if request.user.is_staff %}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-users" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Usuarios
+                    {% translate "Users" %}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-users">
-                    <li><a class="dropdown-item" href="{% url 'signup' %}">Crear Usuario</a></li>
+                    <li><a class="dropdown-item" href="{% url 'signup' %}">{% translate "Create User" %}</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'list-users' %}">Listado de Usuarios</a></li>
+                    <li><a class="dropdown-item" href="{% url 'list-users' %}">{% translate "User List" %}</a></li>
                   </ul>
                 </li>
               {% endif %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-customers" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Clientes
+                  {% translate "Customers" %}
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-customers">
                   {% if request.user.is_staff %}
-                    <li><a class="dropdown-item" href="{% url 'create-customer' %}">Crear Cliente</a></li>
+                    <li><a class="dropdown-item" href="{% url 'create-customer' %}">{% translate "Create Customer" %}</a></li>
                     <li><hr class="dropdown-divider"></li>
                   {% endif %}
-                  <li><a class="dropdown-item" href="{% url 'list-customers' %}">Listado de Clientes</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-customers' %}">{% translate "Customer List" %}</a></li>
                 </ul>
               </li>
               {% if request.user.is_staff %}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-customers" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Productos
+                    {% translate "Products" %}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-customers">
-                    <li><a class="dropdown-item" href="{% url 'create-product' %}">Crear Producto</a></li>
+                    <li><a class="dropdown-item" href="{% url 'create-product' %}">{% translate "Create Product" %}</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'list-product' %}">Listado de Productos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'list-product' %}">{% translate "Product List" %}</a></li>
                   </ul>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-sales" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Ventas
+                    {% translate "Sales" %}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-sales">
-                    <li><a class="dropdown-item" href="{% url 'create-sale' %}">Nueva Venta</a></li>
+                    <li><a class="dropdown-item" href="{% url 'create-sale' %}">{% translate "New Sale" %}</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'list-sales' %}">Listado de Ventas</a></li>
-                    <li><a class="dropdown-item" href="{% url 'create-uncollectible-sale' %}">Ventas Incobrables</a></li>
+                    <li><a class="dropdown-item" href="{% url 'list-sales' %}">{% translate "Sales List" %}</a></li>
+                    <li><a class="dropdown-item" href="{% url 'create-uncollectible-sale' %}">{% translate "Uncollectible Sales" %}</a></li>
                   </ul>
                 </li>
               {% endif %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-installments" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Cobranzas
+                  {% translate "Collections" %}
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-installments">
-                  <li><a class="dropdown-item" href="{% url 'create-collection' %}">Nueva Cobranza</a></li>
+                  <li><a class="dropdown-item" href="{% url 'create-collection' %}">{% translate "New Collection" %}</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="{% url 'list-collection' %}">Listado de Cobranzas</a></li>
-                  <li><a class="dropdown-item" href="{% url 'pending-collection' %}">Cobranzas sin Sincronizar</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-collection' %}">{% translate "Collection List" %}</a></li>
+                  <li><a class="dropdown-item" href="{% url 'pending-collection' %}">{% translate "Non-Synchronized Collections" %}</a></li>
                   {% if request.user.is_staff %}
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'collection-delivery' %}">Rendición de Cobros</a></li>
+                    <li><a class="dropdown-item" href="{% url 'collection-delivery' %}">{% translate "Delivery of Collections" %}</a></li>
                   {% endif %}
                 </ul>
               </li>
@@ -142,7 +143,7 @@
     </header>
     <section class="content container mt-4 mb-3">
       <div class="alert alert-danger offline" role="alert">
-        <i class="bi bi-exclamation-circle-fill"></i> Estas offline!
+        <i class="bi bi-exclamation-circle-fill"></i> {% translate "You're offline!" %}
       </div>
       <div class="synchronization text-end">
         <div class="sync-date">
@@ -150,12 +151,12 @@
             <div>
               <span class="last-sync">-</span><span class="spinner-border spinner-border-sm text-secondary" role="status"></span>
             </div>
-            <span class="sync-title">Ult. Sincronización</span>
+            <span class="sync-title">{% translate "Last Sync" %}</span>
           </div> 
           <button id="sync-button" type="button" class="btn btn-primary">
-            <span class="d-none d-sm-inline">Sincronizar</span> <i class="bi bi-arrow-repeat"></i>
+            <span class="d-none d-sm-inline">{% translate "Sync" context "Sync button" %}</span> <i class="bi bi-arrow-repeat"></i>
           </button>
-          <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cobranzas pendientes de sincronizar!">
+          <span id="pending-requests" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% translate "Collections pending synchronization!" context "Collections pending synchronization tooltip" %}">
             <button type="button" class="btn btn-sm btn-danger" disabled>
               <i class="bi bi-exclamation-lg"></i>
             </button>

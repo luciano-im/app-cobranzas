@@ -1,0 +1,294 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-24 00:37-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: collection/forms.py:33 collection/models.py:11
+msgid "Customer"
+msgstr "Cliente"
+
+#: collection/forms.py:34
+msgid "From Date"
+msgstr "Fecha Desde"
+
+#: collection/forms.py:35
+msgid "To Date"
+msgstr "Fecha Hasta"
+
+#: collection/forms.py:36 collection/models.py:10 collection/models.py:56
+msgid "Collector"
+msgstr "Cobrador"
+
+#: collection/models.py:12 collection/models.py:45 collection/models.py:57
+#: collection/templates/print_collection.html:26
+#: collection/templates/print_local_collection.html:24
+msgid "Date"
+msgstr "Fecha"
+
+#: collection/models.py:13
+msgid "Modification Date"
+msgstr "Fecha de Modificación"
+
+#: collection/models.py:14
+msgid "Collection Delivered"
+msgstr "Cobranza Rendida"
+
+#: collection/models.py:21 collection/models.py:55
+msgid "Collection"
+msgstr "Cobranza"
+
+#: collection/models.py:22
+msgid "Sale Installment"
+msgstr "Cuota"
+
+#: collection/models.py:23 collection/templates/print_collection.html:54
+msgid "Amount"
+msgstr "Importe"
+
+#: collection/models.py:32
+msgid "Amount can not be greater than installment total amount"
+msgstr "El importe no puede ser mayor al importe total de la cuota"
+
+#: collection/models.py:44
+msgid "User"
+msgstr "Usuario"
+
+#: collection/models.py:51
+msgid "Collector Synchronization Log"
+msgstr ""
+
+#: collection/templates/create_collection.html:14
+msgid "New Collection"
+msgstr "Nueva Cobranza"
+
+#: collection/templates/create_collection.html:19
+msgctxt "Select customer default option"
+msgid "Select a customer"
+msgstr "Selecciona un Cliente"
+
+#: collection/templates/create_collection.html:26
+#: collection/templates/delivery_collection.html:21
+msgctxt "Search button"
+msgid "Search"
+msgstr "Buscar"
+
+#: collection/templates/create_collection.html:54
+#: collection/templates/list_collection.html:117
+msgctxt "dselect search button"
+msgid "Search"
+msgstr "Buscar"
+
+#: collection/templates/create_collection.html:55
+#: collection/templates/list_collection.html:118
+msgctxt "dselect no results text"
+msgid "No Results"
+msgstr "Sin Resultados"
+
+#: collection/templates/delivery_collection.html:9
+msgid "Delivery of Collections"
+msgstr "Rendición de Cobros"
+
+#: collection/templates/delivery_collection.html:14
+msgctxt "Select collector default option"
+msgid "Select a collector"
+msgstr "Selecciona un Cobrador"
+
+#: collection/templates/delivery_collection.html:36
+#: collection/templates/list_collection.html:46
+#: collection/templates/pending_collection.html:13
+msgctxt "Column name"
+msgid "Customer"
+msgstr "Cliente"
+
+#: collection/templates/delivery_collection.html:37
+#: collection/templates/list_collection.html:45
+#: collection/templates/pending_collection.html:12
+msgctxt "Column name"
+msgid "Date"
+msgstr "Fecha"
+
+#: collection/templates/delivery_collection.html:38
+#: collection/templates/list_collection.html:84
+#: collection/templates/update_collection.html:35
+msgctxt "Column name"
+msgid "Amount Paid"
+msgstr "Importe Pagado"
+
+#: collection/templates/delivery_collection.html:55
+#: collection/templates/update_collection.html:59
+msgid "Total"
+msgstr "Total"
+
+#: collection/templates/delivery_collection.html:56
+#: collection/templates/update_collection.html:60
+msgctxt "Save button"
+msgid "Save"
+msgstr "Guardar"
+
+#: collection/templates/delivery_collection.html:62
+msgid "There are no pending collections!"
+msgstr "No hay cobranzas pendientes!"
+
+#: collection/templates/list_collection.html:14
+msgid "Collection List"
+msgstr "Listado de Cobranzas"
+
+#: collection/templates/list_collection.html:27
+msgid "Collection Date"
+msgstr "Fecha de Cobro"
+
+#: collection/templates/list_collection.html:36
+msgctxt "Filter button"
+msgid "Filter"
+msgstr "Filtro"
+
+#: collection/templates/list_collection.html:37
+msgctxt "Clear filters button"
+msgid "Clear"
+msgstr "Borrar Filtros"
+
+#: collection/templates/list_collection.html:47
+#: collection/templates/pending_collection.html:14
+msgctxt "Column name"
+msgid "Amount"
+msgstr "Importe"
+
+#: collection/templates/list_collection.html:48
+#: collection/templates/pending_collection.html:15
+msgctxt "Column name"
+msgid "Actions"
+msgstr "Acciones"
+
+#: collection/templates/list_collection.html:61
+#: collection/templates/pending_collection.html:27
+msgctxt "Receipt button"
+msgid "Receipt"
+msgstr "Recibo"
+
+#: collection/templates/list_collection.html:65
+msgctxt "Edit button"
+msgid "Edit"
+msgstr "Editar"
+
+#: collection/templates/list_collection.html:74
+#: collection/templates/print_collection.html:48
+msgid "Details of Fees"
+msgstr "Detalle de Cuotas"
+
+#: collection/templates/list_collection.html:81
+msgctxt "Column name"
+msgid "Sale ID"
+msgstr "ID Venta"
+
+#: collection/templates/list_collection.html:82
+msgctxt "Column name"
+msgid "Sale Date"
+msgstr "Fecha de Venta"
+
+#: collection/templates/list_collection.html:83
+#: collection/templates/update_collection.html:33
+msgctxt "Column name"
+msgid "Installment"
+msgstr "Cuota"
+
+#: collection/templates/pending_collection.html:6
+msgid "Non-Synchronized Collections"
+msgstr "Cobranzas sin Sincronizar"
+
+#: collection/templates/print_collection.html:13
+#: collection/templates/print_local_collection.html:10
+msgctxt "Receipt page title"
+msgid "Proof of Payment"
+msgstr "Comprobante de Pago"
+
+#: collection/templates/print_collection.html:20
+#: collection/templates/print_local_collection.html:17
+msgid "Proof of Payment"
+msgstr "Comprobante de Pago"
+
+#: collection/templates/print_collection.html:27
+#: collection/templates/print_local_collection.html:25
+msgid "Time"
+msgstr "Hora"
+
+#: collection/templates/print_collection.html:28
+#: collection/templates/print_local_collection.html:26
+msgid "Trans. ID"
+msgstr "Nro. Tran."
+
+#: collection/templates/print_collection.html:44
+msgid "COLLECTOR"
+msgstr "COBRADOR"
+
+#: collection/templates/print_collection.html:58
+msgid "Installment"
+msgstr "Cuota"
+
+#: collection/templates/print_collection.html:62
+msgid "Sale"
+msgstr "Venta"
+
+#: collection/templates/print_collection.html:71
+msgid "Balance"
+msgstr "Saldo"
+
+#: collection/templates/print_collection.html:81
+#: collection/templates/print_local_collection.html:51
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#: collection/templates/print_collection.html:88
+#: collection/templates/print_local_collection.html:58
+msgid "Please keep this proof of payment"
+msgstr "Conserve este comprobante de pago"
+
+#: collection/templates/print_local_collection.html:18
+msgid "non synchronized"
+msgstr "sin sincronizar"
+
+#: collection/templates/update_collection.html:7
+msgid "Collection Update"
+msgstr "Modificación de Cobranza"
+
+#: collection/templates/update_collection.html:18
+msgid "installments"
+msgstr "cuotas"
+
+#: collection/templates/update_collection.html:19
+msgid "Collected"
+msgstr "Cobrado"
+
+#: collection/templates/update_collection.html:20
+msgid "To Collect"
+msgstr "A Cobrar"
+
+#: collection/templates/update_collection.html:34
+msgctxt "Column name"
+msgid "Total"
+msgstr "Total"
+
+#: collection/views.py:238
+msgid "The total paid must be greater than zero"
+msgstr "El total pagado debe ser mayor a cero"
+
+#: collection/views.py:328
+msgid "Collection could not be saved"
+msgstr "No se pudo guardar la cobranza"
+
+#: collection/views.py:422
+msgid "The Collector has not been specified"
+msgstr "El Cobrador no ha sido especificado"

@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
-<h2>Modificación de Cobranza</h2>
+<h2>{% translate "Collection Update" %}</h2>
 <div class="create-collection">
   <form action="{% url 'update-collection' collection_id %}" method="post">
     {% csrf_token %}
@@ -14,9 +15,9 @@
             <div class="sale-details">
               <span class="badge text-bg-primary">#<span class="id">{{sale.sale.id}}</span></span>
               <span class="badge text-bg-primary"><span class="date">{{sale.sale.date}}</span></span>
-              <span class="badge text-bg-primary"><span class="installments">{{sale.sale.installments}}</span> cuotas</span>
-              <span class="badge text-bg-primary">Cobrado: $<span class="paid-amount">{{sale.sale.paid_amount|floatformat:2|intcomma}}</span></span>
-              <span class="badge text-bg-primary">Pendiente: $<span class="pending-balance">{{sale.sale.pending_balance|floatformat:2|intcomma}}</span></span>
+              <span class="badge text-bg-primary"><span class="installments">{{sale.sale.installments}}</span> {% translate "installments" %}</span>
+              <span class="badge text-bg-primary">{% translate "Collected" %}: $<span class="paid-amount">{{sale.sale.paid_amount|floatformat:2|intcomma}}</span></span>
+              <span class="badge text-bg-primary">{% translate "To Collect" %}: $<span class="pending-balance">{{sale.sale.pending_balance|floatformat:2|intcomma}}</span></span>
             </div>
           </div>
           <div style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="products-list">
@@ -29,9 +30,9 @@
           <table class="table table-hover next-installment">
             <thead class="table-light">
               <tr>
-                <th scope="col">Cuota</th>
-                <th scope="col">Importe Total</th>
-                <th scope="col">Importe Pagado</th>
+                <th scope="col">{% translate "Installment" context "Column name" %}</th>
+                <th scope="col">{% translate "Total" context "Column name" %}</th>
+                <th scope="col">{% translate "Amount Paid" context "Column name" %}</th>
               </tr>
             </thead>
             <tbody class="next-installment-tbody">
@@ -55,8 +56,8 @@
       {% endfor %}
     </div>
     <div class="totals d-flex flex-column align-items-end mb-5">
-      <p class="p-0">Total: $<span id="total">{{total.total}}</span></p>
-      <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
+      <p class="p-0">{% translate "Total" %}: $<span id="total">{{total.total}}</span></p>
+      <input type="submit" id="submit-collection" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
     </div>
   </form>
 </div>

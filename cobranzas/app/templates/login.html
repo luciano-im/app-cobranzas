@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inicio de Sesión</title>
+  <title>{% translate "Login" context "Login page title" %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="{% static "css/styles.css" %}">
@@ -21,7 +22,7 @@
       </a>
     </header>
     <div class="content">
-      <h2>Inicio de Sesión</h2>
+      <h2>{% translate "Login" context "Login title" %}</h2>
       <section class="form-container">
         {% if form.errors %}
           {% for key, msg in form.errors.items %}
@@ -37,7 +38,7 @@
             {{form.password|as_crispy_field}}
           </div>
           <div>
-            <input type="submit" value="Iniciar Sesión" class="btn btn-primary">
+            <input type="submit" value="{% translate "Sign in" context "Login button" %}" class="btn btn-primary">
           </div>
           <input type="hidden" name="next" value="{{ next }}" />
         </form>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -10,19 +11,19 @@
 {% endblock %}
 
 {% block content %}
-<h2>Nuevo Cobro</h2>
+<h2>{% translate "New Collection" %}</h2>
 <form action="#" method="get" id="filter-customer" name="filter-customer">
   <div class="row">
     <div class="col col-sm-8">
       <select name="select-customer" id="select-customer" class="form-select" required>
-        <option selected> -- Selecciona un Cliente -- </option>
+        <option selected> -- {% translate "Select a customer" context "Select customer default option" %} -- </option>
         {% for customer in customers %}
           <option value="{{customer.pk}}" {% if selected_customer == customer.pk %}selected{% endif %}>{{customer.name}}</option>
         {% endfor %}
       </select>
     </div>
     <div class="col-2 col-sm-3">
-      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">{% translate "Search" context "Search button" %}</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
@@ -50,8 +51,8 @@
     clearable: false, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
-    placeholder: 'Buscar',
-    noResults: 'Sin Resultados'
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
   };
   dselect(document.querySelector('#select-customer'), config);
 

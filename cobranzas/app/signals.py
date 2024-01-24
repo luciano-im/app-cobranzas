@@ -31,7 +31,7 @@ def postSave_Sale(sender, instance, created, **kwargs):
         installments = price / installment_amount
         fixed_installment_amount = installments - math.trunc(installments)
 
-        if(fixed_installment_amount == 0):
+        if fixed_installment_amount == 0:
             # Fixed amount is True
             objs = [SaleInstallment(sale=instance, installment=x, installment_amount=instance.installment_amount) for x in range(1, instance.installments + 1)]
             SaleInstallment.objects.bulk_create(objs)
@@ -40,7 +40,7 @@ def postSave_Sale(sender, instance, created, **kwargs):
             installments_quantity = math.trunc(installments)
 
             # Calculate how many istallments the sale have
-            if(fixed_installment_amount <= 0.6):
+            if fixed_installment_amount <= 0.6:
                 installments_quantity -= 1
 
             last_installment_number = installments_quantity + 1

@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-  <h2>Lista de Clientes</h2>
+  <h2>{% translate "Customer List" %}</h2>
 
   <form action="{% url 'list-customers' %}" method="get" class="filterset-form">
     <div class="row">
@@ -23,22 +24,22 @@
       {% endif %}
     </div>
     <div>
-      <input type="submit" value="Filtrar" class="btn btn-primary">
-      <a href="{% url 'list-customers' %}" class="btn btn-secondary erase-filters">Borrar Filtros</a>
+      <input type="submit" value="{% translate "Filter" context "Filter button" %}" class="btn btn-primary">
+      <a href="{% url 'list-customers' %}" class="btn btn-secondary erase-filters">{% translate "Clear" context "Clear filters button" %}</a>
     </div>
   </form>
   
   <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Dirección</th>
-        <th scope="col">Ciudad</th>
-        <th scope="col">Teléfono</th>
+        <th scope="col">{% translate "Name" context "Column name" %}</th>
+        <th scope="col">{% translate "Address" context "Column name" %}</th>
+        <th scope="col">{% translate "City" context "Column name" %}</th>
+        <th scope="col">{% translate "Telephone" context "Column name" %}</th>
         {% if request.user.is_admin %}
-          <th scope="col">Cobrador</th>
+          <th scope="col">{% translate "Collector" context "Column name" %}</th>
         {% endif %}
-        <th scope="col">Acciones</th>
+        <th scope="col">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -54,7 +55,7 @@
           <td>
             <a href="{% url 'update-customer' customer.pk %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
-              <span class="d-none d-sm-inline">Editar</span>
+              <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
           </td>
         </tr>
