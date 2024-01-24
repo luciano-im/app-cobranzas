@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-  <h2>Modificación de Cliente</h2>
+  <h2>{% translate "Customer Update" %}</h2>
   <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Modificar Cliente" class="btn btn-primary">
+    <input type="submit" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
   </form>
 {% endblock %}

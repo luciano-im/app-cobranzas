@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -10,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-  <h2>Lista de Ventas</h2>
+  <h2>{% translate "Sales List" %}</h2>
 
   <form action="{% url 'list-sales' %}" method="get" class="filterset-form">
     <div class="row">
@@ -26,7 +27,7 @@
     </div>
     <div class="row">
       <div class="col-sm-8 col-md-6 col-lg-5">
-        <label for="id_date_from" class="form-label">Fecha de Venta</label>
+        <label for="id_date_from" class="form-label">{% translate "Sale Date" %}</label>
         <div class="input-group mb-3">
           <input type="date" name="date_from" class="dateinput form-control" id="id_date_from" value="{{filter_form.date_from.value}}">
           <span class="input-group-text">&nbsp;</span>
@@ -35,8 +36,8 @@
       </div>
     </div>
     <div>
-      <input type="submit" value="Filtrar" class="btn btn-primary">
-      <a href="{% url 'list-sales' %}" class="btn btn-secondary erase-filters">Borrar Filtros</a>
+      <input type="submit" value="{% translate "Filter" context "Filter button" %}" class="btn btn-primary">
+      <a href="{% url 'list-sales' %}" class="btn btn-secondary erase-filters">{% translate "Clear" context "Clear filters button" %}</a>
     </div>
   </form>
   
@@ -44,14 +45,14 @@
     <thead>
       <tr>
         <th scope="col">ID</th>
-        <th scope="col">Fecha</th>
-        <th scope="col">Cliente</th>
+        <th scope="col">{% translate "Date" context "Column name" %}</th>
+        <th scope="col">{% translate "Customer" context "Column name" %}</th>
         {% comment %} <th scope="col" class="d-none d-sm-table-cell">Productos</th> {% endcomment %}
-        <th scope="col">Importe</th>
-        <th scope="col" class="text-center d-none d-sm-table-cell">Cuotas</th>
-        <th scope="col" class="text-center d-none d-md-table-cell">Cobrado</th>
-        <th scope="col" class="text-center d-none d-md-table-cell">A Cobrar</th>
-        <th scope="col" class="text-center">Acciones</th>
+        <th scope="col">{% translate "Amount" context "Column name" %}</th>
+        <th scope="col" class="text-center d-none d-sm-table-cell">{% translate "Installments" context "Column name" %}</th>
+        <th scope="col" class="text-center d-none d-md-table-cell">{% translate "Collected" context "Column name" %}</th>
+        <th scope="col" class="text-center d-none d-md-table-cell">{% translate "To Collect" context "Column name" %}</th>
+        <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -73,7 +74,7 @@
           <td class="actions text-center col-2">
             <a href="{% url 'update-sale' sale.pk %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
-              <span class="d-none d-sm-inline">Editar</span>
+              <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
           </td>
         </tr>
@@ -82,16 +83,16 @@
             <div class="accordion accordion-flush" id="accordion-flush-{{sale.pk}}">
               <div class="accordion-item">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.pk}}">
-                  Más detalles
+                  {% translate "More Details" %}
                 </button>
                 <div id="flush-collapse-{{sale.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.pk}}" data-bs-parent="#accordion-flush-{{sale.pk}}">
                   <div class="accordion-body">
-                    <h6 class="d-md-none">Otros Datos</h6>
+                    <h6 class="d-md-none">{% translate "Other Data" %}</h6>
                     <table class="table d-md-none">
                       <thead class="table-light">
-                        <th scope="col" class="text-center d-sm-none">Cuotas</th>
-                        <th scope="col" class="text-center">Cobrado</th>
-                        <th scope="col" class="text-center">A Cobrar</th>
+                        <th scope="col" class="text-center d-sm-none">{% translate "Installments" context "Column name" %}</th>
+                        <th scope="col" class="text-center">{% translate "Collected" context "Column name" %}</th>
+                        <th scope="col" class="text-center">{% translate "To Collect" context "Column name" %}</th>
                       </thead>
                       <tbody>
                         <tr>
@@ -103,8 +104,8 @@
                     </table>
                     <table class="table">
                       <thead class="table-light">
-                        <th scope="col">Producto</th>
-                        <th scope="col">Precio</th>
+                        <th scope="col">{% translate "Product" context "Column name" %}</th>
+                        <th scope="col">{% translate "Price" context "Column name" %}</th>
                       </thead>
                       <tbody>
                         {% for p in sale.saleproduct_set.all %}
@@ -115,14 +116,14 @@
                         {% endfor %}
                       </tbody>
                     </table>
-                    <h6>Detalle de Cuotas</h6>
+                    <h6>{% translate "Details of Fees" %}</h6>
                     <table class="table">
                       <thead class="table-light">
                         <tr>
-                          <th scope="row">#</th>
-                          <th>Importe</th>
-                          <th>Pagado</th>
-                          <th>Estado</th>
+                          <th scope="row">{% translate "Installment" %}</th>
+                          <th>{% translate "Amount" context "Column name" %}</th>
+                          <th>{% translate "Amount Paid" context "Column name" %}</th>
+                          <th>{% translate "Status" context "Column name" %}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -155,8 +156,8 @@
     clearable: true, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
-    placeholder: 'Buscar',
-    noResults: 'Sin Resultados'
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
   };
   dselect(document.querySelector('#id_customer'), config);
   dselect(document.querySelector('#id_product'), config);

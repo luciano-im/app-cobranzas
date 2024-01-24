@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h2>Modificación de Venta</h2>
+<h2>{% translate "Sale Update" %}</h2>
 <form action="" method="post" class="sale-creation">
   {% csrf_token %}
   {{ form.customer|as_crispy_field }}
@@ -11,7 +12,7 @@
   {{ form.remarks|as_crispy_field }}
   <hr>
   <div class="products-list">
-    <h3 class="title">Lista de Productos</h3>
+    <h3 class="title">{% translate "Products" context "Sale subtitle" %}</h3>
     {{products.management_form|crispy}}
     <div id="empty_form" style="display: none;">
       {% with products.empty_form as emptyform %}
@@ -39,10 +40,10 @@
     <div class="product-forms">
       <div class="row">
         <div class="col-6">
-          <p style="margin-bottom: .5rem;">Producto</p>
+          <p style="margin-bottom: .5rem;">{% translate "Product" %}</p>
         </div>
         <div class="col-4">
-          <p style="margin-bottom: .5rem;">Precio</p>
+          <p style="margin-bottom: .5rem;">{% translate "Price" %}</p>
         </div>
       </div>
       {% for productform in products %}
@@ -74,10 +75,10 @@
         </div>
       {% endfor %}
     </div>
-    <button id="add-form" type="button" class="btn btn-outline-primary add-form-row" {% if add_product_button_disabled %}disabled{% endif %}>Agregar Producto</button>
+    <button id="add-form" type="button" class="btn btn-outline-primary add-form-row" {% if add_product_button_disabled %}disabled{% endif %}>{% translate "Add Product" context "Add product button" %}</button>
   </div>
   <hr>
-  <h3 class="title">Esquema de Pago</h3>
+  <h3 class="title">{% translate "Amount of Fees" context "Payment scheme" %}</h3>
   <div class="row">
     <div class="col-4">
       {{ form.price|as_crispy_field }}
@@ -90,25 +91,25 @@
     </div>
   </div>
   <div class="col-6" id="payment-scheme">
-    <p class="title">Detalles:</p>
+    <p class="title">{% translate "Details" %}:</p>
     <table class="table">
       <tbody>
         {% if installments_scheme %}
           <tr id="payment-scheme-row-1" class="payment-scheme-row">
             <th scope="row" id="i" style="visibility:visible;">{{installments_scheme.0.installments}}</th>
-            <td style="visibility:visible;">cuotas de</td>
+            <td style="visibility:visible;">{% translate "installments of" context "Payment scheme" %}</td>
             <td id="i_amount" style="visibility:visible;">{{installments_scheme.0.installment_amount}}</td>
           </tr>
           {% if installments_scheme|length == 2 %}
             <tr id="payment-scheme-row-2" class="payment-scheme-row">
               <th scope="row" style="visibility:visible;">1</th>
-              <td style="visibility:visible;">cuota de</td>
+              <td style="visibility:visible;">{% translate "installment of" context "Payment scheme" %}</td>
               <td id="rest_amount" style="visibility:visible;">{{installments_scheme.1.installment_amount}}</td>
             </tr>
           {% else %}
             <tr id="payment-scheme-row-2" class="payment-scheme-row">
               <th scope="row">1</th>
-              <td>cuota de</td>
+              <td>{% translate "installment of" context "Payment scheme" %}</td>
               <td id="rest_amount"></td>
             </tr>
           {% endif %}
@@ -121,7 +122,7 @@
     {{ form.uncollectible|as_crispy_field }}
   </div>
   <hr>
-  <input type="submit" value="Guardar Venta" class="btn btn-primary">
+  <input type="submit" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
 </form>
 {% endblock %}
 

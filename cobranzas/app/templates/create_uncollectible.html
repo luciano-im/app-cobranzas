@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -12,19 +13,19 @@
 {% endblock %}
 
 {% block content %}
-<h2>Ventas Incobrables</h2>
+<h2>{% translate "Uncollectible Sales" %}</h2>
 <form action="{% url 'create-uncollectible-sale' %}" method="get" id="filter-customer" name="filter-customer">
   <div class="row">
     <div class="col col-sm-8">
       <select name="select-customer" id="select-customer" class="form-select" required>
-        <option disabled selected> -- Selecciona un Cliente -- </option>
+        <option disabled selected> -- {% translate "Select a customer" context "Select customer default option" %} -- </option>
         {% for customer in customers %}
           <option value="{{customer.pk}}" {% if selected_customer == customer.pk %}selected{% endif %}>{{customer.name}}</option>
         {% endfor %}
       </select>
     </div>
     <div class="col-2 col-sm-3">
-      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">{% translate "Search" context "Search button" %}</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
@@ -41,12 +42,12 @@
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Importe Total</th>
-              <th scope="col" class="d-none d-md-table-cell">Importe Pagado</th>
-              <th scope="col" class="d-none d-sm-table-cell">Cuotas Pendientes</th>
-              <th scope="col" style="color: red;">Saldo Deudor</th>
-              <th scope="col">Incobrable?</th>
+              <th scope="col">{% translate "Date" context "Column name" %}</th>
+              <th scope="col">{% translate "Total" context "Column name" %}</th>
+              <th scope="col" class="d-none d-md-table-cell">{% translate "Amount Paid" context "Column name" %}</th>
+              <th scope="col" class="d-none d-sm-table-cell">{% translate "Pending Installments" context "Column name" %}</th>
+              <th scope="col" style="color: red;">{% translate "Debit Balance" context "Column name" %}</th>
+              <th scope="col">{% translate "Uncollectible" context "Column name" %}?</th>
             </tr>
           </thead>
           <tbody>
@@ -65,15 +66,15 @@
                   <div class="accordion accordion-flush" id="accordion-flush-{{sale.id}}">
                     <div class="accordion-item">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.id}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.id}}">
-                        Más detalles
+                        {% translate "More Details" %}
                       </button>
                       <div id="flush-collapse-{{sale.id}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.id}}" data-bs-parent="#accordion-flush-{{sale.id}}">
                         <div class="accordion-body">
-                          <h6 class="d-md-none">Otros Datos</h6>
+                          <h6 class="d-md-none">{% translate "Other Data" %}</h6>
                           <table class="table d-md-none">
                             <thead class="table-light">
-                              <th scope="col" class="text-center d-sm-none">Cuotas Pendientes</th>
-                              <th scope="col" class="text-center">Cobrado</th>
+                              <th scope="col" class="text-center d-sm-none">{% translate "Pending Installments" context "Column name" %}</th>
+                              <th scope="col" class="text-center">{% translate "Amount Paid" context "Column name" %}</th>
                             </thead>
                             <tbody>
                               <tr>
@@ -84,7 +85,7 @@
                           </table>
                           <table class="table">
                             <thead class="table-light">
-                              <th scope="col">Productos</th>
+                              <th scope="col">{% translate "Products" context "Column name" %}</th>
                               {% comment %} <th scope="col">Precio</th> {% endcomment %}
                             </thead>
                             <tbody>
@@ -97,14 +98,14 @@
                             </tbody>
                           </table>
                           <br>
-                          <h6>Detalle de Cuotas</h6>
+                          <h6>{% translate "Details of Fees" %}</h6>
                           <table class="table">
                             <thead class="table-light">
                               <tr>
-                                <th scope="row">Cuota</th>
-                                <th>Importe</th>
-                                <th>Pagado</th>
-                                <th>Estado</th>
+                                <th scope="row">{% translate "Installment" %}</th>
+                                <th>{% translate "Amount" context "Column name" %}</th>
+                                <th>{% translate "Amount Paid" context "Column name" %}</th>
+                                <th>{% translate "Status" context "Column name" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -130,14 +131,14 @@
 
         <div class="totals d-flex flex-column align-items-end mb-5">
           {% comment %} <p class="p-0 fs-4">Total: $<span id="total">0,00</span></p> {% endcomment %}
-          <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
+          <input type="submit" id="submit-collection" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
         </div>
       </form>
     </div>
   {% else %}
     {% if selected_customer %}
       <div class="alert alert-warning" role="alert">
-        No hay ventas pendientes!
+        {% translate "There are no pending sales!" %}
       </div>
     {% endif %}
   {% endif %}
@@ -152,8 +153,8 @@
     clearable: false, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
-    placeholder: 'Buscar',
-    noResults: 'Sin Resultados'
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
   };
   dselect(document.querySelector('#select-customer'), config);
 

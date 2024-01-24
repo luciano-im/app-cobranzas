@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h2>Rendición de Cobranza</h2>
+<h2>{% translate "Delivery of Collections" %}</h2>
 <form action="{% url 'collection-delivery' %}" method="get" id="filter-collector" name="filter-collector">
   <div class="row">
     <div class="col col-sm-8">
       <select name="select-collector" id="select-collector" class="form-select" required>
-        <option disabled selected> -- Selecciona un Cobrador -- </option>
+        <option disabled selected> -- {% translate "Select a collector" context "Select collector default option" %} -- </option>
         {% for c in collector %}
           <option value="{{c.pk}}" {% if selected_collector == c.pk %}selected{% endif %}>{{c.first_name}} {{c.last_name}}</option>
         {% endfor %}
       </select>
     </div>
     <div class="col-2 col-sm-3">
-      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">Buscar</span> <i class="bi bi-search"></i></button>
+      <button type="submit" class="btn btn-primary"><span class="d-none d-sm-inline">{% translate "Search" context "Search button" %}</span> <i class="bi bi-search"></i></button>
     </div>
   </div>
 </form>
@@ -32,9 +33,9 @@
         <thead class="table-light">
           <tr>
             <th scope="col"><input type="checkbox" id="check-all"> ID</th>
-            <th scope="col">Cliente</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Importe Pagado</th>
+            <th scope="col">{% translate "Customer" context "Column name" %}</th>
+            <th scope="col">{% translate "Date" context "Column name" %}</th>
+            <th scope="col">{% translate "Amount Paid" context "Column name" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -51,14 +52,14 @@
         </tbody>
       </table>
       <div class="totals d-flex flex-column align-items-end mb-5">
-        <p class="p-0">Total: $<span id="total">0,00</span></p>
-        <input type="submit" id="submit-collection" value="Guardar" class="btn btn-primary">
+        <p class="p-0">{% translate "Total" %}: $<span id="total">0,00</span></p>
+        <input type="submit" id="submit-collection" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
       </div>
     </form>
   {% else %}
     {% if selected_collector %}
       <div class="alert alert-warning" role="alert">
-        No hay cobranzas pendientes!
+        {% translate "There are no pending collections!" %}
       </div>
     {% endif %}
   {% endif %}

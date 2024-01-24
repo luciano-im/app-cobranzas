@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load get_sale_products %}
@@ -9,21 +10,21 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comprobante de Pago</title>
+    <title>{% translate "Proof of Payment" context "Receipt page title" %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static "css/styles.css" %}">
     <link rel="stylesheet" href="{% static "css/receipt.css" %}" media="print">
   </head>
   <body class="receipt" onload="window.print()">
-    <h1>Comprobante de Pago</h1>
+    <h1>{% translate "Proof of Payment" %}</h1>
     <h3>Leiva Equipamientos</h3>
     {% comment %}<p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>{% endcomment %}
     <table>
       <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Nro. Tran.</th>
+        <th>{% translate "Date" %}</th>
+        <th>{% translate "Time" %}</th>
+        <th>{% translate "Trans. ID" %}</th>
       </tr>
       <tr>
         <td>{{collection.date|date:"d/m/Y"}}</td>
@@ -39,25 +40,25 @@
     </div>
     <hr>
     <div class="collector details">
-      <p>COBRADOR: <span>{{collection.collector.first_name}} {{collection.collector.last_name}}</span></p>
+      <p>{% translate "COLLECTOR" %}: <span>{{collection.collector.first_name}} {{collection.collector.last_name}}</span></p>
     </div>
     <hr>
     <div class="details installments">
-      <h3>Detalle de Cuotas</h3>
+      <h3>{% translate "Details of Fees" %}</h3>
       {% for i in collection_installment %}
         <p class="line"><span></span></p>
         {% get_sale_products i.sale_installment.sale.id as products %}
         <table class="installment-detail">
           <tr>
-            <td>Importe:</td>
+            <td>{% translate "Amount" %}:</td>
             <td><b>${{i.amount|floatformat:2|intcomma}}</b></td>
           </tr>
           <tr>
-            <td>Cuota:</td>
+            <td>{% translate "Installment" %}:</td>
             <td>{{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</td>
           </tr>
           <tr>
-            <td>Venta:</td>
+            <td>{% translate "Sale" %}:</td>
             <td>#{{i.sale_installment.sale.id}} - {{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
           </tr>
           {% for product in products %}
@@ -66,7 +67,7 @@
           </tr>
           {% endfor %}
           <tr>
-            <td>Saldo:</td>
+            <td>{% translate "Balance" %}:</td>
             <td>${{i.sale_installment.sale.pending_balance|floatformat:2|intcomma}}</td>
           </tr>
         </table>
@@ -76,14 +77,14 @@
     <div class="total details">
       <table>
         <tr>
-          <td>TOTAL:</td>
+          <td>{% translate "TOTAL" %}:</td>
           <td>${{total.total|floatformat:2|intcomma}}</td>
         </tr>
       </table>
     </div>
     <hr>
     <div class="disclaimer details">
-      <p>*** Conserve este comprobante de pago ***</p>
+      <p>*** {% translate "Please keep this proof of payment" %} ***</p>
     </div>
 
     <!-- JavaScript Bundle with Popper -->

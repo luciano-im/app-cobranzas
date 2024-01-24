@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
-  <h2>Lista de Usuarios</h2>
+  <h2>{% translate "User List" %}</h2>
   
   <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col">Usuario</th>
-        <th scope="col">Nombre y Apellido</th>
-        <th scope="col">Es Administrador?</th>
-        <th scope="col">Es Cobrador?</th>
-        <th scope="col">Acciones</th>
+        <th scope="col">{% translate "User" context "Column name" %}</th>
+        <th scope="col">{% translate "Name" context "Column name" %}</th>
+        <th scope="col">{% translate "Is Admin?" context "Column name" %}</th>
+        <th scope="col">{% translate "Is Collector?" context "Column name" %}</th>
+        <th scope="col">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -36,7 +37,7 @@
           <td>
             <a href="#" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
-              <span class="d-none d-sm-inline">Editar</span>
+              <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
           </td>
         </tr>

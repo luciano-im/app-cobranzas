@@ -1,5 +1,6 @@
 import json
 from django.conf import settings
+from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -12,6 +13,7 @@ class User(AbstractUser):
     is_collector = models.BooleanField(default=False, verbose_name=_('Is a collector?'))
 
     @cached_property
+    @admin.display(description=_("Is it an administrator?"))
     def is_admin(self):
         return self.is_staff
 
@@ -69,10 +71,12 @@ class Sale(models.Model):
         return f"{self.date.strftime('%m/%d/%Y')} - {self.customer.name} - {self.pk}"
 
     @cached_property
+    @admin.display(description=_("Pending Balance"))
     def pending_balance(self):
         return self.price - self.paid_amount
 
     @cached_property
+    @admin.display(description=_("Paid Amount"))
     def paid_amount(self):
         paid = SaleInstallment.objects.filter(sale=self.id).aggregate(paid=Sum('paid_amount'))
         return paid['paid']

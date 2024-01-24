@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db.models import Q, Count, F
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
@@ -305,7 +306,7 @@ class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
 
         calculated_price = self.object.installment_amount * self.object.installments
         price = self.object.price
-        if(calculated_price == price):
+        if calculated_price == price:
             context['installments_scheme'] = [
                 {
                     'installments': self.object.installments,
@@ -440,7 +441,7 @@ class UncollectibleSaleCreateView(LoginRequiredMixin, AdminPermission, ContextMi
                     try:
                         Sale.objects.filter(customer=customer, id=sale).update(uncollectible=True)
                     except:
-                        raise ValidationError('Error al establecer estado incobrable a una venta')
+                        raise ValidationError(_('Error when setting uncollectible status to a sale'))
         else:
             raise PermissionDenied
 

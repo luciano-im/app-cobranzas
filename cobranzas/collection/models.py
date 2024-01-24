@@ -11,7 +11,7 @@ class Collection(models.Model):
     customer = models.ForeignKey(Customer, db_index=True, on_delete=models.CASCADE, verbose_name=_('Customer'))
     date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
-    delivered = models.BooleanField(default=False, verbose_name=_('Cobranza Rendida'))
+    delivered = models.BooleanField(default=False, verbose_name=_('Collection Delivered'))
 
     def __str__(self):
         return f"{self.id}: {self.customer} - {self.date.strftime('%m/%d/%Y')}"

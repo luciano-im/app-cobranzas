@@ -7,6 +7,7 @@ from django.db.models import Q, Sum, F, Count, Prefetch
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
@@ -234,7 +235,7 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
                             # If form has errors
                             print(f_form.errors)
                 if check_total == 0:
-                    raise ValidationError('El total pagado debe ser mayor a cero')
+                    raise ValidationError(_('The total paid must be greater than zero'))
 
         response_data = {}
         response_data['collection_id'] = collection.pk
@@ -324,7 +325,7 @@ class CollectionUpdateView(LoginRequiredMixin, AdminPermission, TemplateView):
                     collection_installment.save()
                     sale_installment.save()
                 except:
-                    raise ValidationError('No se pudo guardar la cobranza')
+                    raise ValidationError(_('Collection could not be saved'))
 
         return redirect('list-collection')
 
@@ -418,7 +419,7 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
                     collection.delivered = True
                     collection.save()
         else:
-            raise ValidationError('No se ha indicado el Cobrador')
+            raise ValidationError(_('The Collector has not been specified'))
 
         return redirect('collection-delivery')
 
@@ -466,7 +467,7 @@ class CollectionDataView(LoginRequiredMixin, ContextMixin, CollectionData, View)
         # get_data return sales and installments data
         data = self.get_data()
 
-        # CollectorSyncLog.objects.create(user=request.user)
+        CollectorSyncLog.objects.create(user=request.user)
 
         return HttpResponse(data, content_type="application/json")
 

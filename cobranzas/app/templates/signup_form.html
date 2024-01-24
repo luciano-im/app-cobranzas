@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-  <h2>Alta de Usuario</h2>
+  <h2>{% translate "User Registration" %}</h2>
   {% crispy form %}
 {% endblock %}

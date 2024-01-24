@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,22 +7,22 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comprobante de Pago</title>
+    <title>{% translate "Proof of Payment" context "Receipt page title" %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static "css/styles.css" %}">
     <link rel="stylesheet" href="{% static "css/receipt.css" %}" media="print">
   </head>
   <body class="receipt">
-    <h1>Comprobante de Pago</h1>
-    <h6>*** sin sincronizar ***</h6>
+    <h1>{% translate "Proof of Payment" %}</h1>
+    <h6>*** {% translate "non synchronized" %} ***</h6>
     <h3>Leiva Equipamientos</h3>
     {% comment %}<p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>{% endcomment %}
     <table class="receipt-header">
       <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Nro. Tran.</th>
+        <th>{% translate "Date" %}</th>
+        <th>{% translate "Time" %}</th>
+        <th>{% translate "Trans. ID" %}</th>
       </tr>
       <tr>
         <td class="date"></td>
@@ -45,14 +46,14 @@
     <div class="total details">
       <table>
         <tr>
-          <td>TOTAL:</td>
+          <td>{% translate "TOTAL" %}:</td>
           <td class="total-value"></td>
         </tr>
       </table>
     </div>
     <hr>
     <div class="disclaimer details">
-      <p>*** Conserve este comprobante de pago ***</p>
+      <p>*** {% translate "Please keep this proof of payment" %} ***</p>
     </div>
 
     <!-- JavaScript Bundle with Popper -->
