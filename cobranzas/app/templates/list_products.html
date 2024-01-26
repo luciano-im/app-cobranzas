@@ -9,13 +9,13 @@
 
   <form action="{% url 'list-product' %}" method="get" class="filterset-form">
     <div class="row">
-      <div class="col-3">
+      <div class="col-sm-6 col-md-4">
         {{ filter_form.name|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-6 col-md-4">
         {{ filter_form.brand|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-6 col-md-4">
         {{ filter_form.sku|as_crispy_field }}
       </div>
     </div>
@@ -25,29 +25,33 @@
     </div>
   </form>
   
-  <table class="table table-hover">
+  <table class="table table-hover table-with-installments-detail">
     <thead>
       <tr>
         <th scope="col">#</th>
         <th scope="col">{% translate "Name" context "Column name" %}</th>
-        <th scope="col">{% translate "Brand" context "Column name" %}</th>
-        <th scope="col">{% translate "Price" context "Column name" %}</th>
-        <th scope="col">SKU</th>
+        <th scope="col" class="d-none d-sm-table-cell">{% translate "Brand" context "Column name" %}</th>
+        <th scope="col" class="d-none d-md-table-cell">{% translate "Price" context "Column name" %}</th>
+        <th scope="col" class="d-none d-md-table-cell">SKU</th>
         <th scope="col">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
       {% for product in products %}
         <tr>
-          <th scope="row">{{product.pk}}</th>
-          <td>{{product.name}}</td>
-          <td>{{product.brand}}</td>
-          <td>{{product.price|floatformat:2|intcomma}}</td>
-          <td>{{product.sku}}</td>
-          <td>
+          <td class="col-1">{{product.pk}}</td>
+          <td class="col-9 col-sm-4 col-md-3 col-lg-4 col-xl-5">
+            <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="SKU: {{product.sku}}">
+              {{product.name}} <span class="d-sm-none">- {{product.brand}}</span>
+            </span>
+          </td>
+          <td class="d-none d-sm-table-cell col-sm-3 col-md-2">{{product.brand}}</td>
+          <td class="d-none d-md-table-cell col-md-1">{{product.price|floatformat:2|intcomma}}</td>
+          <td class="d-none d-md-table-cell col-md-2">{{product.sku}}</td>
+          <td class="actions col-2 col-sm-2 col-md-3">
             <a href="{% url 'update-product' product.pk %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
-              <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
+              <span class="d-none d-md-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
           </td>
         </tr>
