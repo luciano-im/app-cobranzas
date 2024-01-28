@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-24 00:37-0300\n"
+"POT-Creation-Date: 2024-01-28 11:29-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,12 +95,10 @@ msgid "ID"
 msgstr "ID"
 
 #: app/forms.py:140
-#| msgid "Date"
 msgid "From Date"
 msgstr "Fecha Desde"
 
 #: app/forms.py:141
-#| msgid "Date"
 msgid "To Date"
 msgstr "Fecha Hasta"
 
@@ -385,7 +383,8 @@ msgctxt "Column name"
 msgid "Uncollectible"
 msgstr "Incobrable"
 
-#: app/templates/create_uncollectible.html:69 app/templates/list_sales.html:88
+#: app/templates/create_uncollectible.html:69
+#: app/templates/list_customers.html:70 app/templates/list_sales.html:88
 msgid "More Details"
 msgstr "Mas Detalles"
 
@@ -447,12 +446,12 @@ msgctxt "Column name"
 msgid "City"
 msgstr "Ciudad"
 
-#: app/templates/list_customers.html:38
+#: app/templates/list_customers.html:38 app/templates/list_customers.html:80
 msgctxt "Column name"
 msgid "Telephone"
 msgstr "Teléfono"
 
-#: app/templates/list_customers.html:40
+#: app/templates/list_customers.html:40 app/templates/list_customers.html:78
 msgctxt "Column name"
 msgid "Collector"
 msgstr "Cobrador"
@@ -463,7 +462,7 @@ msgctxt "Column name"
 msgid "Actions"
 msgstr "Acciones"
 
-#: app/templates/list_customers.html:58 app/templates/list_products.html:50
+#: app/templates/list_customers.html:58 app/templates/list_products.html:54
 #: app/templates/list_sales.html:79 app/templates/list_users.html:40
 msgctxt "Edit button"
 msgid "Edit"
