@@ -84,7 +84,8 @@
   margin-left: .5rem;
 }
 
-.content .table-with-installments-detail .sale-detail {
+.content .table-with-installments-detail .sale-detail,
+.content .table-with-installments-detail .customer-detail {
   border-bottom-color: transparent;
 }
 

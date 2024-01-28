@@ -8,17 +8,17 @@
 
   <form action="{% url 'list-customers' %}" method="get" class="filterset-form">
     <div class="row">
-      <div class="col-3">
+      <div class="col-sm-6 col-md-3">
         {{ filter_form.name|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-6 col-md-3">
         {{ filter_form.city|as_crispy_field }}
       </div>
-      <div class="col-3">
+      <div class="col-sm-6 col-md-3">
         {{ filter_form.address|as_crispy_field }}
       </div>
       {% if request.user.is_admin %}
-        <div class="col-3">
+        <div class="col-sm-6 col-md-3">
           {{ filter_form.collector|as_crispy_field }}
         </div>
       {% endif %}
@@ -29,34 +29,70 @@
     </div>
   </form>
   
-  <table class="table table-hover">
+  <table class="table table-hover table-with-installments-detail">
     <thead>
       <tr>
         <th scope="col">{% translate "Name" context "Column name" %}</th>
         <th scope="col">{% translate "Address" context "Column name" %}</th>
         <th scope="col">{% translate "City" context "Column name" %}</th>
-        <th scope="col">{% translate "Telephone" context "Column name" %}</th>
+        <th scope="col" class="d-none d-md-table-cell">{% translate "Telephone" context "Column name" %}</th>
         {% if request.user.is_admin %}
-          <th scope="col">{% translate "Collector" context "Column name" %}</th>
+          <th scope="col" class="d-none d-md-table-cell">{% translate "Collector" context "Column name" %}</th>
         {% endif %}
-        <th scope="col">{% translate "Actions" context "Column name" %}</th>
+        <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
       {% for customer in customers %}
-        <tr>
+        <tr class="customer-detail">
           <th scope="row">{{customer.name}}</th>
-          <td>{{customer.address}}</td>
-          <td>{{customer.get_city_display}}</td>
-          <td>{{customer.telephone}}</td>
+          <td class="col-sm-3">{{customer.address}}</td>
+          <td class="col-sm-3">{{customer.get_city_display}}</td>
+          <td class="d-none d-md-table-cell">{{customer.telephone}}</td>
           {% if request.user.is_admin %}
-            <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
+            <td class="d-none d-md-table-cell">{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
           {% endif %}
-          <td>
+          <td class="actions text-center col-3 col-lg-2">
             <a href="{% url 'update-customer' customer.pk %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
-              <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
+              <span class="d-none d-md-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
+            <a href="tel:{{customer.telephone}}" class="btn btn-primary d-md-none">
+              <i class="bi bi-telephone-fill"></i></span>
+            </a>
+          </td>
+        </tr>
+        <tr class="d-md-none">
+          <td colspan="9" class="installments-detail">
+            <div class="accordion accordion-flush" id="accordion-flush-{{customer.pk}}">
+              <div class="accordion-item">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{customer.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{customer.pk}}">
+                  {% translate "More Details" %}
+                </button>
+                <div id="flush-collapse-{{customer.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{customer.pk}}" data-bs-parent="#accordion-flush-{{customer.pk}}">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead class="table-light">
+                        <tr>
+                          {% if request.user.is_admin %}
+                            <th scope="row">{% translate "Collector" context "Column name" %}</th>
+                          {% endif %}
+                          <th>{% translate "Telephone" context "Column name" %}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          {% if request.user.is_admin %}
+                            <td>{{customer.collector.first_name}} {{customer.collector.last_name}}</td>
+                          {% endif %}
+                          <td>{{customer.telephone}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
       {% endfor %}
