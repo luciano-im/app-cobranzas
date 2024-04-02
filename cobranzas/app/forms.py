@@ -39,7 +39,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomerCreationForm(forms.ModelForm):
-    collector = forms.ModelChoiceField(queryset=User.objects.filter(is_collector=True), label=_('Collector'))
+    collector = UserModelChoiceField(queryset=User.objects.filter(is_collector=True).order_by('first_name', 'last_name'), label=_('Collector'))
 
     class Meta:
         model = Customer
