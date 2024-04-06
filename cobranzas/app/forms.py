@@ -127,7 +127,7 @@ class CustomerFilterForm(forms.Form):
 class ProductFilterForm(forms.Form):
 
     def brand_choices():
-        return [('', '---------')] + [(c, c) for c in Product.objects.exclude(id=0).values_list('brand', flat=True).distinct()]
+        return [('', '---------')] + [(c, c) for c in Product.objects.exclude(id=0).values_list('brand', flat=True).distinct().order_by('brand')]
 
     name = forms.CharField(required=False, label=_('Name'))
     brand = forms.ChoiceField(choices=brand_choices, required=False, label=_('Brand'))

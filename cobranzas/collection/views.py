@@ -382,7 +382,7 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['collector'] = User.objects.filter(Q(is_collector=True) | Q(is_staff=True))
+        context['collector'] = User.objects.filter(Q(is_collector=True) | Q(is_staff=True)).order_by('first_name', 'last_name')
         return context
 
     def get(self, request, *args, **kwargs):

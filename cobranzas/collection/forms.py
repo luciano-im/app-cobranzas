@@ -30,7 +30,7 @@ CollectionFormset = formset_factory(
 
 
 class CollectionFilterForm(forms.Form):
-    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=False, label=_('Customer'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all().order_by('name'), required=False, label=_('Customer'))
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
-    collector = UserModelChoiceField(queryset=User.objects.filter(), required=False, label=_('Collector'))
+    collector = UserModelChoiceField(queryset=User.objects.filter().order_by('first_name', 'last_name'), required=False, label=_('Collector'))
