@@ -197,6 +197,14 @@
   background-size: 15px;
 }
 
+.content .list-collection-delivery .collector-title {
+  margin: 2rem 0 1rem 0;
+}
+
+.content .list-collection-delivery .totals {
+  margin-top: 2rem;
+}
+
 .content .create-collection .totals,
 .content .delivery-collection .totals {
   position: fixed;
@@ -204,15 +212,21 @@
   right: 0;
   z-index: 10;
   background-color: #fafafa;
-  padding: 20px;
-  margin-bottom: 2rem;
   border-radius: 4px;
   box-shadow: -12px 12px 20px -5px #eee;
+  padding: 20px;
+}
+
+.content .create-collection .totals,
+.content .delivery-collection .totals,
+.content .list-collection-delivery .totals {
+  margin-bottom: 2rem;
   min-width: 210px;
 }
 
 .content .create-collection .totals p,
-.content .delivery-collection .totals p {
+.content .delivery-collection .totals p,
+.content .list-collection-delivery .totals p {
   font-size: 1.2rem;
   font-weight: 500;
 }

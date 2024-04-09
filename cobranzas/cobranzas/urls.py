@@ -23,7 +23,7 @@ from app.views import ProductCreationView, ProductUpdateView, ProductListView, L
 from app.views import UncollectibleSaleCreateView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
-from collection.views import CollectionUpdateView, CollectionDeliveryView
+from collection.views import CollectionUpdateView, CollectionDeliveryView, CollectionDeliveryListView
 
 
 urlpatterns = [
@@ -51,6 +51,7 @@ urlpatterns = [
     path('collections/print/local/', LocalCollectionPrintView.as_view(), name='print-local-collection'),
     path('collections/data/', CollectionDataView.as_view(), name='collections-data'),
     path('collections/pending/', PendingCollectionView.as_view(), name='pending-collection'),
+    path('reports/collections-delivery/', CollectionDeliveryListView.as_view(), name='list-collection-delivery'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # Include SW views

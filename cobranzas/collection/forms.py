@@ -34,3 +34,9 @@ class CollectionFilterForm(forms.Form):
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
     collector = UserModelChoiceField(queryset=User.objects.filter().order_by('first_name', 'last_name'), required=False, label=_('Collector'))
+
+
+class CollectionDeliveryFilterForm(forms.Form):
+    date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
+    date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
+    collector = UserModelChoiceField(queryset=User.objects.filter().order_by('first_name', 'last_name'), required=False, label=_('Collector'))

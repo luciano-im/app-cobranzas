@@ -18,7 +18,7 @@ from app.views import FilterSetView, ReceivableSalesView
 from collection.models import Collection, CollectionInstallment, CollectorSyncLog
 from collection.models import CollectionDelivery
 
-from collection.forms import CollectionFormset, CollectionFilterForm
+from collection.forms import CollectionFormset, CollectionFilterForm, CollectionDeliveryFilterForm
 
 from app.permissions import AdminPermission
 
@@ -422,6 +422,48 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
             raise ValidationError(_('The Collector has not been specified'))
 
         return redirect('collection-delivery')
+
+
+class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
+    template_name = 'list_collection_delivery.html'
+    context_object_name = 'collections_delivery'
+    filterset = [
+        ('collector', 'collector', 'exact'),
+        ('date_from', 'date', 'gte'),
+        ('date_to', 'date', 'lte'),
+    ]
+
+    def get_queryset(self):
+
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = CollectionDelivery.objects.\
+                filter(filters).\
+                select_related('collection', 'collector').\
+                order_by('-pk').\
+                all()
+        else:
+            today = datetime.today().date()
+            tz = timezone.get_current_timezone()
+            # Else add 00:00:00 (start of the day)
+            date_start = datetime.combine(today, time.min)
+            value = timezone.make_aware(date_start, tz, False)
+
+            queryset = CollectionDelivery.objects.\
+                filter(date__gte=value).\
+                select_related('collection', 'collector').\
+                order_by('-pk').\
+                all()
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['filter_form'] = CollectionDeliveryFilterForm(self.request.GET)
+        context['total'] = queryset.aggregate(total=Sum('collection__collectioninstallment__amount'))
+        return context
+
 
 class CollectionPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'print_collection.html'

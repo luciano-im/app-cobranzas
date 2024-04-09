@@ -129,6 +129,16 @@
                   {% endif %}
                 </ul>
               </li>
+              {% if request.user.is_staff %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-reports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% translate "Reports" %}
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbar-dropdown-reports">
+                    <li><a class="dropdown-item" href="{% url 'list-collection-delivery' %}">{% translate "Collection Delivery List" %}</a></li>
+                  </ul>
+                </li>
+              {% endif %}
             </ul>
             {% comment %} <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="..." aria-label="Search">
