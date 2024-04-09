@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-05 22:56-0300\n"
+"POT-Creation-Date: 2024-04-09 01:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,20 +261,30 @@ msgstr "Cobranzas sin Sincronizar"
 msgid "Delivery of Collections"
 msgstr "Rendición de Cobros"
 
-#: app/templates/base.html:147
+#: app/templates/base.html:135
+msgid "Reports"
+msgstr "Reportes"
+
+#: app/templates/base.html:138
+#, fuzzy
+#| msgid "Collection List"
+msgid "Collection Delivery List"
+msgstr "Listado de Rendición de Cobranzas"
+
+#: app/templates/base.html:157
 msgid "You're offline!"
 msgstr "Estas offline!"
 
-#: app/templates/base.html:155
+#: app/templates/base.html:165
 msgid "Last Sync"
 msgstr "Ult. Sincronización"
 
-#: app/templates/base.html:158
+#: app/templates/base.html:168
 msgctxt "Sync button"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: app/templates/base.html:160
+#: app/templates/base.html:170
 msgctxt "Collections pending synchronization tooltip"
 msgid "Collections pending synchronization!"
 msgstr "Cobranzas pendientes de sincronización!"

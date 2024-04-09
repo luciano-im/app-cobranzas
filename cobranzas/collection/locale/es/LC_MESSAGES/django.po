@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-05 22:56-0300\n"
+"POT-Creation-Date: 2024-04-09 01:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,57 +18,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: collection/forms.py:33 collection/models.py:11
+#: collection/forms.py:33 collection/models.py:14
 msgid "Customer"
 msgstr "Cliente"
 
-#: collection/forms.py:34
+#: collection/forms.py:34 collection/forms.py:40
 msgid "From Date"
 msgstr "Fecha Desde"
 
-#: collection/forms.py:35
+#: collection/forms.py:35 collection/forms.py:41
 msgid "To Date"
 msgstr "Fecha Hasta"
 
-#: collection/forms.py:36 collection/models.py:10 collection/models.py:56
+#: collection/forms.py:36 collection/forms.py:42 collection/models.py:13
+#: collection/models.py:65
 msgid "Collector"
 msgstr "Cobrador"
 
-#: collection/models.py:12 collection/models.py:45 collection/models.py:57
+#: collection/models.py:15 collection/models.py:54 collection/models.py:66
 #: collection/templates/print_collection.html:26
 #: collection/templates/print_local_collection.html:24
 msgid "Date"
 msgstr "Fecha"
 
-#: collection/models.py:13
+#: collection/models.py:16
 msgid "Modification Date"
 msgstr "Fecha de Modificación"
 
-#: collection/models.py:14
+#: collection/models.py:17
 msgid "Collection Delivered"
 msgstr "Cobranza Rendida"
 
-#: collection/models.py:21 collection/models.py:55
+#: collection/models.py:23
+#, fuzzy
+#| msgid "Amount"
+msgid "Paid Amount"
+msgstr "Importe"
+
+#: collection/models.py:30 collection/models.py:64
 msgid "Collection"
 msgstr "Cobranza"
 
-#: collection/models.py:22
+#: collection/models.py:31
 msgid "Sale Installment"
 msgstr "Cuota"
 
-#: collection/models.py:23 collection/templates/print_collection.html:54
+#: collection/models.py:32 collection/templates/print_collection.html:54
 msgid "Amount"
 msgstr "Importe"
 
-#: collection/models.py:32
+#: collection/models.py:41
 msgid "Amount can not be greater than installment total amount"
 msgstr "El importe no puede ser mayor al importe total de la cuota"
 
-#: collection/models.py:44
+#: collection/models.py:53
 msgid "User"
 msgstr "Usuario"
 
-#: collection/models.py:51
+#: collection/models.py:60
 msgid "Collector Synchronization Log"
 msgstr ""
 
@@ -89,12 +96,14 @@ msgstr "Buscar"
 
 #: collection/templates/create_collection.html:54
 #: collection/templates/list_collection.html:117
+#: collection/templates/list_collection_delivery.html:87
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: collection/templates/create_collection.html:55
 #: collection/templates/list_collection.html:118
+#: collection/templates/list_collection_delivery.html:88
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
@@ -110,6 +119,7 @@ msgstr "Selecciona un Cobrador"
 
 #: collection/templates/delivery_collection.html:36
 #: collection/templates/list_collection.html:46
+#: collection/templates/list_collection_delivery.html:47
 #: collection/templates/pending_collection.html:13
 msgctxt "Column name"
 msgid "Customer"
@@ -117,6 +127,7 @@ msgstr "Cliente"
 
 #: collection/templates/delivery_collection.html:37
 #: collection/templates/list_collection.html:45
+#: collection/templates/list_collection_delivery.html:48
 #: collection/templates/pending_collection.html:12
 msgctxt "Column name"
 msgid "Date"
@@ -124,12 +135,14 @@ msgstr "Fecha"
 
 #: collection/templates/delivery_collection.html:38
 #: collection/templates/list_collection.html:84
+#: collection/templates/list_collection_delivery.html:49
 #: collection/templates/update_collection.html:35
 msgctxt "Column name"
 msgid "Amount Paid"
 msgstr "Importe Pagado"
 
 #: collection/templates/delivery_collection.html:55
+#: collection/templates/list_collection_delivery.html:73
 #: collection/templates/update_collection.html:59
 msgid "Total"
 msgstr "Total"
@@ -153,11 +166,13 @@ msgid "Collection Date"
 msgstr "Fecha de Cobro"
 
 #: collection/templates/list_collection.html:36
+#: collection/templates/list_collection_delivery.html:31
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtro"
 
 #: collection/templates/list_collection.html:37
+#: collection/templates/list_collection_delivery.html:32
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
@@ -205,6 +220,19 @@ msgstr "Fecha de Venta"
 msgctxt "Column name"
 msgid "Installment"
 msgstr "Cuota"
+
+#: collection/templates/list_collection_delivery.html:15
+#, fuzzy
+#| msgid "Collection Delivered"
+msgid "Collections Delivery List"
+msgstr "Listado de Rendición de Cobranzas"
+
+#: collection/templates/list_collection_delivery.html:22
+#, fuzzy
+#| msgctxt "Column name"
+#| msgid "Sale Date"
+msgid "Delivery Date"
+msgstr "Fecha de Rendición"
 
 #: collection/templates/pending_collection.html:6
 msgid "Non-Synchronized Collections"
