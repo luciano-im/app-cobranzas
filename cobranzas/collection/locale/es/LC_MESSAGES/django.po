@@ -222,8 +222,6 @@ msgid "Installment"
 msgstr "Cuota"
 
 #: collection/templates/list_collection_delivery.html:15
-#, fuzzy
-#| msgid "Collection Delivered"
 msgid "Collections Delivery List"
 msgstr "Listado de Rendición de Cobranzas"
 

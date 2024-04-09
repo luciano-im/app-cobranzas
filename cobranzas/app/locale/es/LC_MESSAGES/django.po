@@ -266,8 +266,6 @@ msgid "Reports"
 msgstr "Reportes"
 
 #: app/templates/base.html:138
-#, fuzzy
-#| msgid "Collection List"
 msgid "Collection Delivery List"
 msgstr "Listado de Rendición de Cobranzas"
 
