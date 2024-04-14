@@ -28,26 +28,39 @@
     </div>
   </form>
   
-  <table class="table table-hover table-with-installments-detail">
-    <thead>
-      <tr>
-        <th scope="col">{% translate "Customer" context "Column name" %}</th>
-        <th scope="col">{% translate "Pending Balance" context "Column name" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for customer in pending_balance %}
-        <tr>
-          <th scope="row" class="col-5">{{customer.customer__name}}</th>
-          <td class="text-end d-none d-md-table-cell">{{customer.price|floatformat:0|intcomma}}</td>
-          <td class="text-end d-none d-md-table-cell">{{customer.paid_amount|floatformat:0|intcomma}}</td>
-          <td class="text-end d-none d-md-table-cell">{{customer.pending_balance|floatformat:0|intcomma}}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="totals d-flex flex-column align-items-end mb-5">
-    <p class="p-0">{% translate "Total" %}: $<span id="total">{{total.total|default:0.0|floatformat:0|intcomma}}</span></p>
+  <div class="data-container">
+    <div class="list-pending-balance">
+      <table class="table table-hover table-with-installments-detail">
+        <thead>
+          <tr>
+            <th scope="col">{% translate "Customer" context "Column name" %}</th>
+            <th scope="col" class="text-center">{% translate "Sales" context "Column name" %}</th>
+            <th scope="col" class="text-center">{% translate "Paid Amount" context "Column name" %}</th>
+            <th scope="col" class="text-center">{% translate "Pending Balance" context "Column name" %}</th>
+            <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for customer in pending_balance %}
+            <tr>
+              <th scope="row" class="col-5">{{customer.customer__name}}</th>
+              <td class="text-end d-none d-md-table-cell col-2">{{customer.price|floatformat:0|intcomma}}</td>
+              <td class="text-end d-none d-md-table-cell col-2">{{customer.paid_amount|floatformat:0|intcomma}}</td>
+              <td class="text-end d-none d-md-table-cell col-2">{{customer.pending_balance|floatformat:0|intcomma}}</td>
+              <td class="actions text-center col-1">
+                <a href="{% url 'list-sales' %}?customer={{customer.customer__id}}" class="btn btn-primary">
+                  <i class="bi bi-search"></i>
+                  {% comment %} <span class="d-none d-sm-inline">{% translate "Details" context "Edit button" %}</span> {% endcomment %}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="totals d-flex flex-column align-items-end mb-5">
+        <p class="p-0">{% translate "Total" %}: $<span id="total">{{total.total|default:0.0|floatformat:0|intcomma}}</span></p>
+      </div>
+    </div>
   </div>
 {% endblock %}
 

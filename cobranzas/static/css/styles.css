@@ -219,14 +219,16 @@
 
 .content .create-collection .totals,
 .content .delivery-collection .totals,
-.content .list-collection-delivery .totals {
+.content .list-collection-delivery .totals,
+.content .list-pending-balance .totals {
   margin-bottom: 2rem;
   min-width: 210px;
 }
 
 .content .create-collection .totals p,
 .content .delivery-collection .totals p,
-.content .list-collection-delivery .totals p {
+.content .list-collection-delivery .totals p,
+.content .list-pending-balance .totals p {
   font-size: 1.2rem;
   font-weight: 500;
 }

@@ -453,7 +453,7 @@ class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, Filt
     context_object_name = 'pending_balance'
     filterset = [
         ('customer', 'customer', 'exact'),
-        ('city', 'city', 'exact')
+        ('city', 'customer__city', 'exact')
     ]
 
     def get_queryset(self):
@@ -468,7 +468,7 @@ class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, Filt
         paid_amount_sum = SaleInstallment.objects.filter(sale=OuterRef('pk')).values('sale').annotate(paid_amount_sum=Sum('paid_amount')).values('paid_amount_sum')
         queryset = Sale.objects.\
             filter(pk__in=Subquery(sales_with_pending_balance.values('pk'))).\
-            values('customer__name', 'customer__city').\
+            values('customer__id', 'customer__name', 'customer__city').\
             annotate(price=Sum('price'), paid_amount=Sum(Subquery(paid_amount_sum))).\
             annotate(pending_balance=F('price') - F('paid_amount')).\
             order_by('-pending_balance')
