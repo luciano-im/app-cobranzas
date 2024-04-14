@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-09 01:05-0300\n"
+"POT-Creation-Date: 2024-04-14 20:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,8 @@ msgstr "Crear Usuario"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/forms.py:57 app/forms.py:68 app/forms.py:139 app/models.py:57
+#: app/forms.py:57 app/forms.py:68 app/forms.py:139 app/forms.py:146
+#: app/models.py:57
 msgid "Customer"
 msgstr "Cliente"
 
@@ -74,7 +75,7 @@ msgstr "Producto"
 msgid "Name"
 msgstr "Nombre"
 
-#: app/forms.py:122 app/models.py:30
+#: app/forms.py:122 app/forms.py:147 app/models.py:30
 msgid "City"
 msgstr "Ciudad"
 
@@ -269,20 +270,26 @@ msgstr "Reportes"
 msgid "Collection Delivery List"
 msgstr "Listado de Rendición de Cobranzas"
 
-#: app/templates/base.html:157
+#: app/templates/base.html:139 app/templates/list_pending_balance.html:14
+#, fuzzy
+#| msgid "Pending Balance"
+msgid "Pending Balance List"
+msgstr "Reporte de Saldos Pendientes"
+
+#: app/templates/base.html:158
 msgid "You're offline!"
 msgstr "Estas offline!"
 
-#: app/templates/base.html:165
+#: app/templates/base.html:166
 msgid "Last Sync"
 msgstr "Ult. Sincronización"
 
-#: app/templates/base.html:168
+#: app/templates/base.html:169
 msgctxt "Sync button"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: app/templates/base.html:170
+#: app/templates/base.html:171
 msgctxt "Collections pending synchronization tooltip"
 msgid "Collections pending synchronization!"
 msgstr "Cobranzas pendientes de sincronización!"
@@ -336,14 +343,16 @@ msgstr "cuota de"
 
 #: app/templates/create_sale.html:109
 #: app/templates/create_uncollectible.html:159
-#: app/templates/list_sales.html:161 app/templates/update_sale.html:144
+#: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:161
+#: app/templates/update_sale.html:144
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: app/templates/create_sale.html:110
 #: app/templates/create_uncollectible.html:160
-#: app/templates/list_sales.html:162 app/templates/update_sale.html:145
+#: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:162
+#: app/templates/update_sale.html:145
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
@@ -427,14 +436,16 @@ msgstr "Estado"
 msgid "There are no pending sales!"
 msgstr "No hay ventas pendientes!"
 
-#: app/templates/list_customers.html:27 app/templates/list_products.html:23
-#: app/templates/list_sales.html:39
+#: app/templates/list_customers.html:27
+#: app/templates/list_pending_balance.html:26
+#: app/templates/list_products.html:23 app/templates/list_sales.html:39
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtrar"
 
-#: app/templates/list_customers.html:28 app/templates/list_products.html:24
-#: app/templates/list_sales.html:40
+#: app/templates/list_customers.html:28
+#: app/templates/list_pending_balance.html:27
+#: app/templates/list_products.html:24 app/templates/list_sales.html:40
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
@@ -465,8 +476,10 @@ msgctxt "Column name"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/templates/list_customers.html:42 app/templates/list_products.html:36
-#: app/templates/list_sales.html:56 app/templates/list_users.html:15
+#: app/templates/list_customers.html:42
+#: app/templates/list_pending_balance.html:40
+#: app/templates/list_products.html:36 app/templates/list_sales.html:56
+#: app/templates/list_users.html:15
 msgctxt "Column name"
 msgid "Actions"
 msgstr "Acciones"
@@ -476,6 +489,39 @@ msgstr "Acciones"
 msgctxt "Edit button"
 msgid "Edit"
 msgstr "Editar"
+
+#: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:49
+msgctxt "Column name"
+msgid "Customer"
+msgstr "Cliente"
+
+#: app/templates/list_pending_balance.html:37
+#, fuzzy
+#| msgid "Sales"
+msgctxt "Column name"
+msgid "Sales"
+msgstr "Ventas"
+
+#: app/templates/list_pending_balance.html:38
+#, fuzzy
+#| msgid "Paid Amount"
+msgctxt "Column name"
+msgid "Paid Amount"
+msgstr "Importe Pagado"
+
+#: app/templates/list_pending_balance.html:39
+#, fuzzy
+#| msgid "Pending Balance"
+msgctxt "Column name"
+msgid "Pending Balance"
+msgstr "Saldo Pendiente"
+
+#: app/templates/list_pending_balance.html:62
+#, fuzzy
+#| msgctxt "Column name"
+#| msgid "Total"
+msgid "Total"
+msgstr "Total"
 
 #: app/templates/list_products.html:33
 msgctxt "Column name"
@@ -490,11 +536,6 @@ msgstr "Precio"
 #: app/templates/list_sales.html:30
 msgid "Sale Date"
 msgstr "Fecha de Pago"
-
-#: app/templates/list_sales.html:49
-msgctxt "Column name"
-msgid "Customer"
-msgstr "Cliente"
 
 #: app/templates/list_sales.html:53 app/templates/list_sales.html:95
 msgctxt "Column name"
