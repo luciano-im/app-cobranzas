@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, Sum, Subquery, OuterRef
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,7 @@ from django.views.generic.edit import UpdateView
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleWithPaymentsUpdateForm
 from app.forms import SaleProductCreationForm, SaleWithPaymentsProductUpdateForm, ProductCreationForm
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
-from app.forms import CustomAuthenticationForm
+from app.forms import CustomAuthenticationForm, PendingBalanceFilterForm
 from app.forms import create_saleproduct_formset
 from app.models import User, Customer, Sale, Product, SaleProduct, SaleInstallment
 
@@ -446,3 +446,38 @@ class UncollectibleSaleCreateView(LoginRequiredMixin, AdminPermission, ContextMi
             raise PermissionDenied
 
         return self.render_to_response(context)
+
+
+class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView, ReceivableSalesView):
+    template_name = 'list_pending_balance.html'
+    context_object_name = 'pending_balance'
+    filterset = [
+        ('customer', 'customer', 'exact'),
+        ('city', 'city', 'exact')
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        sales_with_pending_balance = Sale.objects.\
+            filter(filters).\
+            filter(uncollectible=False).\
+            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            exclude(installments=F('paid_installments'))
+        # OuterRef makes reference to a field from the parent subquuery
+        # OuterReg can be used only in a Subquery
+        paid_amount_sum = SaleInstallment.objects.filter(sale=OuterRef('pk')).values('sale').annotate(paid_amount_sum=Sum('paid_amount')).values('paid_amount_sum')
+        queryset = Sale.objects.\
+            filter(pk__in=Subquery(sales_with_pending_balance.values('pk'))).\
+            values('customer__name', 'customer__city').\
+            annotate(price=Sum('price'), paid_amount=Sum(Subquery(paid_amount_sum))).\
+            annotate(pending_balance=F('price') - F('paid_amount')).\
+            order_by('-pending_balance')
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['filter_form'] = PendingBalanceFilterForm(self.request.GET)
+        context['total'] = queryset.aggregate(total=Sum('pending_balance'))
+        return context

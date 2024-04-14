@@ -140,3 +140,8 @@ class SaleFilterForm(forms.Form):
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('From Date'))
     date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label=_('To Date'))
     product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), required=False, label=_('Product'))
+
+
+class PendingBalanceFilterForm(forms.Form):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), required=False, label=_('Customer'))
+    city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False, label=_('City'))
