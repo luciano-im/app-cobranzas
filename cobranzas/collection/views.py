@@ -408,7 +408,7 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
             collector = User.objects.get(id=selected_collector)
             with transaction.atomic():
                 for c in collection_list:
-                    collection_id = c.split('-')[1]
+                    collection_id = int(c.split('-')[1])
                     collection = Collection.objects.get(pk=collection_id)
                     collection_delivery = CollectionDelivery(
                         collection=collection,
