@@ -316,10 +316,13 @@ class CollectionUpdateView(LoginRequiredMixin, AdminPermission, TemplateView):
                 installment_amount = sale_installment.installment_amount
                 paid_amount = sale_installment.paid_amount - old_paid_amount
                 sale_installment.paid_amount = paid_amount + new_paid_amount
-                if installment_amount > sale_installment.paid_amount:
-                    sale_installment.status = SaleInstallment.PARTIAL
+                if sale_installment.paid_amount == 0.0:
+                    sale_installment.status = SaleInstallment.PENDING
                 else:
-                    sale_installment.status = SaleInstallment.PAID
+                    if installment_amount > sale_installment.paid_amount:
+                        sale_installment.status = SaleInstallment.PARTIAL
+                    else:
+                        sale_installment.status = SaleInstallment.PAID
 
                 try:
                     collection_installment.save()
