@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load l10n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -63,12 +64,12 @@
               </tr>
               <tr>
                 <td colspan="9" class="installments-detail">
-                  <div class="accordion accordion-flush" id="accordion-flush-{{sale.id}}">
+                  <div class="accordion accordion-flush" id="accordion-flush-{{sale.id|unlocalize}}">
                     <div class="accordion-item">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.id}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.id}}">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.id|unlocalize}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.id|unlocalize}}">
                         {% translate "More Details" %}
                       </button>
-                      <div id="flush-collapse-{{sale.id}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.id}}" data-bs-parent="#accordion-flush-{{sale.id}}">
+                      <div id="flush-collapse-{{sale.id|unlocalize}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.id|unlocalize}}" data-bs-parent="#accordion-flush-{{sale.id|unlocalize}}">
                         <div class="accordion-body">
                           <h6 class="d-md-none">{% translate "Other Data" %}</h6>
                           <table class="table d-md-none">
