@@ -127,7 +127,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% for i in sale.saleinstallment_set.all %}
+                        {% for i in sale.saleinstallment_set.all|dictsort:"id" %}
                           <tr>
                             <td scope="row">{{i.installment}}</td>
                             <td>{{i.installment_amount|floatformat:0|intcomma}}</td>
