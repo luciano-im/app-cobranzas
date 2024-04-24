@@ -1,3 +1,4 @@
+import datetime
 import json
 from django.conf import settings
 from django.contrib import admin
@@ -63,6 +64,7 @@ class Sale(models.Model):
     )
     date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Date'))
     modification = models.DateTimeField(auto_now=True, verbose_name=_('Modification Date'))
+    sale_date = models.DateTimeField(db_index=True, default=datetime.date.today(), verbose_name=_('Sale Date'))
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='collector', verbose_name=_('Collector'))
     uncollectible = models.BooleanField(default=False, verbose_name=_('Is uncollectible?'))
     remarks = models.TextField(default="", verbose_name=_('Remarks'))

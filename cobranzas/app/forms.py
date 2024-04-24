@@ -54,6 +54,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
+    sale_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}), label=_('Sale Date'))
     customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
     collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
@@ -61,10 +62,11 @@ class SaleCreationForm(forms.ModelForm):
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
+        fields = ['sale_date', 'customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
 
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
+    sale_date = forms.DateField(required=True, input_formats=('%Y-%m-%d',), widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}), label=_('Sale Date'))
     customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.order_by('name'), label=_('Customer'))
     collector = UserModelChoiceField(disabled=True, queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
     price = forms.FloatField(disabled=True, label=_('Price'))
@@ -74,7 +76,7 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Sale
-        fields = ['customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
+        fields = ['sale_date', 'customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
 
 
 class SaleProductCreationForm(forms.ModelForm):

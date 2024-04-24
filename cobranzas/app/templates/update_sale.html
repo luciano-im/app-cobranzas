@@ -12,6 +12,14 @@
 <h2>{% translate "Sale Update" %}</h2>
 <form action="" method="post" class="sale-creation">
   {% csrf_token %}
+  <div class="col-12 col-sm-4">
+    <div id="div_id_sale_date" class="mb-3">
+      <label for="id_sale_date" class="form-label requiredField">
+          Fecha de Venta<span class="asteriskField">*</span>
+      </label>
+      <input type="date" name="sale_date" value="{{form.sale_date.value|date:'Y-m-d'}}" class="dateinput form-control" required="" id="id_sale_date">
+    </div>
+  </div>
   {{ form.customer|as_crispy_field }}
   {{ form.collector|as_crispy_field }}
   {{ form.remarks|as_crispy_field }}
