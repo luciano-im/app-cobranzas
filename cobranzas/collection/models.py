@@ -64,3 +64,10 @@ class CollectionDelivery(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, verbose_name=_('Collection'))
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('Collector'))
     date = models.DateTimeField(db_index=True, verbose_name=_('Date'))
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['collection', 'collector'], name='unique_collection_delivery'
+            ),
+        ]
