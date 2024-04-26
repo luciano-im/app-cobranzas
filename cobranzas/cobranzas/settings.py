@@ -10,11 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
-
+import sys
 from pathlib import Path
+import sentry_sdk
 
 from dotenv import load_dotenv
 load_dotenv()
+
+INSTANCE_RUNNING_ON_LOCALHOST = False
+# this check is needed to prevent 'out of range' error in apache production.
+if len(sys.argv) > 1:
+    # Determine if Django is running under the development server. #Ref: https://stackoverflow.com/questions/12027545/determine-if-django-is-running-under-the-development-server/12028260 
+    INSTANCE_RUNNING_ON_LOCALHOST = (sys.argv[1] == 'runserver')
+
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    sentry_sdk.init(
+        dsn=os.getenv('SENTRY_DSN'),
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1.0,
+        send_default_pii=True
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
