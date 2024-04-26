@@ -49,7 +49,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    ALLOWED_HOSTS = ['cobranzas.leivaequipamientos.com', 'localhost']
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -196,3 +199,16 @@ SILKY_AUTHORISATION = True
 SILKY_META = True
 SILKY_MAX_RECORDED_REQUESTS = 10**4
 SILKY_PYTHON_PROFILER = True
+
+# Deploy settings
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Allow more fields in POST o GET requests
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
