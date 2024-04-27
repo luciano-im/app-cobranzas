@@ -381,7 +381,7 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         else:
             # Filter last month by default
             queryset = Sale.objects.\
-                filter(date__gte=timezone.now() - relativedelta(months=1)).\
+                filter(date__gte=timezone.now() - relativedelta(days=7)).\
                 prefetch_related('saleinstallment_set').\
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
                 all()
