@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
+from django.utils import timezone, dateformat
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -54,7 +55,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
-    sale_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}), label=_('Sale Date'))
+    sale_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date', 'value': dateformat.format(timezone.now(), 'Y-m-d')}), label=_('Sale Date'))
     customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
     collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
