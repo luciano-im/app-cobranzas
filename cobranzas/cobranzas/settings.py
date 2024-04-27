@@ -13,10 +13,12 @@ import os
 import sys
 from pathlib import Path
 import sentry_sdk
+from sentry_sdk.integrations.logging import ignore_logger
 
 from dotenv import load_dotenv
 load_dotenv()
 
+# Sentry integration
 INSTANCE_RUNNING_ON_LOCALHOST = False
 # this check is needed to prevent 'out of range' error in apache production.
 if len(sys.argv) > 1:
@@ -35,6 +37,8 @@ if not INSTANCE_RUNNING_ON_LOCALHOST:
         profiles_sample_rate=1.0,
         send_default_pii=True
     )
+    # Prevent logging to Sentry "Invalid HTTP_HOST header. You may need to add XXXX to ALLOWED_HOSTS"
+    ignore_logger('django.security.DisallowedHost')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 if not INSTANCE_RUNNING_ON_LOCALHOST:
     ALLOWED_HOSTS = ['cobranzas.leivaequipamientos.com', 'localhost']
