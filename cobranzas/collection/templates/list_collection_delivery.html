@@ -38,36 +38,46 @@
     {% regroup collections_delivery by collector as collections_by_collector %}
     
     {% for collection_list in collections_by_collector %}
-    {% get_total_delivered collection_list.list as total_by_collector %}
-    <h5 class="collector-title">{{collection_list.grouper.first_name}} {{collection_list.grouper.last_name}}</h5>
-    <table class="table table-hover table-with-installments-detail">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">{% translate "Customer" context "Column name" %}</th>
-          <th scope="col">{% translate "Date" context "Column name" %}</th>
-          <th scope="col">{% translate "Amount Paid" context "Column name" %}</th>
+      {% get_total_delivered collection_list.list as total_by_collector %}
+      <h5 class="collector-title">{{collection_list.grouper.first_name}} {{collection_list.grouper.last_name}}</h5>
+
+      {% regroup collection_list.list by date as delivery_list %}
+      {% for delivery in delivery_list %}
+        {% get_total_delivered delivery.list as total_by_delivery %}
+        <h6 class="text-center border p-3 mb-2 bg-light">{{delivery.grouper|date:"D d/m/y H:i"}}</h6>
+        <table class="table table-hover table-with-installments-detail">
+          <thead>
+            <tr>
+              <th scope="col">{% translate "Collection" context "Column name" %}</th>
+              <th scope="col">{% translate "Customer" context "Column name" %}</th>
+              <th scope="col" class="text-end">{% translate "Amount Paid" context "Column name" %}</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th colspan="2" class="text-end">Total:</th>
+              <th class="text-end">{{total_by_delivery|default:0.0|floatformat:0|intcomma}}</th>
+            </tr>
+          </tfoot>
+          <tbody>
+            {% for c in delivery.list %}
+              <tr>
+                <th scope="row" class="col-2">
+                  {{c.collection.id}}
+                </th>
+                <td class="col-8">{{c.collection.customer.name}}</td>
+                <td class="col-2 text-end">{{c.collection.paid_amount|default:0.0|floatformat:0|intcomma}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endfor %}
+      <table class="table table-with-installments-detail">
+        <tr class="table-secondary">
+          <th class="col-10 text-end">Total {{collection_list.grouper.first_name}} {{collection_list.grouper.last_name}}:</th>
+          <th class="col-2 text-end">{{total_by_collector|default:0.0|floatformat:0|intcomma}}</th>
         </tr>
-      </thead>
-      <tfoot>
-        <tr class="table-light">
-          <th colspan="3" class="text-end">Total:</th>
-          <th class="text-end">{{total_by_collector|default:0.0|floatformat:0|intcomma}}</th>
-        </tr>
-      </tfoot>
-      <tbody>
-        {% for c in collection_list.list %}
-          <tr>
-            <th scope="row" class="col-2">
-              {{c.id}}
-            </th>
-            <td class="col-4">{{c.collection.customer.name}}</td>
-            <td class="col-4">{{c.date|date:"D d/m/y H:i"}}</td>
-            <td class="col-2 text-end">{{c.collection.paid_amount|default:0.0|floatformat:0|intcomma}}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+      </table>
     {% endfor %}
     <div class="totals d-flex flex-column align-items-end mb-5">
       <p class="p-0">{% translate "Total" %}: $<span id="total">{{total.total|default:0.0|floatformat:0|intcomma}}</span></p>
