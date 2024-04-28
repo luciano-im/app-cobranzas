@@ -31,11 +31,22 @@ from rest_framework.renderers import JSONRenderer
 class CollectionData(ReceivableSalesView):
 
     def __get_data_sales_detail(self, filters):
+        # Get value of collector filter from filters variable
+        # Because I need to apply this filter to sale_set prefetch
+        # instead of the main queryset, to get just sales where the
+        # collector is the current user
+        collector_filter = Q()
+        if 'sale__collector' in str(filters):
+            for item in filters.children:
+                if item[0] == 'sale__collector':
+                    collector_value = item[1]
+                    break
+            collector_filter = Q(collector=collector_value)
         # Prefetch() executes a filter on the Sale records to filter already paid sales
         # Prefetch() executes a filter on SaleInstallment to filter PAID installments
         result = Customer.objects.\
             prefetch_related(
-                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
+                Prefetch('sale_set', queryset=Sale.objects.filter(collector_filter).annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
                     Prefetch('saleinstallment_set', queryset=SaleInstallment.objects.filter(~Q(status='PAID')).order_by('installment'))
                 ))
             ).\
@@ -166,11 +177,10 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         selected_customer = request.POST.get('customer', None)
         customer = Customer.objects.get(id=selected_customer)
         if customer:
-            # If the current collector is not an admin
-            # Raise a 403 error if the selected customer is not assigned to the collector
-            if not self.collector.is_admin:
-                if customer.collector != self.collector:
-                    raise PermissionDenied
+            # If the current collector is not an admin and collector is not assigned to a sale 
+            # or the whole customer, raise a 403 error
+            if not self.collector_validation(selected_customer, self.collector):
+                raise PermissionDenied
 
             collection_formset = CollectionFormset(
                 self.request.POST,

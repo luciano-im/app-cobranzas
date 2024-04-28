@@ -80,7 +80,7 @@ class ReceivableSalesView:
                 if customer_record.collector == user:
                     q_filter = Q(id=customer)
                 else:
-                    q_filter = Q(id=customer, sale_set__collector=user)
+                    q_filter = Q(id=customer, sale__collector=user)
             else:
                 # If customer is None then get sales of customers whose collector is the current user
                 # and get those whose collector is the current user but the customer collector is not the current user
