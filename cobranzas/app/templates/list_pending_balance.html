@@ -35,8 +35,8 @@
           <tr>
             <th scope="col">{% translate "Customer" context "Column name" %}</th>
             <th scope="col" class="text-center">{% translate "Sales" context "Column name" %}</th>
-            <th scope="col" class="text-center">{% translate "Paid Amount" context "Column name" %}</th>
-            <th scope="col" class="text-center">{% translate "Pending Balance" context "Column name" %}</th>
+            <th scope="col" class="text-center d-none d-sm-table-cell">{% translate "Paid Amount" context "Column name" %}</th>
+            <th scope="col" class="text-center d-none d-sm-table-cell">{% translate "Pending Balance" context "Column name" %}</th>
             <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
           </tr>
         </thead>
@@ -44,9 +44,9 @@
           {% for customer in pending_balance %}
             <tr>
               <th scope="row" class="col-5">{{customer.customer__name}}</th>
-              <td class="text-end d-none d-md-table-cell col-2">{{customer.price|floatformat:0|intcomma}}</td>
-              <td class="text-end d-none d-md-table-cell col-2">{{customer.paid_amount|floatformat:0|intcomma}}</td>
-              <td class="text-end d-none d-md-table-cell col-2">{{customer.pending_balance|floatformat:0|intcomma}}</td>
+              <td class="text-end d-none d-sm-table-cell col-2">{{customer.price|floatformat:0|intcomma}}</td>
+              <td class="text-end d-none d-sm-table-cell col-2">{{customer.paid_amount|floatformat:0|intcomma}}</td>
+              <td class="text-end d-md-table-cell col-2">{{customer.pending_balance|floatformat:0|intcomma}}</td>
               <td class="actions text-center col-1">
                 <a href="{% url 'list-sales' %}?customer={{customer.customer__id}}" class="btn btn-primary">
                   <i class="bi bi-search"></i>
