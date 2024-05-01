@@ -453,7 +453,7 @@ class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, 
             queryset = CollectionDelivery.objects.\
                 filter(filters).\
                 select_related('collection', 'collector').\
-                order_by('-pk').\
+                order_by('collector', '-pk').\
                 all()
         else:
             today = datetime.today().date()
@@ -465,7 +465,7 @@ class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, 
             queryset = CollectionDelivery.objects.\
                 filter(date__gte=value).\
                 select_related('collection', 'collector').\
-                order_by('-pk').\
+                order_by('collector', '-pk').\
                 all()
 
         return queryset
