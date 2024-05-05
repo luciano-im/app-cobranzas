@@ -3,10 +3,23 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
+{% block extra_header %}
+  <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
+  <script src="{% static 'library/dselect/dselect.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <h2>{% translate "Sale Update" %}</h2>
 <form action="" method="post" class="sale-creation">
   {% csrf_token %}
+  <div class="col-12 col-sm-4">
+    <div id="div_id_sale_date" class="mb-3">
+      <label for="id_sale_date" class="form-label requiredField">
+          Fecha de Venta<span class="asteriskField">*</span>
+      </label>
+      <input type="date" name="sale_date" value="{{form.sale_date.value|date:'Y-m-d'}}" class="dateinput form-control" required="" id="id_sale_date">
+    </div>
+  </div>
   {{ form.customer|as_crispy_field }}
   {{ form.collector|as_crispy_field }}
   {{ form.remarks|as_crispy_field }}
@@ -128,4 +141,25 @@
 
 {% block extra_js %}
 <script src="{% static 'js/create-sale.js' %}" type="text/javascript"></script>
+
+<script>
+  const config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: false, // Creatable selection. Default: false
+    clearable: false, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: '', // Can be "sm" or "lg". Default ''
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
+  };
+  dselect(document.querySelector('#id_customer'), config);
+
+  // Set focus on search field when user opens the select element
+  const customerSelect = document.querySelector('#id_customer + div.dselect-wrapper');
+  const customerSearch = customerSelect.querySelector('.dropdown-menu input');
+
+  customerSelect.addEventListener('shown.bs.dropdown', e => {
+    customerSearch.focus();
+  });
+</script>
 {% endblock %}

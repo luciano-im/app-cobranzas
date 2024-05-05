@@ -18,7 +18,7 @@ from app.views import FilterSetView, ReceivableSalesView
 from collection.models import Collection, CollectionInstallment, CollectorSyncLog
 from collection.models import CollectionDelivery
 
-from collection.forms import CollectionFormset, CollectionFilterForm
+from collection.forms import CollectionFormset, CollectionFilterForm, CollectionDeliveryFilterForm
 
 from app.permissions import AdminPermission
 
@@ -31,12 +31,23 @@ from rest_framework.renderers import JSONRenderer
 class CollectionData(ReceivableSalesView):
 
     def __get_data_sales_detail(self, filters):
+        # Get value of collector filter from filters variable
+        # Because I need to apply this filter to sale_set prefetch
+        # instead of the main queryset, to get just sales where the
+        # collector is the current user
+        collector_filter = Q()
+        if 'sale__collector' in str(filters):
+            for item in filters.children:
+                if item[0] == 'sale__collector':
+                    collector_value = item[1]
+                    break
+            collector_filter = Q(collector=collector_value)
         # Prefetch() executes a filter on the Sale records to filter already paid sales
         # Prefetch() executes a filter on SaleInstallment to filter PAID installments
         result = Customer.objects.\
             prefetch_related(
-                Prefetch('sale_set', queryset=Sale.objects.annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
-                    Prefetch('saleinstallment_set', queryset=SaleInstallment.objects.filter(~Q(status='PAID')))
+                Prefetch('sale_set', queryset=Sale.objects.filter(collector_filter).filter(uncollectible=False).annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
+                    Prefetch('saleinstallment_set', queryset=SaleInstallment.objects.filter(~Q(status='PAID')).order_by('installment'))
                 ))
             ).\
             filter(filters).distinct()
@@ -117,7 +128,7 @@ class ServiceWorkerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['version'] = '1.3'
+        context['version'] = '1.4'
         return context
 
 
@@ -166,11 +177,10 @@ class CollectionCreationView(LoginRequiredMixin, ContextMixin, TemplateResponseM
         selected_customer = request.POST.get('customer', None)
         customer = Customer.objects.get(id=selected_customer)
         if customer:
-            # If the current collector is not an admin
-            # Raise a 403 error if the selected customer is not assigned to the collector
-            if not self.collector.is_admin:
-                if customer.collector != self.collector:
-                    raise PermissionDenied
+            # If the current collector is not an admin and collector is not assigned to a sale 
+            # or the whole customer, raise a 403 error
+            if not self.collector_validation(selected_customer, self.collector):
+                raise PermissionDenied
 
             collection_formset = CollectionFormset(
                 self.request.POST,
@@ -316,10 +326,13 @@ class CollectionUpdateView(LoginRequiredMixin, AdminPermission, TemplateView):
                 installment_amount = sale_installment.installment_amount
                 paid_amount = sale_installment.paid_amount - old_paid_amount
                 sale_installment.paid_amount = paid_amount + new_paid_amount
-                if installment_amount > sale_installment.paid_amount:
-                    sale_installment.status = SaleInstallment.PARTIAL
+                if sale_installment.paid_amount == 0.0:
+                    sale_installment.status = SaleInstallment.PENDING
                 else:
-                    sale_installment.status = SaleInstallment.PAID
+                    if installment_amount > sale_installment.paid_amount:
+                        sale_installment.status = SaleInstallment.PARTIAL
+                    else:
+                        sale_installment.status = SaleInstallment.PAID
 
                 try:
                     collection_installment.save()
@@ -382,7 +395,7 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['collector'] = User.objects.filter(Q(is_collector=True) | Q(is_staff=True))
+        context['collector'] = User.objects.filter(Q(is_collector=True) | Q(is_staff=True)).order_by('first_name', 'last_name')
         return context
 
     def get(self, request, *args, **kwargs):
@@ -408,7 +421,7 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
             collector = User.objects.get(id=selected_collector)
             with transaction.atomic():
                 for c in collection_list:
-                    collection_id = c.split('-')[1]
+                    collection_id = int(c.split('-')[1])
                     collection = Collection.objects.get(pk=collection_id)
                     collection_delivery = CollectionDelivery(
                         collection=collection,
@@ -422,6 +435,48 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
             raise ValidationError(_('The Collector has not been specified'))
 
         return redirect('collection-delivery')
+
+
+class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
+    template_name = 'list_collection_delivery.html'
+    context_object_name = 'collections_delivery'
+    filterset = [
+        ('collector', 'collector', 'exact'),
+        ('date_from', 'date', 'gte'),
+        ('date_to', 'date', 'lte'),
+    ]
+
+    def get_queryset(self):
+
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = CollectionDelivery.objects.\
+                filter(filters).\
+                select_related('collection', 'collector').\
+                order_by('collector', '-pk').\
+                all()
+        else:
+            today = datetime.today().date()
+            tz = timezone.get_current_timezone()
+            # Else add 00:00:00 (start of the day)
+            date_start = datetime.combine(today, time.min)
+            value = timezone.make_aware(date_start, tz, False)
+
+            queryset = CollectionDelivery.objects.\
+                filter(date__gte=value).\
+                select_related('collection', 'collector').\
+                order_by('collector', '-pk').\
+                all()
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['filter_form'] = CollectionDeliveryFilterForm(self.request.GET)
+        context['total'] = queryset.aggregate(total=Sum('collection__collectioninstallment__amount'))
+        return context
+
 
 class CollectionPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'print_collection.html'

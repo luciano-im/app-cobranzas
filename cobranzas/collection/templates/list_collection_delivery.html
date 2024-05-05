@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load get_total_delivered %}
+
+{% block extra_header %}
+  <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
+  <script src="{% static 'library/dselect/dselect.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h2>{% translate "Collections Delivery List" %}</h2>
+<form action="{% url 'list-collection-delivery' %}" method="get" class="filterset-form">
+  <div class="row">
+    <div class="col-sm-5 col-md-5">
+      {{ filter_form.collector|as_crispy_field }}
+    </div>
+    <div class="col-sm-8 col-md-6 col-lg-5">
+      <label for="id_date_from" class="form-label">{% translate "Delivery Date" %}</label>
+      <div class="input-group mb-3">
+        <input type="date" name="date_from" class="dateinput form-control" id="id_date_from" value="{{filter_form.date_from.value}}">
+        <span class="input-group-text">&nbsp;</span>
+        <input type="date" name="date_to" class="dateinput form-control" id="id_date_to" value="{{filter_form.date_to.value}}">
+      </div>
+    </div>
+  </div>
+  <div>
+    <input type="submit" value="{% translate "Filter" context "Filter button" %}" class="btn btn-primary">
+    <a href="{% url 'list-collection-delivery' %}" class="btn btn-secondary erase-filters">{% translate "Clear" context "Clear filters button" %}</a>
+  </div>
+</form>
+  
+<div class="data-container">
+  <div class="list-collection-delivery">
+    {% regroup collections_delivery by collector as collections_by_collector %}
+    
+    {% for collection_list in collections_by_collector %}
+      {% get_total_delivered collection_list.list as total_by_collector %}
+      <h5 class="collector-title">{{collection_list.grouper.first_name}} {{collection_list.grouper.last_name}}</h5>
+
+      {% regroup collection_list.list by date as delivery_list %}
+      {% for delivery in delivery_list %}
+        {% get_total_delivered delivery.list as total_by_delivery %}
+        <h6 class="text-center border p-3 mb-2 bg-light">{{delivery.grouper|date:"D d/m/y H:i"}}</h6>
+        <table class="table table-hover table-with-installments-detail">
+          <thead>
+            <tr>
+              <th scope="col">{% translate "Collection" context "Column name" %}</th>
+              <th scope="col">{% translate "Customer" context "Column name" %}</th>
+              <th scope="col" class="text-end">{% translate "Amount Paid" context "Column name" %}</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th colspan="2" class="text-end">Total:</th>
+              <th class="text-end">{{total_by_delivery|default:0.0|floatformat:0|intcomma}}</th>
+            </tr>
+          </tfoot>
+          <tbody>
+            {% for c in delivery.list %}
+              <tr>
+                <th scope="row" class="col-2">
+                  {{c.collection.id}}
+                </th>
+                <td class="col-8">{{c.collection.customer.name}}</td>
+                <td class="col-2 text-end">{{c.collection.paid_amount|default:0.0|floatformat:0|intcomma}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endfor %}
+      <table class="table table-with-installments-detail">
+        <tr class="table-secondary">
+          <th class="col-10 text-end">Total {{collection_list.grouper.first_name}} {{collection_list.grouper.last_name}}:</th>
+          <th class="col-2 text-end">{{total_by_collector|default:0.0|floatformat:0|intcomma}}</th>
+        </tr>
+      </table>
+    {% endfor %}
+    <div class="totals d-flex flex-column align-items-end mb-5">
+      <p class="p-0">{% translate "Total" %}: $<span id="total">{{total.total|default:0.0|floatformat:0|intcomma}}</span></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: false, // Creatable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: '', // Can be "sm" or "lg". Default ''
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
+  };
+  dselect(document.querySelector('#id_collector'), config);
+
+  // Set focus on search field when user opens the select element
+  const collectorSelect = document.querySelector('#id_collector + div.dselect-wrapper');
+  const collectorSearch = customerSelect.querySelector('.dropdown-menu input');
+
+  collectorSelect.addEventListener('shown.bs.dropdown', e => {
+    customerSearch.focus();
+  });
+</script>
+{% endblock %}

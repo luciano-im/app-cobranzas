@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load l10n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -42,7 +43,7 @@
           {% for c in collections %}
           <tr>
             <th scope="row" class="col-2">
-              <input type="checkbox" name="collection" value="collection-{{c.id}}" data-amount="{{c.amount|default:0.0|stringformat:".2f"}}"> <span>{{c.id}}</span>
+              <input type="checkbox" name="collection" value="collection-{{c.id|unlocalize}}" data-amount="{{c.amount|default:0.0|stringformat:".2f"}}"> <span>{{c.id}}</span>
             </th>
             <td class="col-4">{{c.customer.name}}</td>
             <td class="col-4">{{c.date|date:"D d/m/y"}}</td>

@@ -1,6 +1,9 @@
 from django.conf import settings
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Customer, SaleInstallment, User
@@ -15,6 +18,12 @@ class Collection(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.customer} - {self.date.strftime('%m/%d/%Y')}"
+
+    @cached_property
+    @admin.display(description=_("Paid Amount"))
+    def paid_amount(self):
+        paid = CollectionInstallment.objects.filter(collection=self.id).aggregate(paid=Sum('amount'))
+        return paid['paid']
 
 
 class CollectionInstallment(models.Model):
@@ -55,3 +64,10 @@ class CollectionDelivery(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, verbose_name=_('Collection'))
     collector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('Collector'))
     date = models.DateTimeField(db_index=True, verbose_name=_('Date'))
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['collection', 'collector'], name='unique_collection_delivery'
+            ),
+        ]

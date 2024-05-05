@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, Sum, Subquery, OuterRef
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,7 @@ from django.views.generic.edit import UpdateView
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleWithPaymentsUpdateForm
 from app.forms import SaleProductCreationForm, SaleWithPaymentsProductUpdateForm, ProductCreationForm
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
-from app.forms import CustomAuthenticationForm
+from app.forms import CustomAuthenticationForm, PendingBalanceFilterForm
 from app.forms import create_saleproduct_formset
 from app.models import User, Customer, Sale, Product, SaleProduct, SaleInstallment
 
@@ -59,9 +59,6 @@ class FilterSetView:
 
 class ReceivableSalesView:
 
-    def __init__(self):
-        self.sales_with_pending_balance = None
-
     def get_customers_filter(self, customer):
         user = self.request.user
         # If user is admin get all sales
@@ -80,7 +77,7 @@ class ReceivableSalesView:
                 if customer_record.collector == user:
                     q_filter = Q(id=customer)
                 else:
-                    q_filter = Q(id=customer, sale_set__collector=user)
+                    q_filter = Q(id=customer, sale__collector=user)
             else:
                 # If customer is None then get sales of customers whose collector is the current user
                 # and get those whose collector is the current user but the customer collector is not the current user
@@ -88,43 +85,12 @@ class ReceivableSalesView:
 
         return q_filter
 
-    # TODO: Check if this method still works
-    def set_sales_with_pending_balance(self, customer=None):
-        filters = self.get_customers_filter(customer)
-        self.sales_with_pending_balance = self.get_pending_sales(filters, ['pk', 'customer'])
-
     def get_pending_sales(self, filters, fields):
         return Sale.objects.\
             filter(filters, uncollectible=False).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
             exclude(installments=F('paid_installments')).\
             values(*fields)
-
-    def get_sale(self, id):
-        sale = Sale.objects.get(pk=id)
-        products = SaleProduct.objects.filter(sale=id).values('product__name')
-
-        data = {
-            'id': sale.pk,
-            'installments': sale.installments,
-            'date': sale.date.strftime('%m/%d/%Y'),
-            'price': sale.price,
-            'remarks': sale.remarks,
-            'paid_amount': sale.paid_amount,
-            'pending_balance': sale.pending_balance,
-            'products': [p['product__name'] for p in products]
-        }
-
-        return data
-
-    def get_installments(self, sale):
-        installments = SaleInstallment.objects.\
-            filter(sale=sale).\
-            filter(Q(status=SaleInstallment.PARTIAL) | Q(status=SaleInstallment.PENDING)).\
-            order_by('sale', 'installment', 'status').\
-            values('pk', 'sale_id', 'status', 'installment', 'installment_amount', 'paid_amount')
-
-        return installments
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -381,7 +347,7 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         else:
             # Filter last month by default
             queryset = Sale.objects.\
-                filter(date__gte=timezone.now() - relativedelta(months=1)).\
+                filter(date__gte=timezone.now() - relativedelta(days=7)).\
                 prefetch_related('saleinstallment_set').\
                 annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
                 all()
@@ -393,56 +359,36 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         return context
 
 
-class UncollectibleSaleCreateView(LoginRequiredMixin, AdminPermission, ContextMixin, TemplateResponseMixin, ReceivableSalesView, View):
-    template_name = 'create_uncollectible.html'
+class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView, ReceivableSalesView):
+    template_name = 'list_pending_balance.html'
+    context_object_name = 'pending_balance'
+    filterset = [
+        ('customer', 'customer', 'exact'),
+        ('city', 'customer__city', 'exact')
+    ]
 
-    def get_uncollectible_data(self, customer):
-        self.set_sales_with_pending_balance(customer)
-        data = []
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        sales_with_pending_balance = Sale.objects.\
+            filter(filters).\
+            filter(uncollectible=False).\
+            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            exclude(installments=F('paid_installments'))
+        # OuterRef makes reference to a field from the parent subquuery
+        # OuterReg can be used only in a Subquery
+        paid_amount_sum = SaleInstallment.objects.filter(sale=OuterRef('pk')).values('sale').annotate(paid_amount_sum=Sum('paid_amount')).values('paid_amount_sum')
+        queryset = Sale.objects.\
+            filter(pk__in=Subquery(sales_with_pending_balance.values('pk'))).\
+            values('customer__id', 'customer__name', 'customer__city').\
+            annotate(price=Sum('price'), paid_amount=Sum(Subquery(paid_amount_sum))).\
+            annotate(pending_balance=F('price') - F('paid_amount')).\
+            order_by('-pending_balance')
 
-        for s in self.sales_with_pending_balance:
-            installments = self.get_installments(s['pk'])
-            temp = self.get_sale(s['pk'])
-            temp['installments_data'] = installments
-
-            data.append(temp)
-
-        return data
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.collector = self.request.user
-        context['customers'] = Customer.objects.values('pk', 'name').order_by('name')
+        queryset = self.get_queryset()
+        context['filter_form'] = PendingBalanceFilterForm(self.request.GET)
+        context['total'] = queryset.aggregate(total=Sum('pending_balance'))
         return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        selected_customer_param = self.request.GET.get('select-customer', None)
-        selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
-
-        if selected_customer:
-            # get_data return sales and installments data
-            data = self.get_uncollectible_data(selected_customer)
-            # data['customers'] = list(context['customers'])
-            # data['selected_customer'] = selected_customer
-            context['selected_customer'] = selected_customer
-            context['data'] = data
-
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        selected_customer = request.POST.get('customer', None)
-        customer = Customer.objects.get(id=selected_customer)
-        if customer:
-            checkboxes = request.POST.getlist('uncollectible-sale', None)
-            if checkboxes:
-                for sale in checkboxes:
-                    try:
-                        Sale.objects.filter(customer=customer, id=sale).update(uncollectible=True)
-                    except:
-                        raise ValidationError(_('Error when setting uncollectible status to a sale'))
-        else:
-            raise PermissionDenied
-
-        return self.render_to_response(context)

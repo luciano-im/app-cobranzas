@@ -10,11 +10,35 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
-
+import sys
 from pathlib import Path
+import sentry_sdk
+from sentry_sdk.integrations.logging import ignore_logger
 
 from dotenv import load_dotenv
 load_dotenv()
+
+# Sentry integration
+INSTANCE_RUNNING_ON_LOCALHOST = False
+# this check is needed to prevent 'out of range' error in apache production.
+if len(sys.argv) > 1:
+    # Determine if Django is running under the development server. #Ref: https://stackoverflow.com/questions/12027545/determine-if-django-is-running-under-the-development-server/12028260 
+    INSTANCE_RUNNING_ON_LOCALHOST = (sys.argv[1] == 'runserver')
+
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    sentry_sdk.init(
+        dsn=os.getenv('SENTRY_DSN'),
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1.0,
+        send_default_pii=True
+    )
+    # Prevent logging to Sentry "Invalid HTTP_HOST header. You may need to add XXXX to ALLOWED_HOSTS"
+    ignore_logger('django.security.DisallowedHost')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +51,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = []
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    ALLOWED_HOSTS = ['cobranzas.leivaequipamientos.com', 'localhost']
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -176,3 +203,16 @@ SILKY_AUTHORISATION = True
 SILKY_META = True
 SILKY_MAX_RECORDED_REQUESTS = 10**4
 SILKY_PYTHON_PROFILER = True
+
+# Deploy settings
+if not INSTANCE_RUNNING_ON_LOCALHOST:
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Allow more fields in POST o GET requests
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000

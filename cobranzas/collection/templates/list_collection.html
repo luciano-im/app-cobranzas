@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% load l10n %}
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
@@ -60,7 +61,7 @@
               <i class="bi bi-receipt"></i>
               <span class="d-none d-sm-inline">{% translate "Receipt" context "Receipt button" %}</span>
             </a>
-            <a href="{% url 'update-collection' collection.pk %}" class="btn btn-primary">
+            <a href="{% url 'update-collection' collection.pk|unlocalize %}" class="btn btn-primary">
               <i class="bi bi-pencil-square"></i>
               <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
@@ -68,12 +69,12 @@
         </tr>
         <tr>
           <td colspan="9" class="installments-detail">
-            <div class="accordion accordion-flush" id="accordion-flush-{{collection.pk}}">
+            <div class="accordion accordion-flush" id="accordion-flush-{{collection.pk|unlocalize}}">
               <div class="accordion-item">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{collection.pk}}" aria-expanded="false" aria-controls="flush-collapse-{{collection.pk}}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{collection.pk|unlocalize}}" aria-expanded="false" aria-controls="flush-collapse-{{collection.pk|unlocalize}}">
                   {% translate "Details of Fees" %}
                 </button>
-                <div id="flush-collapse-{{collection.pk}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{collection.pk}}" data-bs-parent="#accordion-flush-{{collection.pk}}">
+                <div id="flush-collapse-{{collection.pk|unlocalize}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{collection.pk|unlocalize}}" data-bs-parent="#accordion-flush-{{collection.pk|unlocalize}}">
                   <div class="accordion-body">
                     <table class="table">
                       <thead class="table-light">

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 11:29-0300\n"
+"POT-Creation-Date: 2024-04-14 20:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,13 +43,14 @@ msgstr "Crear Usuario"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/forms.py:57 app/forms.py:68 app/forms.py:139 app/models.py:57
+#: app/forms.py:57 app/forms.py:68 app/forms.py:139 app/forms.py:146
+#: app/models.py:57
 msgid "Customer"
 msgstr "Cliente"
 
 #: app/forms.py:58 app/forms.py:70 app/forms.py:94 app/models.py:41
 #: app/models.py:58 app/templates/create_sale.html:47
-#: app/templates/update_sale.html:46
+#: app/templates/update_sale.html:51
 msgid "Price"
 msgstr "Precio"
 
@@ -66,7 +67,7 @@ msgid "Installments"
 msgstr "Cuotas"
 
 #: app/forms.py:81 app/forms.py:142 app/models.py:87
-#: app/templates/create_sale.html:44 app/templates/update_sale.html:43
+#: app/templates/create_sale.html:44 app/templates/update_sale.html:48
 msgid "Product"
 msgstr "Producto"
 
@@ -74,7 +75,7 @@ msgstr "Producto"
 msgid "Name"
 msgstr "Nombre"
 
-#: app/forms.py:122 app/models.py:30
+#: app/forms.py:122 app/forms.py:147 app/models.py:30
 msgid "City"
 msgstr "Ciudad"
 
@@ -203,11 +204,11 @@ msgstr "Listado de Usuarios"
 msgid "Customers"
 msgstr "Clientes"
 
-#: app/templates/base.html:88
+#: app/templates/base.html:88 app/templates/home.html:16
 msgid "Create Customer"
 msgstr "Crear Cliente"
 
-#: app/templates/base.html:91 app/templates/home.html:16
+#: app/templates/base.html:91 app/templates/home.html:24
 #: app/templates/list_customers.html:7
 msgid "Customer List"
 msgstr "Listado de Clientes"
@@ -229,6 +230,7 @@ msgid "Sales"
 msgstr "Ventas"
 
 #: app/templates/base.html:110 app/templates/create_sale.html:12
+#: app/templates/home.html:13
 msgid "New Sale"
 msgstr "Nueva Venta"
 
@@ -248,7 +250,7 @@ msgstr "Cobranzas"
 msgid "New Collection"
 msgstr "Nueva Cobranza"
 
-#: app/templates/base.html:124 app/templates/home.html:13
+#: app/templates/base.html:124 app/templates/home.html:21
 msgid "Collection List"
 msgstr "Listado de Cobranzas"
 
@@ -260,20 +262,34 @@ msgstr "Cobranzas sin Sincronizar"
 msgid "Delivery of Collections"
 msgstr "Rendición de Cobros"
 
-#: app/templates/base.html:147
+#: app/templates/base.html:135
+msgid "Reports"
+msgstr "Reportes"
+
+#: app/templates/base.html:138
+msgid "Collection Delivery List"
+msgstr "Listado de Rendición de Cobranzas"
+
+#: app/templates/base.html:139 app/templates/list_pending_balance.html:14
+#, fuzzy
+#| msgid "Pending Balance"
+msgid "Pending Balance List"
+msgstr "Reporte de Saldos Pendientes"
+
+#: app/templates/base.html:158
 msgid "You're offline!"
 msgstr "Estas offline!"
 
-#: app/templates/base.html:155
+#: app/templates/base.html:166
 msgid "Last Sync"
 msgstr "Ult. Sincronización"
 
-#: app/templates/base.html:158
+#: app/templates/base.html:169
 msgctxt "Sync button"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: app/templates/base.html:160
+#: app/templates/base.html:171
 msgctxt "Collections pending synchronization tooltip"
 msgid "Collections pending synchronization!"
 msgstr "Cobranzas pendientes de sincronización!"
@@ -286,7 +302,7 @@ msgstr "Crear Cliente"
 #: app/templates/create_sale.html:95
 #: app/templates/create_uncollectible.html:137
 #: app/templates/update_customer.html:11 app/templates/update_product.html:11
-#: app/templates/update_sale.html:125
+#: app/templates/update_sale.html:130
 msgctxt "Save button"
 msgid "Save"
 msgstr "Guardar"
@@ -295,46 +311,48 @@ msgstr "Guardar"
 msgid "Product Registration"
 msgstr "Crear Producto"
 
-#: app/templates/create_sale.html:20 app/templates/update_sale.html:15
+#: app/templates/create_sale.html:20 app/templates/update_sale.html:20
 msgctxt "Sale subtitle"
 msgid "Products"
 msgstr "Productos"
 
-#: app/templates/create_sale.html:63 app/templates/update_sale.html:78
+#: app/templates/create_sale.html:63 app/templates/update_sale.html:83
 msgctxt "Add product button"
 msgid "Add Product"
 msgstr "Agregar Producto"
 
-#: app/templates/create_sale.html:66 app/templates/update_sale.html:81
+#: app/templates/create_sale.html:66 app/templates/update_sale.html:86
 msgctxt "Payment scheme"
 msgid "Amount of Fees"
 msgstr "Cantidad de Cuotas"
 
-#: app/templates/create_sale.html:79 app/templates/update_sale.html:94
+#: app/templates/create_sale.html:79 app/templates/update_sale.html:99
 msgid "Details"
 msgstr "Detalles"
 
-#: app/templates/create_sale.html:84 app/templates/update_sale.html:100
+#: app/templates/create_sale.html:84 app/templates/update_sale.html:105
 msgctxt "Payment scheme"
 msgid "installments of"
 msgstr "cuotas de"
 
-#: app/templates/create_sale.html:89 app/templates/update_sale.html:106
-#: app/templates/update_sale.html:112
+#: app/templates/create_sale.html:89 app/templates/update_sale.html:111
+#: app/templates/update_sale.html:117
 msgctxt "Payment scheme"
 msgid "installment of"
 msgstr "cuota de"
 
 #: app/templates/create_sale.html:109
 #: app/templates/create_uncollectible.html:159
-#: app/templates/list_sales.html:161
+#: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:161
+#: app/templates/update_sale.html:144
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: app/templates/create_sale.html:110
 #: app/templates/create_uncollectible.html:160
-#: app/templates/list_sales.html:162
+#: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:162
+#: app/templates/update_sale.html:145
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
@@ -418,14 +436,16 @@ msgstr "Estado"
 msgid "There are no pending sales!"
 msgstr "No hay ventas pendientes!"
 
-#: app/templates/list_customers.html:27 app/templates/list_products.html:23
-#: app/templates/list_sales.html:39
+#: app/templates/list_customers.html:27
+#: app/templates/list_pending_balance.html:26
+#: app/templates/list_products.html:23 app/templates/list_sales.html:39
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtrar"
 
-#: app/templates/list_customers.html:28 app/templates/list_products.html:24
-#: app/templates/list_sales.html:40
+#: app/templates/list_customers.html:28
+#: app/templates/list_pending_balance.html:27
+#: app/templates/list_products.html:24 app/templates/list_sales.html:40
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
@@ -456,8 +476,10 @@ msgctxt "Column name"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/templates/list_customers.html:42 app/templates/list_products.html:36
-#: app/templates/list_sales.html:56 app/templates/list_users.html:15
+#: app/templates/list_customers.html:42
+#: app/templates/list_pending_balance.html:40
+#: app/templates/list_products.html:36 app/templates/list_sales.html:56
+#: app/templates/list_users.html:15
 msgctxt "Column name"
 msgid "Actions"
 msgstr "Acciones"
@@ -467,6 +489,39 @@ msgstr "Acciones"
 msgctxt "Edit button"
 msgid "Edit"
 msgstr "Editar"
+
+#: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:49
+msgctxt "Column name"
+msgid "Customer"
+msgstr "Cliente"
+
+#: app/templates/list_pending_balance.html:37
+#, fuzzy
+#| msgid "Sales"
+msgctxt "Column name"
+msgid "Sales"
+msgstr "Ventas"
+
+#: app/templates/list_pending_balance.html:38
+#, fuzzy
+#| msgid "Paid Amount"
+msgctxt "Column name"
+msgid "Paid Amount"
+msgstr "Importe Pagado"
+
+#: app/templates/list_pending_balance.html:39
+#, fuzzy
+#| msgid "Pending Balance"
+msgctxt "Column name"
+msgid "Pending Balance"
+msgstr "Saldo Pendiente"
+
+#: app/templates/list_pending_balance.html:62
+#, fuzzy
+#| msgctxt "Column name"
+#| msgid "Total"
+msgid "Total"
+msgstr "Total"
 
 #: app/templates/list_products.html:33
 msgctxt "Column name"
@@ -481,11 +536,6 @@ msgstr "Precio"
 #: app/templates/list_sales.html:30
 msgid "Sale Date"
 msgstr "Fecha de Pago"
-
-#: app/templates/list_sales.html:49
-msgctxt "Column name"
-msgid "Customer"
-msgstr "Cliente"
 
 #: app/templates/list_sales.html:53 app/templates/list_sales.html:95
 msgctxt "Column name"
@@ -549,7 +599,7 @@ msgstr "Modificación de Cliente"
 msgid "Product Update"
 msgstr "Modificación de Producto"
 
-#: app/templates/update_sale.html:7
+#: app/templates/update_sale.html:12
 msgid "Sale Update"
 msgstr "Modificación de Venta"
 

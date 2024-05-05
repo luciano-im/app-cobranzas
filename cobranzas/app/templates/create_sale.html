@@ -12,6 +12,9 @@
 <h2>{% translate "New Sale" %}</h2>
 <form action="{% url 'create-sale' %}" method="post" class="sale-creation">
   {% csrf_token %}
+  <div class="col-12 col-sm-4">
+    {{ form.sale_date|as_crispy_field }}
+  </div>
   {{ form.customer|as_crispy_field }}
   {{ form.collector|as_crispy_field }}
   {{ form.remarks|as_crispy_field }}
