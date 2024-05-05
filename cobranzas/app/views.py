@@ -59,9 +59,6 @@ class FilterSetView:
 
 class ReceivableSalesView:
 
-    def __init__(self):
-        self.sales_with_pending_balance = None
-
     def get_customers_filter(self, customer):
         user = self.request.user
         # If user is admin get all sales
@@ -88,43 +85,12 @@ class ReceivableSalesView:
 
         return q_filter
 
-    # TODO: Check if this method still works
-    def set_sales_with_pending_balance(self, customer=None):
-        filters = self.get_customers_filter(customer)
-        self.sales_with_pending_balance = self.get_pending_sales(filters, ['pk', 'customer'])
-
     def get_pending_sales(self, filters, fields):
         return Sale.objects.\
             filter(filters, uncollectible=False).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
             exclude(installments=F('paid_installments')).\
             values(*fields)
-
-    def get_sale(self, id):
-        sale = Sale.objects.get(pk=id)
-        products = SaleProduct.objects.filter(sale=id).values('product__name')
-
-        data = {
-            'id': sale.pk,
-            'installments': sale.installments,
-            'date': sale.date.strftime('%m/%d/%Y'),
-            'price': sale.price,
-            'remarks': sale.remarks,
-            'paid_amount': sale.paid_amount,
-            'pending_balance': sale.pending_balance,
-            'products': [p['product__name'] for p in products]
-        }
-
-        return data
-
-    def get_installments(self, sale):
-        installments = SaleInstallment.objects.\
-            filter(sale=sale).\
-            filter(Q(status=SaleInstallment.PARTIAL) | Q(status=SaleInstallment.PENDING)).\
-            order_by('sale', 'installment', 'status').\
-            values('pk', 'sale_id', 'status', 'installment', 'installment_amount', 'paid_amount')
-
-        return installments
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -391,61 +357,6 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         context = super().get_context_data(**kwargs)
         context['filter_form'] = SaleFilterForm(self.request.GET)
         return context
-
-
-class UncollectibleSaleCreateView(LoginRequiredMixin, AdminPermission, ContextMixin, TemplateResponseMixin, ReceivableSalesView, View):
-    template_name = 'create_uncollectible.html'
-
-    def get_uncollectible_data(self, customer):
-        self.set_sales_with_pending_balance(customer)
-        data = []
-
-        for s in self.sales_with_pending_balance:
-            installments = self.get_installments(s['pk'])
-            temp = self.get_sale(s['pk'])
-            temp['installments_data'] = installments
-
-            data.append(temp)
-
-        return data
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.collector = self.request.user
-        context['customers'] = Customer.objects.values('pk', 'name').order_by('name')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        selected_customer_param = self.request.GET.get('select-customer', None)
-        selected_customer = int(selected_customer_param) if selected_customer_param is not None else selected_customer_param
-
-        if selected_customer:
-            # get_data return sales and installments data
-            data = self.get_uncollectible_data(selected_customer)
-            # data['customers'] = list(context['customers'])
-            # data['selected_customer'] = selected_customer
-            context['selected_customer'] = selected_customer
-            context['data'] = data
-
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        selected_customer = request.POST.get('customer', None)
-        customer = Customer.objects.get(id=selected_customer)
-        if customer:
-            checkboxes = request.POST.getlist('uncollectible-sale', None)
-            if checkboxes:
-                for sale in checkboxes:
-                    try:
-                        Sale.objects.filter(customer=customer, id=sale).update(uncollectible=True)
-                    except:
-                        raise ValidationError(_('Error when setting uncollectible status to a sale'))
-        else:
-            raise PermissionDenied
-
-        return self.render_to_response(context)
 
 
 class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView, ReceivableSalesView):
