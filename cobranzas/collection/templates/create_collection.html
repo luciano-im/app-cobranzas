@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col col-sm-8">
       <select name="select-customer" id="select-customer" class="form-select" required>
-        <option selected> -- {% translate "Select a customer" context "Select customer default option" %} -- </option>
+        <option value=""> -- {% translate "Select a customer" context "Select customer default option" %} -- </option>
         {% for customer in customers %}
           <option value="{{customer.pk}}" {% if selected_customer == customer.pk %}selected{% endif %}>{{customer.name}}</option>
         {% endfor %}
@@ -48,7 +48,7 @@
   const config = {
     search: true, // Toggle search feature. Default: false
     creatable: false, // Creatable selection. Default: false
-    clearable: false, // Clearable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
     maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
     size: '', // Can be "sm" or "lg". Default ''
     placeholder: '{% translate "Search" context "dselect search button" %}',
