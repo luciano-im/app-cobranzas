@@ -31,17 +31,28 @@ from rest_framework.renderers import JSONRenderer
 class CollectionData(ReceivableSalesView):
 
     def __get_data_sales_detail(self, filters):
+
+        def get_sale_collector_filter(item):
+            if isinstance(item, tuple) and item[0] == 'sale__collector':
+                return item[1]
+
+            if hasattr(item, 'children'):
+                for child in item.children:
+                    value = get_sale_collector_filter(child)
+                    if value:
+                        return value
+
+            return False
+
         # Get value of collector filter from filters variable
         # Because I need to apply this filter to sale_set prefetch
         # instead of the main queryset, to get just sales where the
         # collector is the current user
         collector_filter = Q()
         if 'sale__collector' in str(filters):
-            for item in filters.children:
-                if item[0] == 'sale__collector':
-                    collector_value = item[1]
-                    break
+            collector_value = get_sale_collector_filter(filters)
             collector_filter = Q(collector=collector_value)
+
         # Prefetch() executes a filter on the Sale records to filter already paid sales
         # Prefetch() executes a filter on SaleInstallment to filter PAID installments
         result = Customer.objects.\
