@@ -27,7 +27,7 @@
 <div class="data-container">
   <div class="delivery-collection">
   {% if collections %}
-    <form action="{% url 'collection-delivery' %}" method="post" id="delivery-collection">
+    <form action="{% url 'collection-delivery' %}" method="post" id="delivery-collection" onsubmit="return disableSubmitButton();">
       {% csrf_token %}
       <input type="hidden" name="selected-collector" value="{{selected_collector}}">
       <table class="table table-hover">
@@ -54,7 +54,7 @@
       </table>
       <div class="totals d-flex flex-column align-items-end mb-5">
         <p class="p-0">{% translate "Total" %}: $<span id="total">0,00</span></p>
-        <input type="submit" id="submit-collection" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
+        <input type="submit" id="submit-collection" value="{% translate "Save" context "Save button" %}" class="btn btn-primary" disabled>
       </div>
     </form>
   {% else %}
@@ -75,6 +75,17 @@
   let totalTag = document.querySelector('#total');
   const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(#check-all)');
   const checkAllCheckbox = document.querySelector('#check-all');
+  const submitButton = document.getElementById('submit-collection');
+
+  /**
+  * Disable submit button after first click
+  * 
+  */
+
+  function disableSubmitButton() {
+    submitButton.disabled = true;
+    return true;
+  }
 
   /**
   * Updates the total tag in the template.
@@ -83,6 +94,11 @@
   */
   function updateTotal(amount) {
     total += amount;
+    if (total == 0) {
+      submitButton.disabled = true;
+    } else {
+      submitButton.disabled = false;
+    }
     totalTag.innerText = total.toLocaleString("es-AR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
