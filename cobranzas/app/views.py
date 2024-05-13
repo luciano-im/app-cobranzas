@@ -152,9 +152,9 @@ class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
 
         filters = self.get_filters(self.request)
         if filters:
-            queryset = Customer.objects.filter(filters)
+            queryset = Customer.objects.select_related('collector').filter(filters)
         else:
-            queryset = Customer.objects.all()
+            queryset = Customer.objects.select_related('collector').all()
 
         # If the user is not an admin then filter customers assigned to the loggued user
         if not user.is_admin:
