@@ -91,6 +91,16 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
         model = Sale
         fields = ['sale_date', 'customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
 
+    def clean_sale_date(self):
+        sale_date = self.cleaned_data['sale_date']
+        tz = timezone.get_current_timezone()
+        today_date = timezone.make_aware(datetime.today(), tz, True)
+
+        if sale_date > today_date.date():
+            raise ValidationError(_('La fecha de venta no puede ser mayor a la fecha actual!'), code='invalid',)
+
+        return sale_date
+
 
 class SaleProductCreationForm(forms.ModelForm):
     product = forms.ModelChoiceField(queryset=Product.objects.exclude(id=0), widget=forms.Select(attrs={'data-dselect-search': 'true', 'data-dselect-max-height': '360px'}), required=False, label=_('Product'))
