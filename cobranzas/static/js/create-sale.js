@@ -8,6 +8,8 @@ const formRegex = RegExp(`${FORMSET_NAME}-(\\d){1}-`, "g");
 
 //// DOM ACCESS ////
 
+// Sale creation form
+const saleCreationForm = document.getElementById("sale-creation");
 // Container
 const productFormsContainer = document.querySelector(".product-forms");
 // Button to add a new product form
@@ -177,6 +179,35 @@ function updatePaymentSchemeRow(row, installments, installmentAmount) {
 
 
 //// EVENTS ////
+
+// Validate form before submit
+saleCreationForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  // Validation flags
+  let saleDateValidation = false;
+
+  // Validate that the sale date must be less than or equal to the current date
+  const saleDateError = document.getElementById('sale-date-error');
+  const saleDateElement = document.getElementById('id_sale_date');
+  const saleDate = dayjs(saleDateElement.value);
+  const now = dayjs().startOf('day');
+
+  if (saleDate.isAfter(now, 'day')) {
+    saleDateError.classList.remove('d-none');
+    saleDateElement.classList.add('is-invalid');
+  } else {
+    saleDateError.classList.add('d-none');
+    saleDateElement.classList.remove('is-invalid');
+    saleDateValidation = true;
+  }
+
+  // Check if there is no errors then submit
+  if (saleDateValidation) {
+    saleCreationForm.submit();
+  }
+});
+
 
 // Attach change event listener to "extra" forms that come with the formset
 productPriceInputs.forEach((input) => {

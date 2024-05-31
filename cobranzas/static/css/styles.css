@@ -250,6 +250,10 @@ form.filterset-form .erase-filters {
   margin-top: .5rem;
 }
 
+form .is-invalid {
+  border-color: #dc3545;
+}
+
 .content .create-collection .empty-sale {
   display: none;
 }

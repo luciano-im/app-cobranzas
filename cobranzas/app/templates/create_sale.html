@@ -10,10 +10,11 @@
 
 {% block content %}
 <h2>{% translate "New Sale" %}</h2>
-<form action="{% url 'create-sale' %}" method="post" class="sale-creation">
+<form action="{% url 'create-sale' %}" method="post" class="sale-creation" id="sale-creation">
   {% csrf_token %}
   <div class="col-12 col-sm-4">
     {{ form.sale_date|as_crispy_field }}
+    <span id="sale-date-error" class="mb-3 invalid-feedback d-block d-none">{% translate "The sale date can't be greater than the current date" %}</span>
   </div>
   {{ form.customer|as_crispy_field }}
   {{ form.collector|as_crispy_field }}
@@ -100,6 +101,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.8/dayjs.min.js" integrity="sha512-af90l7+r/ujCury3kqomcoZ4aNuC4JP0xUUU682bqlRCLLvGJrc9L82zONFccLWmxcMXSqO9d6C7Rr39EkbT3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{% static 'js/create-sale.js' %}" type="text/javascript"></script>
 
 <script>

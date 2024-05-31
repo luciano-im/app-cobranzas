@@ -1,5 +1,7 @@
+from datetime import datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 from django.urls import reverse
 from django.utils import timezone, dateformat
@@ -55,7 +57,7 @@ class ProductCreationForm(forms.ModelForm):
 
 
 class SaleCreationForm(forms.ModelForm):
-    sale_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date', 'value': dateformat.format(timezone.now(), 'Y-m-d')}), label=_('Sale Date'))
+    sale_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date', 'value': dateformat.format(timezone.make_aware(datetime.today(), timezone.get_current_timezone(), True), 'Y-m-d')}), label=_('Sale Date'))
     customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
     price = forms.FloatField(widget=forms.NumberInput(attrs={'readonly': True}), label=_('Price'))
     collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
@@ -64,6 +66,16 @@ class SaleCreationForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = ['sale_date', 'customer', 'collector', 'price', 'installment_amount', 'installments', 'uncollectible', 'remarks']
+
+    def clean_sale_date(self):
+        sale_date = self.cleaned_data['sale_date']
+        tz = timezone.get_current_timezone()
+        today_date = timezone.make_aware(datetime.today(), tz, True)
+
+        if sale_date > today_date.date():
+            raise ValidationError(_('La fecha de venta no puede ser mayor a la fecha actual!'), code='invalid',)
+
+        return sale_date
 
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
