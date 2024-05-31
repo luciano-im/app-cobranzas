@@ -20,6 +20,7 @@ from django.urls import path, include
 from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerUpdateView
 from app.views import CustomerListView, SaleCreationView, SaleUpdateView, SaleListView
 from app.views import ProductCreationView, ProductUpdateView, ProductListView, LoginView, PendingBalanceListView
+from app.views import ProductDeleteView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
 from collection.views import CollectionUpdateView, CollectionDeliveryView, CollectionDeliveryListView
@@ -37,6 +38,7 @@ urlpatterns = [
     path('customers/list/', CustomerListView.as_view(), name='list-customers'),
     path('products/create/', ProductCreationView.as_view(), name='create-product'),
     path('products/update/<pk>/', ProductUpdateView.as_view(), name='update-product'),
+    path('products/delete/<pk>/', ProductDeleteView.as_view(), name='delete-product'),
     path('products/list/', ProductListView.as_view(), name='list-product'),
     path('sales/create/', SaleCreationView.as_view(), name='create-sale'),
     path('sales/update/<pk>/', SaleUpdateView.as_view(), name='update-sale'),

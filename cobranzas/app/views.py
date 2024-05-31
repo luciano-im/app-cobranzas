@@ -1,16 +1,18 @@
 from dateutil.relativedelta import relativedelta
 
 from datetime import datetime, time
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q, Count, F, Sum, Subquery, OuterRef
-from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import TemplateView, CreateView, ListView
+from django.views.generic import TemplateView, CreateView, ListView, DeleteView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 from django.views.generic.edit import UpdateView
 
@@ -182,6 +184,21 @@ class ProductUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
 
     def get_success_url(self):
         return reverse('list-product')
+
+
+class ProductDeleteView(LoginRequiredMixin, AdminPermission, DeleteView):
+    model = Product
+    success_url = reverse_lazy('list-product')
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        if not SaleProduct.objects.filter(product=self.object).exists():
+            success_url = self.get_success_url()
+            self.object.delete()
+            return HttpResponseRedirect(success_url)
+        else:
+            messages.add_message(self.request, messages.ERROR, _("The product has already been used in a sale, it cannot be deleted!"))
+            return HttpResponseRedirect(reverse('update-product', kwargs={"pk": self.object.pk}))
 
 
 class ProductListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
