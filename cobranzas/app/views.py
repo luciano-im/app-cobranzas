@@ -136,6 +136,21 @@ class CustomerUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
         return reverse('list-customers')
 
 
+class CustomerDeleteView(LoginRequiredMixin, AdminPermission, DeleteView):
+    model = Customer
+    success_url = reverse_lazy('list-customers')
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        if not Sale.objects.filter(customer=self.object).exists():
+            success_url = self.get_success_url()
+            self.object.delete()
+            return HttpResponseRedirect(success_url)
+        else:
+            messages.add_message(self.request, messages.ERROR, _("There are sales made to this customer, it cannot be deleted!"))
+            return HttpResponseRedirect(reverse('update-customer', kwargs={"pk": self.object.pk}))
+
+
 class CustomerListView(LoginRequiredMixin, ListView, FilterSetView):
     template_name = 'list_customers.html'
     context_object_name = 'customers'
