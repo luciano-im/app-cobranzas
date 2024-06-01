@@ -10,6 +10,16 @@
 
 {% block content %}
 <h2>{% translate "Sale Update" %}</h2>
+
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
 <form action="" method="post" class="sale-creation">
   {% csrf_token %}
   <div class="col-12 col-sm-4">
@@ -135,8 +145,35 @@
     {{ form.uncollectible|as_crispy_field }}
   </div>
   <hr>
-  <input type="submit" value="{% translate "Save" context "Save button" %}" class="btn btn-primary">
+  <div class="d-flex flex-row justify-content-start align-items-center mt-4">
+    <input type="submit" value="{% translate "Save" context "Save button" %}" class="btn btn-primary me-3 mt-0">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal">
+      {% translate "Delete" context "Delete button" %}
+    </button>
+  </div>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{% translate "Are you sure?" context "Delete modal dialog title" %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% translate "Do you really want to delete this sale?" context "Delete modal dialog text" %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "No" %}</button>
+        <form method="POST" action="{% url 'delete-sale' object.pk  %}">
+          {% csrf_token %}
+          <input type="submit" class="btn btn-danger mt-0" value="{% translate "Delete" context "Delete button" %}">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

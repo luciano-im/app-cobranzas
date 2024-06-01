@@ -356,6 +356,21 @@ class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
         return super().form_valid(form)
 
 
+class SaleDeleteView(LoginRequiredMixin, AdminPermission, DeleteView):
+    model = Sale
+    success_url = reverse_lazy('list-sales')
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        if not SaleInstallment.objects.filter(sale=self.object, paid_amount__gt=0.0).exists():
+            success_url = self.get_success_url()
+            self.object.delete()
+            return HttpResponseRedirect(success_url)
+        else:
+            messages.add_message(self.request, messages.ERROR, _("This sale has already paid installments, it cannot be deleted!"))
+            return HttpResponseRedirect(reverse('update-sale', kwargs={"pk": self.object.pk}))
+
+
 class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
     template_name = 'list_sales.html'
     context_object_name = 'sales'
