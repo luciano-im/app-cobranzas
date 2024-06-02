@@ -94,6 +94,12 @@
   color: red;
 }
 
+.content .table-with-installments-detail .sale-remarks {
+  color: grey;
+  font-size: .85rem;
+  padding-top: 0;
+}
+
 .content .table-with-installments-detail .installments-detail {
   box-shadow: none !important;
   padding: 0 1.5rem 1rem 1.5rem;

@@ -60,7 +60,7 @@
       {% for sale in sales %}
         <tr class="sale-detail {% if sale.uncollectible %}is-uncollectible{% endif %}">
           <th scope="row" class="col-1">{{sale.pk}}</th>
-          <td class="col-2 col-sm-1">{{sale.date|date:"d/m/y"}}</td>
+          <td class="col-2 col-sm-1">{{sale.sale_date|date:"d/m/y"}}</td>
           <td class="col-4 col-sm-3">{{sale.customer}}</td>
           {% comment %} <td class="col-sm-1 d-none d-sm-table-cell">
             {% if sale.products_quantity == 1 %}
@@ -77,6 +77,11 @@
               <i class="bi bi-pencil-square"></i>
               <span class="d-none d-sm-inline">{% translate "Edit" context "Edit button" %}</span>
             </a>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="9" class="sale-remarks">
+            {{sale.remarks}}
           </td>
         </tr>
         <tr>
