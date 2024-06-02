@@ -80,8 +80,8 @@ class SaleCreationForm(forms.ModelForm):
 
 class SaleWithPaymentsUpdateForm(forms.ModelForm):
     sale_date = forms.DateField(required=True, input_formats=('%Y-%m-%d',), widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}), label=_('Sale Date'))
-    customer = forms.ModelChoiceField(disabled=True, queryset=Customer.objects.order_by('name'), label=_('Customer'))
-    collector = UserModelChoiceField(disabled=True, queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), label=_('Customer'))
+    collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
     price = forms.FloatField(disabled=True, label=_('Price'))
     installment_amount = forms.FloatField(disabled=True, label=_('Installment Amount'))
     installments = forms.IntegerField(disabled=True, label=_('Installments'))
