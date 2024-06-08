@@ -73,7 +73,7 @@ class SaleCreationForm(forms.ModelForm):
         today_date = timezone.make_aware(datetime.today(), tz, True)
 
         if sale_date > today_date.date():
-            raise ValidationError(_('La fecha de venta no puede ser mayor a la fecha actual!'), code='invalid',)
+            raise ValidationError(_('The sale date cannot be greater than the current date!'), code='invalid',)
 
         return sale_date
 
@@ -97,7 +97,7 @@ class SaleWithPaymentsUpdateForm(forms.ModelForm):
         today_date = timezone.make_aware(datetime.today(), tz, True)
 
         if sale_date > today_date.date():
-            raise ValidationError(_('La fecha de venta no puede ser mayor a la fecha actual!'), code='invalid',)
+            raise ValidationError(_('The sale date cannot be greater than the current date!'), code='invalid',)
 
         return sale_date
 

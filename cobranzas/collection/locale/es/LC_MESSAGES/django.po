@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-14 20:27-0300\n"
+"POT-Creation-Date: 2024-06-07 23:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,8 +50,6 @@ msgid "Collection Delivered"
 msgstr "Cobranza Rendida"
 
 #: collection/models.py:23
-#, fuzzy
-#| msgid "Amount"
 msgid "Paid Amount"
 msgstr "Importe"
 
@@ -77,7 +75,7 @@ msgstr "Usuario"
 
 #: collection/models.py:60
 msgid "Collector Synchronization Log"
-msgstr ""
+msgstr "Log de Sincronización de Cobradores"
 
 #: collection/templates/create_collection.html:14
 msgid "New Collection"
@@ -89,133 +87,132 @@ msgid "Select a customer"
 msgstr "Selecciona un Cliente"
 
 #: collection/templates/create_collection.html:26
-#: collection/templates/delivery_collection.html:21
+#: collection/templates/delivery_collection.html:22
 msgctxt "Search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: collection/templates/create_collection.html:54
-#: collection/templates/list_collection.html:117
-#: collection/templates/list_collection_delivery.html:87
+#: collection/templates/list_collection.html:118
+#: collection/templates/list_collection_delivery.html:97
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: collection/templates/create_collection.html:55
-#: collection/templates/list_collection.html:118
-#: collection/templates/list_collection_delivery.html:88
+#: collection/templates/list_collection.html:119
+#: collection/templates/list_collection_delivery.html:98
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
 
-#: collection/templates/delivery_collection.html:9
+#: collection/templates/delivery_collection.html:10
 msgid "Delivery of Collections"
 msgstr "Rendición de Cobros"
 
-#: collection/templates/delivery_collection.html:14
+#: collection/templates/delivery_collection.html:15
 msgctxt "Select collector default option"
 msgid "Select a collector"
 msgstr "Selecciona un Cobrador"
 
-#: collection/templates/delivery_collection.html:36
-#: collection/templates/list_collection.html:46
-#: collection/templates/list_collection_delivery.html:47
+#: collection/templates/delivery_collection.html:37
+#: collection/templates/list_collection.html:47
+#: collection/templates/list_collection_delivery.html:52
 #: collection/templates/pending_collection.html:13
 msgctxt "Column name"
 msgid "Customer"
 msgstr "Cliente"
 
-#: collection/templates/delivery_collection.html:37
-#: collection/templates/list_collection.html:45
-#: collection/templates/list_collection_delivery.html:48
+#: collection/templates/delivery_collection.html:38
+#: collection/templates/list_collection.html:46
 #: collection/templates/pending_collection.html:12
 msgctxt "Column name"
 msgid "Date"
 msgstr "Fecha"
 
-#: collection/templates/delivery_collection.html:38
-#: collection/templates/list_collection.html:84
-#: collection/templates/list_collection_delivery.html:49
+#: collection/templates/delivery_collection.html:39
+#: collection/templates/list_collection.html:85
+#: collection/templates/list_collection_delivery.html:53
 #: collection/templates/update_collection.html:35
 msgctxt "Column name"
 msgid "Amount Paid"
 msgstr "Importe Pagado"
 
-#: collection/templates/delivery_collection.html:55
-#: collection/templates/list_collection_delivery.html:73
+#: collection/templates/delivery_collection.html:56
+#: collection/templates/list_collection_delivery.html:83
 #: collection/templates/update_collection.html:59
 msgid "Total"
 msgstr "Total"
 
-#: collection/templates/delivery_collection.html:56
+#: collection/templates/delivery_collection.html:57
 #: collection/templates/update_collection.html:60
 msgctxt "Save button"
 msgid "Save"
 msgstr "Guardar"
 
-#: collection/templates/delivery_collection.html:62
+#: collection/templates/delivery_collection.html:63
 msgid "There are no pending collections!"
 msgstr "No hay cobranzas pendientes!"
 
-#: collection/templates/list_collection.html:14
+#: collection/templates/list_collection.html:15
 msgid "Collection List"
 msgstr "Listado de Cobranzas"
 
-#: collection/templates/list_collection.html:27
+#: collection/templates/list_collection.html:28
 msgid "Collection Date"
 msgstr "Fecha de Cobro"
 
-#: collection/templates/list_collection.html:36
+#: collection/templates/list_collection.html:37
 #: collection/templates/list_collection_delivery.html:31
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtro"
 
-#: collection/templates/list_collection.html:37
+#: collection/templates/list_collection.html:38
 #: collection/templates/list_collection_delivery.html:32
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
 
-#: collection/templates/list_collection.html:47
+#: collection/templates/list_collection.html:48
 #: collection/templates/pending_collection.html:14
 msgctxt "Column name"
 msgid "Amount"
 msgstr "Importe"
 
-#: collection/templates/list_collection.html:48
+#: collection/templates/list_collection.html:49
 #: collection/templates/pending_collection.html:15
 msgctxt "Column name"
 msgid "Actions"
 msgstr "Acciones"
 
-#: collection/templates/list_collection.html:61
+#: collection/templates/list_collection.html:62
 #: collection/templates/pending_collection.html:27
 msgctxt "Receipt button"
 msgid "Receipt"
 msgstr "Recibo"
 
-#: collection/templates/list_collection.html:65
+#: collection/templates/list_collection.html:66
 msgctxt "Edit button"
 msgid "Edit"
 msgstr "Editar"
 
-#: collection/templates/list_collection.html:74
+#: collection/templates/list_collection.html:75
 #: collection/templates/print_collection.html:48
 msgid "Details of Fees"
 msgstr "Detalle de Cuotas"
 
-#: collection/templates/list_collection.html:81
+#: collection/templates/list_collection.html:82
 msgctxt "Column name"
 msgid "Sale ID"
 msgstr "ID Venta"
 
-#: collection/templates/list_collection.html:82
+#: collection/templates/list_collection.html:83
 msgctxt "Column name"
 msgid "Sale Date"
 msgstr "Fecha de Venta"
 
-#: collection/templates/list_collection.html:83
+#: collection/templates/list_collection.html:84
 #: collection/templates/update_collection.html:33
 msgctxt "Column name"
 msgid "Installment"
@@ -226,11 +223,13 @@ msgid "Collections Delivery List"
 msgstr "Listado de Rendición de Cobranzas"
 
 #: collection/templates/list_collection_delivery.html:22
-#, fuzzy
-#| msgctxt "Column name"
-#| msgid "Sale Date"
 msgid "Delivery Date"
 msgstr "Fecha de Rendición"
+
+#: collection/templates/list_collection_delivery.html:51
+msgctxt "Column name"
+msgid "Collection"
+msgstr "Cobranza"
 
 #: collection/templates/pending_collection.html:6
 msgid "Non-Synchronized Collections"
@@ -308,14 +307,14 @@ msgctxt "Column name"
 msgid "Total"
 msgstr "Total"
 
-#: collection/views.py:238
+#: collection/views.py:259
 msgid "The total paid must be greater than zero"
 msgstr "El total pagado debe ser mayor a cero"
 
-#: collection/views.py:328
+#: collection/views.py:352
 msgid "Collection could not be saved"
 msgstr "No se pudo guardar la cobranza"
 
-#: collection/views.py:422
+#: collection/views.py:446
 msgid "The Collector has not been specified"
 msgstr "El Cobrador no ha sido especificado"
