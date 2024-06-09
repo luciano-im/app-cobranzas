@@ -24,6 +24,7 @@ const URLS_TO_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.8/dayjs.min.js',
   "{% static 'img/icon/icon-92x92.png' %}",
   "{% static 'img/icon/icon-192x192.png' %}",
   "{% static 'img/icon/icon-256x256.png' %}",
