@@ -1,10 +1,12 @@
 @page {
-  margin: 1rem;
-  size: 80mm 180mm;
+  margin: 1mm;
+  size: 56mm 180mm;
 }
 
 .receipt {
-  width: 80mm;
+  /* width: 58mm; */
+  width: 100%;
+  font-size: .8rem;
 }
 
 .receipt h1 {
@@ -30,11 +32,11 @@
 
 .receipt .details {
   font-size: .9rem;
-  padding: 0 1rem;
+  padding: 0 .5rem;
 }
 
 .receipt .details.customer p {
-  margin: .2rem 0;
+  margin: .1rem 0;
 }
 
 .receipt .details.customer .customer-name {
@@ -47,8 +49,8 @@
 }
 
 .receipt .installments h3 {
-  font-size: 1.3rem;
-  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  margin-top: 1.2rem;
   text-align: center;
 }
 
@@ -58,7 +60,7 @@
 
 .receipt .installments .line span {
   border-bottom: 1px solid grey;
-  max-width: 300px;
+  /* max-width: 300px; */
   width: 100%;
   opacity: .60;
 }
@@ -84,14 +86,15 @@
 }
 
 .receipt .total td {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
 .receipt .disclaimer {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .receipt .disclaimer p {
-  font-size: .82rem;
+  font-size: .5rem;
+  text-align: center;
 }

@@ -59,7 +59,11 @@
           </tr>
           <tr>
             <td>{% translate "Sale" %}:</td>
-            <td>#{{i.sale_installment.sale.id}} - {{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
+            <td>#{{i.sale_installment.sale.id}}</td>
+          </tr>
+          <tr>
+            <td>{% translate "Sale Date" %}:</td>
+            <td>{{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
           </tr>
           {% for product in products %}
           <tr>

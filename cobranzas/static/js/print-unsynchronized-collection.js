@@ -164,7 +164,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                     </tr>
                     <tr>
                       <td>Venta:</td>
-                      <td>#${installment.sale} - ${dayjs(sales[installment.sale].date).format('DD/MM/YYYY')}</td>
+                      <td>#${installment.sale}</td>
+                    </tr>
+                    <tr>
+                      <td>Fecha de Venta:</td>
+                      <td>${dayjs(sales[installment.sale].date).format('DD/MM/YYYY')}</td>
                     </tr>
                     <tr>
                       <td colspan="2">${products}</td>
