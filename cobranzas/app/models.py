@@ -27,7 +27,10 @@ class Customer(models.Model):
     CITY = (
         ('ARR', 'Arrecifes'),
         ('SAR', 'Capitan Sarmiento'),
+        ('DUG', 'Duggan'),
+        ('LUI', 'La Luisa'),
         ('SAL', 'Salto'),
+        ('VLI', 'Villa Lía'),
     )
 
     name = models.CharField(max_length=150, db_index=True, verbose_name=_('Client Name'))
