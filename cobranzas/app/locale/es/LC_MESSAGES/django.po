@@ -46,7 +46,7 @@ msgstr "Cobrador"
 #: app/forms.py:60 app/forms.py:82 app/models.py:71
 #: app/templates/list_sales.html:31
 msgid "Sale Date"
-msgstr "Fecha de Pago"
+msgstr "Fecha de Venta"
 
 #: app/forms.py:61 app/forms.py:83 app/forms.py:164 app/forms.py:171
 #: app/models.py:62
