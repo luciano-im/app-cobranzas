@@ -17,76 +17,56 @@
     <link rel="stylesheet" href="{% static "css/receipt.css" %}" media="print">
   </head>
   <body class="receipt" onload="window.print()">
-    <h1>{% translate "Proof of Payment" %}</h1>
+    <h2>{% translate "Proof of Payment" %}</h2>
     <h3>Leiva Equipamientos</h3>
+    <p>--------------------------------</p>
     {% comment %}<p>Modificado: {{collection.modification|date:"d/m/Y H:i"}}</p>{% endcomment %}
     <table>
-      <tr>
-        <th>{% translate "Date" %}</th>
-        <th>{% translate "Time" %}</th>
-        <th>{% translate "Trans. ID" %}</th>
-      </tr>
-      <tr>
-        <td>{{collection.date|date:"d/m/Y"}}</td>
-        <td>{{collection.date|date:"H:i"}}</td>
-        <td>{{collection.id}}</td>
-      </tr>
+      <tr><td><b>{% translate "Date" %}:</b> {{collection.date|date:"d/m/Y"}}</td></tr>
+      <tr><td><b>{% translate "Time" %}:</b> {{collection.date|date:"H:i"}}</td></tr>
+      <tr><td><b>{% translate "Trans. ID" %}:</b> {{collection.id}}</td></tr>
     </table>
-    <hr>
+    <p>--------------------------------</p>
     <div class="customer details">
-      <p class="customer-name">{{collection.customer.name}}</p>
-      <p>{{collection.customer.address}} - {{collection.customer.get_city_display}}</p>
-      <p>{{collection.customer.telephone}}</p>
+      <p class="customer-name"><b>{{collection.customer.name}}</b></p>
+      {% if collection.customer.address %}<p>{{collection.customer.address}}</p>{% endif %}
+      {% if collection.customer.get_city_display %}<p>{{collection.customer.get_city_display}}</p>{% endif %}
+      {% if collection.customer.telephone %}<p>{{collection.customer.telephone}}</p>{% endif %}
     </div>
-    <hr>
+    <p>--------------------------------</p>
     <div class="collector details">
-      <p>{% translate "COLLECTOR" %}: <span>{{collection.collector.first_name}} {{collection.collector.last_name}}</span></p>
+      <p><b>{% translate "COLLECTOR" %}: {{collection.collector.first_name}} {{collection.collector.last_name}}</b></p>
     </div>
-    <hr>
+    <p>--------------------------------</p>
     <div class="details installments">
       <h3>{% translate "Details of Fees" %}</h3>
       {% for i in collection_installment %}
-        <p class="line"><span></span></p>
+        <p>--------------------------------</p>
         {% get_sale_products i.sale_installment.sale.id as products %}
         <table class="installment-detail">
-          <tr>
-            <td>{% translate "Amount" %}:</td>
-            <td><b>${{i.amount|floatformat:2|intcomma}}</b></td>
-          </tr>
-          <tr>
-            <td>{% translate "Installment" %}:</td>
-            <td>{{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</td>
-          </tr>
-          <tr>
-            <td>{% translate "Sale" %}:</td>
-            <td>#{{i.sale_installment.sale.id}}</td>
-          </tr>
-          <tr>
-            <td>{% translate "Sale Date" %}:</td>
-            <td>{{i.sale_installment.sale.date|date:"d/m/Y"}}</td>
-          </tr>
+          <tr><td>{% translate "Products" %}:</td></tr>
           {% for product in products %}
-          <tr>
-            <td colspan="2"><li>{{product}}</li></td>
-          </tr>
+            <tr>
+              <td colspan="2">* {{product}}</td>
+            </tr>
           {% endfor %}
-          <tr>
-            <td>{% translate "Balance" %}:</td>
-            <td>${{i.sale_installment.sale.pending_balance|floatformat:2|intcomma}}</td>
-          </tr>
+          <tr><td>{% translate "Amount" %}: <b>${{i.amount|floatformat:2|intcomma}}</b></td></tr>
+          <tr><td>{% translate "Installment" %}: <b>{{i.sale_installment.installment}} de {{i.sale_installment.sale.installments}}</b></td></tr>
+          <tr><td>{% translate "Sale" %}: <b>#{{i.sale_installment.sale.id}}</b></td></tr>
+          <tr><td>{% translate "Sale Date" %}: <b>{{i.sale_installment.sale.date|date:"d/m/Y"}}</b></td></tr>
+          <tr><td>{% translate "Balance" %}: <b>${{i.sale_installment.sale.pending_balance|floatformat:2|intcomma}}</b></td></tr>
         </table>
       {% endfor %}
     </div>
-    <hr>
+    <p>--------------------------------</p>
     <div class="total details">
       <table>
         <tr>
-          <td>{% translate "TOTAL" %}:</td>
-          <td>${{total.total|floatformat:2|intcomma}}</td>
+          <td>{% translate "TOTAL" %}: <b>${{total.total|floatformat:2|intcomma}}</b></td>
         </tr>
       </table>
     </div>
-    <hr>
+    <p>--------------------------------</p>
     <div class="disclaimer details">
       <p>*** {% translate "Please keep this proof of payment" %} ***</p>
     </div>
