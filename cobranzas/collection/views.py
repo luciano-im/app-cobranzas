@@ -139,7 +139,7 @@ class ServiceWorkerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['version'] = '1.71'
+        context['version'] = '1.72'
         return context
 
 
