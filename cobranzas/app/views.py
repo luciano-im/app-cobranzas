@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, F, Sum, Subquery, OuterRef
+from django.db.models import Q, Count, F, Sum, Subquery, OuterRef, Max
+from django.db.models import Case, Value, When
+from django.db.models.functions import Coalesce, ExtractDay
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -438,4 +440,42 @@ class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, Filt
         queryset = self.get_queryset()
         context['filter_form'] = PendingBalanceFilterForm(self.request.GET)
         context['total'] = queryset.aggregate(total=Sum('pending_balance'))
+        return context
+
+
+class DefaultersListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView, ReceivableSalesView):
+    template_name = 'list_defaulters.html'
+    context_object_name = 'defaulters'
+    filterset = [
+        ('customer', 'customer', 'exact'),
+        ('city', 'customer__city', 'exact')
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        tz = timezone.get_current_timezone()
+        today_date = timezone.make_aware(datetime.today(), tz, True)
+
+        queryset = Sale.objects.\
+            filter(filters).\
+            filter(uncollectible=False).\
+            values('customer__id', 'customer__name', 'customer__city', 'id', 'sale_date').\
+            annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            exclude(installments=F('paid_installments')).\
+            annotate(last_payment_date=Max('saleinstallment__collectioninstallment__collection__date')).\
+            annotate(debt_days=ExtractDay(today_date - Coalesce(F('last_payment_date'), F('sale_date')))).\
+            annotate(qualification=Case(
+                When(debt_days__lte=7, then=Value(0)),
+                When(debt_days__lte=15, then=Value(7)),
+                When(debt_days__lte=30, then=Value(15)),
+                default=Value(30)
+            )).\
+            exclude(qualification=0).\
+            order_by('-qualification', 'customer__name', '-debt_days')
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PendingBalanceFilterForm(self.request.GET)
         return context

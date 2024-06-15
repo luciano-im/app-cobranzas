@@ -20,7 +20,7 @@ from django.urls import path, include
 from app.views import HomeView, UserCreationView, UserListView, CustomerCreationView, CustomerUpdateView
 from app.views import CustomerListView, SaleCreationView, SaleUpdateView, SaleListView
 from app.views import ProductCreationView, ProductUpdateView, ProductListView, LoginView, PendingBalanceListView
-from app.views import ProductDeleteView, CustomerDeleteView, SaleDeleteView
+from app.views import ProductDeleteView, CustomerDeleteView, SaleDeleteView, DefaultersListView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
 from collection.views import CollectionUpdateView, CollectionDeliveryView, CollectionDeliveryListView
@@ -55,6 +55,7 @@ urlpatterns = [
     path('collections/pending/', PendingCollectionView.as_view(), name='pending-collection'),
     path('reports/collections-delivery/', CollectionDeliveryListView.as_view(), name='list-collection-delivery'),
     path('reports/pending-balance/', PendingBalanceListView.as_view(), name='list-pending-balance'),
+    path('reports/defaulters/', DefaultersListView.as_view(), name='list-defaulters'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # Include SW views
