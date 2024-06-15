@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-15 01:21-0300\n"
+"POT-Creation-Date: 2024-06-15 10:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -349,14 +349,14 @@ msgctxt "Payment scheme"
 msgid "installment of"
 msgstr "cuota de"
 
-#: app/templates/create_sale.html:114 app/templates/list_defaulters.html:75
+#: app/templates/create_sale.html:114 app/templates/list_defaulters.html:79
 #: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:167
 #: app/templates/update_sale.html:191
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
-#: app/templates/create_sale.html:115 app/templates/list_defaulters.html:76
+#: app/templates/create_sale.html:115 app/templates/list_defaulters.html:80
 #: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:168
 #: app/templates/update_sale.html:192
 msgctxt "dselect no results text"
@@ -403,7 +403,7 @@ msgctxt "Column name"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/templates/list_customers.html:42 app/templates/list_defaulters.html:43
+#: app/templates/list_customers.html:42 app/templates/list_defaulters.html:45
 #: app/templates/list_pending_balance.html:40
 #: app/templates/list_products.html:36 app/templates/list_sales.html:57
 #: app/templates/list_users.html:15
@@ -422,27 +422,37 @@ msgid "More Details"
 msgstr "Mas Detalles"
 
 #: app/templates/list_defaulters.html:39
+msgctxt "Column name"
+msgid "Sale"
+msgstr "Venta"
+
+#: app/templates/list_defaulters.html:40
 #: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:50
 msgctxt "Column name"
 msgid "Customer"
 msgstr "Cliente"
 
-#: app/templates/list_defaulters.html:40
-msgctxt "Column name"
-msgid "Sale ID"
-msgstr "ID de Venta"
-
 #: app/templates/list_defaulters.html:41
+msgctxt "Column name"
+msgid "Remarks"
+msgstr "Observaciones"
+
+#: app/templates/list_defaulters.html:42
+msgctxt "Column name"
+msgid "Pending Installments"
+msgstr "Cuotas Pendientes"
+
+#: app/templates/list_defaulters.html:43
 msgctxt "Column name"
 msgid "Last Payment Date"
 msgstr "Última Cobranza"
 
-#: app/templates/list_defaulters.html:42
+#: app/templates/list_defaulters.html:44
 msgctxt "Column name"
 msgid "Days Late"
 msgstr "Días de Mora"
 
-#: app/templates/list_defaulters.html:51
+#: app/templates/list_defaulters.html:55
 msgid "No Payments"
 msgstr "Sin Pagos"
 
@@ -614,6 +624,10 @@ msgstr "El producto ya ha sido utilizado en una venta, ¡no se puede eliminar!"
 msgid "This sale has already paid installments, it cannot be deleted!"
 msgstr "Esta venta ya tiene cuotas pagadas, ¡no se puede eliminar!"
 
+#~ msgctxt "Column name"
+#~ msgid "Sale ID"
+#~ msgstr "ID de Venta"
+
 #~ msgid "Uncollectible Sales"
 #~ msgstr "Ventas Incobrables"
 
@@ -628,10 +642,6 @@ msgstr "Esta venta ya tiene cuotas pagadas, ¡no se puede eliminar!"
 #~ msgctxt "Column name"
 #~ msgid "Total"
 #~ msgstr "Total"
-
-#~ msgctxt "Column name"
-#~ msgid "Pending Installments"
-#~ msgstr "Cuotas Pendientes"
 
 #~ msgctxt "Column name"
 #~ msgid "Debit Balance"
