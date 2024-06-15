@@ -57,7 +57,7 @@ class CollectionData(ReceivableSalesView):
         # Prefetch() executes a filter on SaleInstallment to filter PAID installments
         result = Customer.objects.\
             prefetch_related(
-                Prefetch('sale_set', queryset=Sale.objects.filter(collector_filter).filter(uncollectible=False).annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments=F('paid_installments')).prefetch_related(
+                Prefetch('sale_set', queryset=Sale.objects.filter(collector_filter).filter(uncollectible=False).annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).exclude(installments__lte=F('paid_installments')).prefetch_related(
                     Prefetch('saleinstallment_set', queryset=SaleInstallment.objects.filter(~Q(status='PAID')).order_by('installment'))
                 ).order_by('-id'))
             ).\

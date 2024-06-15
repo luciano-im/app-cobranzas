@@ -93,7 +93,7 @@ class ReceivableSalesView:
         return Sale.objects.\
             filter(filters, uncollectible=False).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-            exclude(installments=F('paid_installments')).\
+            exclude(installments__lte=F('paid_installments')).\
             values(*fields)
 
 
@@ -422,7 +422,7 @@ class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, Filt
             filter(filters).\
             filter(uncollectible=False).\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-            exclude(installments=F('paid_installments'))
+            exclude(installments__lte=F('paid_installments'))
         # OuterRef makes reference to a field from the parent subquuery
         # OuterReg can be used only in a Subquery
         paid_amount_sum = SaleInstallment.objects.filter(sale=OuterRef('pk')).values('sale').annotate(paid_amount_sum=Sum('paid_amount')).values('paid_amount_sum')
@@ -461,7 +461,7 @@ class DefaultersListView(LoginRequiredMixin, AdminPermission, ListView, FilterSe
             filter(uncollectible=False).\
             values('customer__id', 'customer__name', 'customer__city', 'id', 'sale_date').\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
-            exclude(installments=F('paid_installments')).\
+            exclude(installments__lte=F('paid_installments')).\
             annotate(last_payment_date=Max('saleinstallment__collectioninstallment__collection__date')).\
             annotate(debt_days=ExtractDay(today_date - Coalesce(F('last_payment_date'), F('sale_date')))).\
             annotate(qualification=Case(
