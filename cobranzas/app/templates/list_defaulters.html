@@ -36,8 +36,10 @@
         <table class="table table-hover table-with-installments-detail">
           <thead>
             <tr>
+              <th scope="col" class="text-center">{% translate "Sale" context "Column name" %}</th>
               <th scope="col">{% translate "Customer" context "Column name" %}</th>
-              <th scope="col" class="text-center">{% translate "Sale ID" context "Column name" %}</th>
+              <th scope="col">{% translate "Remarks" context "Column name" %}</th>
+              <th scope="col" class="text-center">{% translate "Pending Installments" context "Column name" %}</th>
               <th scope="col" class="text-center">{% translate "Last Payment Date" context "Column name" %}</th>
               <th scope="col" class="text-center">{% translate "Days Late" context "Column name" %}</th>
               <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
@@ -46,8 +48,10 @@
           <tbody>
             {% for sale in sales_group.list %}
               <tr>
-                <th scope="row">{{sale.customer__name}}</th>
-                <td class="text-center">{{sale.id}}</td>
+                <td scope="row" class="text-center">{{sale.id}}</td>
+                <td scope="row">{{sale.customer__name}}</td>
+                <td scope="row">{{sale.remarks}}</td>
+                <td scope="row" class="text-center">{{sale.pending_installments}}</td>
                 <td class="text-center">{% if sale.last_payment_date %}{{sale.last_payment_date|date:"D d/m/y"}}{% else %}{% translate "No Payments" %}{% endif %}</td>
                 <td class="text-center">{{sale.debt_days}}</td>
                 <td class="actions text-center col-1">

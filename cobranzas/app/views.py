@@ -459,8 +459,9 @@ class DefaultersListView(LoginRequiredMixin, AdminPermission, ListView, FilterSe
         queryset = Sale.objects.\
             filter(filters).\
             filter(uncollectible=False).\
-            values('customer__id', 'customer__name', 'customer__city', 'id', 'sale_date').\
+            values('customer__id', 'customer__name', 'customer__city', 'id', 'sale_date', 'remarks').\
             annotate(paid_installments=Count('saleinstallment__pk', filter=Q(saleinstallment__status='PAID'))).\
+            annotate(pending_installments=Count('saleinstallment__pk', filter=~Q(saleinstallment__status='PAID'))).\
             exclude(installments__lte=F('paid_installments')).\
             annotate(last_payment_date=Max('saleinstallment__collectioninstallment__collection__date')).\
             annotate(debt_days=ExtractDay(today_date - Coalesce(F('last_payment_date'), F('sale_date')))).\
