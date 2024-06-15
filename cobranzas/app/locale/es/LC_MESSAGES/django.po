@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-07 23:19-0300\n"
+"POT-Creation-Date: 2024-06-15 01:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,27 +39,27 @@ msgid "Create User"
 msgstr "Crear Usuario"
 
 #: app/forms.py:45 app/forms.py:63 app/forms.py:84 app/forms.py:149
-#: app/models.py:37 app/models.py:72
+#: app/models.py:40 app/models.py:75
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/forms.py:60 app/forms.py:82 app/models.py:71
+#: app/forms.py:60 app/forms.py:82 app/models.py:74
 #: app/templates/list_sales.html:31
 msgid "Sale Date"
 msgstr "Fecha de Venta"
 
 #: app/forms.py:61 app/forms.py:83 app/forms.py:164 app/forms.py:171
-#: app/models.py:62
+#: app/models.py:65
 msgid "Customer"
 msgstr "Cliente"
 
-#: app/forms.py:62 app/forms.py:85 app/forms.py:119 app/models.py:46
-#: app/models.py:63 app/templates/create_sale.html:51
+#: app/forms.py:62 app/forms.py:85 app/forms.py:119 app/models.py:49
+#: app/models.py:66 app/templates/create_sale.html:51
 #: app/templates/update_sale.html:70
 msgid "Price"
 msgstr "Precio"
 
-#: app/forms.py:64 app/forms.py:88 app/models.py:74
+#: app/forms.py:64 app/forms.py:88 app/models.py:77
 msgid "Remarks"
 msgstr "Observaciones"
 
@@ -67,36 +67,36 @@ msgstr "Observaciones"
 msgid "The sale date cannot be greater than the current date!"
 msgstr "La fecha de venta no puede ser mayor a la fecha actual!"
 
-#: app/forms.py:86 app/models.py:64 app/models.py:112
+#: app/forms.py:86 app/models.py:67 app/models.py:115
 msgid "Installment Amount"
 msgstr "Importe de la Cuota"
 
-#: app/forms.py:87 app/models.py:67
+#: app/forms.py:87 app/models.py:70
 msgid "Installments"
 msgstr "Cuotas"
 
-#: app/forms.py:106 app/forms.py:167 app/models.py:93
+#: app/forms.py:106 app/forms.py:167 app/models.py:96
 #: app/templates/create_sale.html:48 app/templates/update_sale.html:67
 msgid "Product"
 msgstr "Producto"
 
-#: app/forms.py:146 app/forms.py:157 app/models.py:44
+#: app/forms.py:146 app/forms.py:157 app/models.py:47
 msgid "Name"
 msgstr "Nombre"
 
-#: app/forms.py:147 app/forms.py:172 app/models.py:35
+#: app/forms.py:147 app/forms.py:172 app/models.py:38
 msgid "City"
 msgstr "Ciudad"
 
-#: app/forms.py:148 app/models.py:34
+#: app/forms.py:148 app/models.py:37
 msgid "Address"
 msgstr "Dirección"
 
-#: app/forms.py:158 app/models.py:45
+#: app/forms.py:158 app/models.py:48
 msgid "Brand"
 msgstr "Marca"
 
-#: app/forms.py:159 app/models.py:47
+#: app/forms.py:159 app/models.py:50
 msgid "SKU"
 msgstr "SKU"
 
@@ -120,75 +120,75 @@ msgstr "Es cobrador?"
 msgid "Is it an administrator?"
 msgstr "Es Administrador?"
 
-#: app/models.py:33
+#: app/models.py:36
 msgid "Client Name"
 msgstr "Nombre del Cliente"
 
-#: app/models.py:36
+#: app/models.py:39
 msgid "Telephone"
 msgstr "Teléfono"
 
-#: app/models.py:61 app/models.py:135
+#: app/models.py:64 app/models.py:138
 msgid "User"
 msgstr "Usuario"
 
-#: app/models.py:69
+#: app/models.py:72
 msgid "Date"
 msgstr "Fecha"
 
-#: app/models.py:70
+#: app/models.py:73
 msgid "Modification Date"
 msgstr "Fecha de Modificación"
 
-#: app/models.py:73
+#: app/models.py:76
 msgid "Is uncollectible?"
 msgstr "Es incobrable?"
 
-#: app/models.py:80
+#: app/models.py:83
 msgid "Pending Balance"
 msgstr "Saldo Pendiente"
 
-#: app/models.py:85 app/models.py:113
+#: app/models.py:88 app/models.py:116
 msgid "Paid Amount"
 msgstr "Importe Pagado"
 
-#: app/models.py:92 app/models.py:110
+#: app/models.py:95 app/models.py:113
 msgid "Sale"
 msgstr "Venta"
 
-#: app/models.py:94
+#: app/models.py:97
 msgid "Unit Price"
 msgstr "Precio Unitario"
 
-#: app/models.py:105
+#: app/models.py:108
 msgid "Paid"
 msgstr "Pagado"
 
-#: app/models.py:106
+#: app/models.py:109
 msgid "Pending"
 msgstr "Pendiente"
 
-#: app/models.py:107
+#: app/models.py:110
 msgid "Partially Paid"
 msgstr "Pago Parcial"
 
-#: app/models.py:111 app/templates/list_sales.html:131
+#: app/models.py:114 app/templates/list_sales.html:131
 msgid "Installment"
 msgstr "Cuota"
 
-#: app/models.py:114
+#: app/models.py:117
 msgid "Payment Date"
 msgstr "Fecha de Pago"
 
-#: app/models.py:116
+#: app/models.py:119
 msgid "Payment Status"
 msgstr "Estado"
 
-#: app/models.py:136
+#: app/models.py:139
 msgid "Login Date/Time"
 msgstr "Fecha/hora de Inicio de Sesión"
 
-#: app/models.py:142
+#: app/models.py:145
 msgid "Login Log"
 msgstr "Log de Inicio de Sesión"
 
@@ -278,20 +278,24 @@ msgstr "Listado de Rendición de Cobranzas"
 msgid "Pending Balance List"
 msgstr "Reporte de Saldos Pendientes"
 
-#: app/templates/base.html:157
+#: app/templates/base.html:139 app/templates/list_defaulters.html:14
+msgid "Defaulters List"
+msgstr "Reporte de Morosos"
+
+#: app/templates/base.html:158
 msgid "You're offline!"
 msgstr "Estas offline!"
 
-#: app/templates/base.html:165
+#: app/templates/base.html:166
 msgid "Last Sync"
 msgstr "Ult. Sincronización"
 
-#: app/templates/base.html:168
+#: app/templates/base.html:169
 msgctxt "Sync button"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: app/templates/base.html:170
+#: app/templates/base.html:171
 msgctxt "Collections pending synchronization tooltip"
 msgid "Collections pending synchronization!"
 msgstr "Cobranzas pendientes de sincronización!"
@@ -345,28 +349,28 @@ msgctxt "Payment scheme"
 msgid "installment of"
 msgstr "cuota de"
 
-#: app/templates/create_sale.html:114
+#: app/templates/create_sale.html:114 app/templates/list_defaulters.html:75
 #: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:167
 #: app/templates/update_sale.html:191
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
-#: app/templates/create_sale.html:115
+#: app/templates/create_sale.html:115 app/templates/list_defaulters.html:76
 #: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:168
 #: app/templates/update_sale.html:192
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
 
-#: app/templates/list_customers.html:27
+#: app/templates/list_customers.html:27 app/templates/list_defaulters.html:26
 #: app/templates/list_pending_balance.html:26
 #: app/templates/list_products.html:23 app/templates/list_sales.html:40
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtrar"
 
-#: app/templates/list_customers.html:28
+#: app/templates/list_customers.html:28 app/templates/list_defaulters.html:27
 #: app/templates/list_pending_balance.html:27
 #: app/templates/list_products.html:24 app/templates/list_sales.html:41
 msgctxt "Clear filters button"
@@ -399,7 +403,7 @@ msgctxt "Column name"
 msgid "Collector"
 msgstr "Cobrador"
 
-#: app/templates/list_customers.html:42
+#: app/templates/list_customers.html:42 app/templates/list_defaulters.html:43
 #: app/templates/list_pending_balance.html:40
 #: app/templates/list_products.html:36 app/templates/list_sales.html:57
 #: app/templates/list_users.html:15
@@ -417,10 +421,30 @@ msgstr "Editar"
 msgid "More Details"
 msgstr "Mas Detalles"
 
+#: app/templates/list_defaulters.html:39
 #: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:50
 msgctxt "Column name"
 msgid "Customer"
 msgstr "Cliente"
+
+#: app/templates/list_defaulters.html:40
+msgctxt "Column name"
+msgid "Sale ID"
+msgstr "ID de Venta"
+
+#: app/templates/list_defaulters.html:41
+msgctxt "Column name"
+msgid "Last Payment Date"
+msgstr "Última Cobranza"
+
+#: app/templates/list_defaulters.html:42
+msgctxt "Column name"
+msgid "Days Late"
+msgstr "Días de Mora"
+
+#: app/templates/list_defaulters.html:51
+msgid "No Payments"
+msgstr "Sin Pagos"
 
 #: app/templates/list_pending_balance.html:37
 msgctxt "Column name"
@@ -578,15 +602,15 @@ msgctxt "Delete modal dialog text"
 msgid "Do you really want to delete this sale?"
 msgstr "Realmente desea eliminar esta venta?"
 
-#: app/views.py:150
+#: app/views.py:152
 msgid "There are sales made to this customer, it cannot be deleted!"
 msgstr "Hay ventas realizadas a este cliente, ¡no se puede eliminar!"
 
-#: app/views.py:215
+#: app/views.py:217
 msgid "The product has already been used in a sale, it cannot be deleted!"
 msgstr "El producto ya ha sido utilizado en una venta, ¡no se puede eliminar!"
 
-#: app/views.py:370
+#: app/views.py:372
 msgid "This sale has already paid installments, it cannot be deleted!"
 msgstr "Esta venta ya tiene cuotas pagadas, ¡no se puede eliminar!"
 

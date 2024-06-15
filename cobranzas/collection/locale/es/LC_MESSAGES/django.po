@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-07 23:19-0300\n"
+"POT-Creation-Date: 2024-06-15 01:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -198,7 +198,7 @@ msgid "Edit"
 msgstr "Editar"
 
 #: collection/templates/list_collection.html:75
-#: collection/templates/print_collection.html:48
+#: collection/templates/print_collection.html:43
 msgid "Details of Fees"
 msgstr "Detalle de Cuotas"
 
@@ -256,28 +256,36 @@ msgstr "Hora"
 msgid "Trans. ID"
 msgstr "Nro. Tran."
 
-#: collection/templates/print_collection.html:44
+#: collection/templates/print_collection.html:39
 msgid "COLLECTOR"
 msgstr "COBRADOR"
 
-#: collection/templates/print_collection.html:58
+#: collection/templates/print_collection.html:48
+msgid "Products"
+msgstr "Productos"
+
+#: collection/templates/print_collection.html:55
 msgid "Installment"
 msgstr "Cuota"
 
-#: collection/templates/print_collection.html:62
+#: collection/templates/print_collection.html:56
 msgid "Sale"
 msgstr "Venta"
 
-#: collection/templates/print_collection.html:71
+#: collection/templates/print_collection.html:57
+msgid "Sale Date"
+msgstr "Fecha de Venta"
+
+#: collection/templates/print_collection.html:58
 msgid "Balance"
 msgstr "Saldo"
 
-#: collection/templates/print_collection.html:81
+#: collection/templates/print_collection.html:66
 #: collection/templates/print_local_collection.html:51
 msgid "TOTAL"
 msgstr "TOTAL"
 
-#: collection/templates/print_collection.html:88
+#: collection/templates/print_collection.html:72
 #: collection/templates/print_local_collection.html:58
 msgid "Please keep this proof of payment"
 msgstr "Conserve este comprobante de pago"
