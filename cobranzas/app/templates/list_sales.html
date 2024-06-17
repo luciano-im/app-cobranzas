@@ -5,6 +5,7 @@
 {% load humanize %}
 {% load mathfilters %}
 {% load crispy_forms_tags %}
+{% load lookup_dict %}
 
 {% block extra_header %}
   <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
@@ -130,6 +131,7 @@
                           <th>{% translate "Amount" context "Column name" %}</th>
                           <th>{% translate "Amount Paid" context "Column name" %}</th>
                           <th>{% translate "Status" context "Column name" %}</th>
+                          <th class="text-center">{% translate "Last Payment Date" context "Column name" %}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -139,6 +141,16 @@
                             <td>{{i.installment_amount|floatformat:0|intcomma}}</td>
                             <td>{{i.paid_amount|floatformat:0|intcomma}}</td>
                             <td>{{i.get_status_display}}</td>
+                            {% if i.status != 'PENDING' %}
+                              {% lookup_dict last_payment_list i.pk as date %}
+                              {% if date %}
+                                <td class="text-center">{{date|date:"D d/m/y"}}</td>
+                              {% else %}
+                                <td></td>
+                              {% endif %}
+                            {% else %}
+                              <td></td>
+                            {% endif %}
                           </tr>
                         {% endfor %}
                       </tbody>

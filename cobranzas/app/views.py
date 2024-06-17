@@ -24,6 +24,7 @@ from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
 from app.forms import CustomAuthenticationForm, PendingBalanceFilterForm
 from app.forms import create_saleproduct_formset
 from app.models import User, Customer, Sale, Product, SaleProduct, SaleInstallment
+from collection.models import CollectionInstallment
 
 from app.permissions import AdminPermission
 
@@ -379,8 +380,8 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
     filterset = [
         ('id', 'pk', 'iexact'),
         ('customer', 'customer', 'exact'),
-        ('date_from', 'date', 'gte'),
-        ('date_to', 'date', 'lte'),
+        ('date_from', 'sale_date', 'gte'),
+        ('date_to', 'sale_date', 'lte'),
         ('product', 'saleproduct__product_id', 'exact'),
     ]
 
@@ -390,21 +391,36 @@ class SaleListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView)
         if filters:
             queryset = Sale.objects.\
                 filter(filters).\
-                prefetch_related('saleinstallment_set').\
-                annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
-                all()
+                prefetch_related('saleinstallment_set', 'saleproduct_set').\
+                select_related('customer').\
+                annotate(products_quantity=Count('saleproduct__pk', distinct=True))
         else:
             # Filter last month by default
             queryset = Sale.objects.\
-                filter(date__gte=timezone.now() - relativedelta(days=7)).\
-                prefetch_related('saleinstallment_set').\
-                annotate(products_quantity=Count('saleproduct__pk', distinct=True)).\
-                all()
+                filter(sale_date__gte=timezone.now() - relativedelta(days=7)).\
+                prefetch_related('saleinstallment_set', 'saleproduct_set').\
+                select_related('customer').\
+                annotate(products_quantity=Count('saleproduct__pk', distinct=True))
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
         context['filter_form'] = SaleFilterForm(self.request.GET)
+
+        # Get paid (totally or partially) installments ID
+        sale_installments = SaleInstallment.objects.\
+            filter(sale_id__in=Subquery(queryset.values('pk'))).\
+            filter(~Q(status='PENDING'))
+        # Calculate last payment date for paid installments
+        last_payment_list = CollectionInstallment.objects.\
+            filter(sale_installment__in=sale_installments.values('pk')).\
+            annotate(last_payment=Max('collection__date')).\
+            values('sale_installment', 'last_payment')
+        # Pass installment/payment_date to context as a dictionary
+        context['last_payment_list'] = {e['sale_installment']: e['last_payment'] for e in last_payment_list}
+
         return context
 
 
