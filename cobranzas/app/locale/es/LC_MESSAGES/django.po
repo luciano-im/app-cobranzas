@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-15 10:37-0300\n"
+"POT-Creation-Date: 2024-06-17 10:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgid "Collector"
 msgstr "Cobrador"
 
 #: app/forms.py:60 app/forms.py:82 app/models.py:74
-#: app/templates/list_sales.html:31
+#: app/templates/list_sales.html:32
 msgid "Sale Date"
 msgstr "Fecha de Venta"
 
@@ -172,7 +172,7 @@ msgstr "Pendiente"
 msgid "Partially Paid"
 msgstr "Pago Parcial"
 
-#: app/models.py:114 app/templates/list_sales.html:131
+#: app/models.py:114 app/templates/list_sales.html:132
 msgid "Installment"
 msgstr "Cuota"
 
@@ -242,7 +242,7 @@ msgstr "Ventas"
 msgid "New Sale"
 msgstr "Nueva Venta"
 
-#: app/templates/base.html:112 app/templates/list_sales.html:15
+#: app/templates/base.html:112 app/templates/list_sales.html:16
 msgid "Sales List"
 msgstr "Listado de Ventas"
 
@@ -350,14 +350,14 @@ msgid "installment of"
 msgstr "cuota de"
 
 #: app/templates/create_sale.html:114 app/templates/list_defaulters.html:79
-#: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:167
+#: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:179
 #: app/templates/update_sale.html:191
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: app/templates/create_sale.html:115 app/templates/list_defaulters.html:80
-#: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:168
+#: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:180
 #: app/templates/update_sale.html:192
 msgctxt "dselect no results text"
 msgid "No Results"
@@ -365,14 +365,14 @@ msgstr "Sin Resultados"
 
 #: app/templates/list_customers.html:27 app/templates/list_defaulters.html:26
 #: app/templates/list_pending_balance.html:26
-#: app/templates/list_products.html:23 app/templates/list_sales.html:40
+#: app/templates/list_products.html:23 app/templates/list_sales.html:41
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtrar"
 
 #: app/templates/list_customers.html:28 app/templates/list_defaulters.html:27
 #: app/templates/list_pending_balance.html:27
-#: app/templates/list_products.html:24 app/templates/list_sales.html:41
+#: app/templates/list_products.html:24 app/templates/list_sales.html:42
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
@@ -405,19 +405,19 @@ msgstr "Cobrador"
 
 #: app/templates/list_customers.html:42 app/templates/list_defaulters.html:45
 #: app/templates/list_pending_balance.html:40
-#: app/templates/list_products.html:36 app/templates/list_sales.html:57
+#: app/templates/list_products.html:36 app/templates/list_sales.html:58
 #: app/templates/list_users.html:15
 msgctxt "Column name"
 msgid "Actions"
 msgstr "Acciones"
 
 #: app/templates/list_customers.html:58 app/templates/list_products.html:54
-#: app/templates/list_sales.html:80 app/templates/list_users.html:40
+#: app/templates/list_sales.html:81 app/templates/list_users.html:40
 msgctxt "Edit button"
 msgid "Edit"
 msgstr "Editar"
 
-#: app/templates/list_customers.html:70 app/templates/list_sales.html:94
+#: app/templates/list_customers.html:70 app/templates/list_sales.html:95
 msgid "More Details"
 msgstr "Mas Detalles"
 
@@ -427,7 +427,7 @@ msgid "Sale"
 msgstr "Venta"
 
 #: app/templates/list_defaulters.html:40
-#: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:50
+#: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:51
 msgctxt "Column name"
 msgid "Customer"
 msgstr "Cliente"
@@ -442,7 +442,7 @@ msgctxt "Column name"
 msgid "Pending Installments"
 msgstr "Cuotas Pendientes"
 
-#: app/templates/list_defaulters.html:43
+#: app/templates/list_defaulters.html:43 app/templates/list_sales.html:136
 msgctxt "Column name"
 msgid "Last Payment Date"
 msgstr "Última Cobranza"
@@ -480,55 +480,55 @@ msgctxt "Column name"
 msgid "Brand"
 msgstr "Marca"
 
-#: app/templates/list_products.html:34 app/templates/list_sales.html:116
+#: app/templates/list_products.html:34 app/templates/list_sales.html:117
 msgctxt "Column name"
 msgid "Price"
 msgstr "Precio"
 
-#: app/templates/list_sales.html:49
+#: app/templates/list_sales.html:50
 msgctxt "Column name"
 msgid "Date"
 msgstr "Fecha"
 
-#: app/templates/list_sales.html:53 app/templates/list_sales.html:132
+#: app/templates/list_sales.html:54 app/templates/list_sales.html:133
 msgctxt "Column name"
 msgid "Amount"
 msgstr "Importe"
 
-#: app/templates/list_sales.html:54 app/templates/list_sales.html:101
+#: app/templates/list_sales.html:55 app/templates/list_sales.html:102
 msgctxt "Column name"
 msgid "Installments"
 msgstr "Cuotas"
 
-#: app/templates/list_sales.html:55 app/templates/list_sales.html:102
+#: app/templates/list_sales.html:56 app/templates/list_sales.html:103
 msgctxt "Column name"
 msgid "Collected"
 msgstr "Cobrado"
 
-#: app/templates/list_sales.html:56 app/templates/list_sales.html:103
+#: app/templates/list_sales.html:57 app/templates/list_sales.html:104
 msgctxt "Column name"
 msgid "To Collect"
 msgstr "A Cobrar"
 
-#: app/templates/list_sales.html:98
+#: app/templates/list_sales.html:99
 msgid "Other Data"
 msgstr "Otros Datos"
 
-#: app/templates/list_sales.html:115
+#: app/templates/list_sales.html:116
 msgctxt "Column name"
 msgid "Product"
 msgstr "Producto"
 
-#: app/templates/list_sales.html:127
+#: app/templates/list_sales.html:128
 msgid "Details of Fees"
 msgstr "Detalle de Cuotas"
 
-#: app/templates/list_sales.html:133
+#: app/templates/list_sales.html:134
 msgctxt "Column name"
 msgid "Amount Paid"
 msgstr "Importe Pagado"
 
-#: app/templates/list_sales.html:134
+#: app/templates/list_sales.html:135
 msgctxt "Column name"
 msgid "Status"
 msgstr "Estado"
@@ -612,15 +612,15 @@ msgctxt "Delete modal dialog text"
 msgid "Do you really want to delete this sale?"
 msgstr "Realmente desea eliminar esta venta?"
 
-#: app/views.py:152
+#: app/views.py:153
 msgid "There are sales made to this customer, it cannot be deleted!"
 msgstr "Hay ventas realizadas a este cliente, ¡no se puede eliminar!"
 
-#: app/views.py:217
+#: app/views.py:218
 msgid "The product has already been used in a sale, it cannot be deleted!"
 msgstr "El producto ya ha sido utilizado en una venta, ¡no se puede eliminar!"
 
-#: app/views.py:372
+#: app/views.py:373
 msgid "This sale has already paid installments, it cannot be deleted!"
 msgstr "Esta venta ya tiene cuotas pagadas, ¡no se puede eliminar!"
 
