@@ -434,6 +434,11 @@ class PendingBalanceListView(LoginRequiredMixin, AdminPermission, ListView, Filt
 
     def get_queryset(self):
         filters = self.get_filters(self.request)
+
+        collector = self.request.GET.get('collector', None)
+        if collector:
+            filters = filters & (Q(customer__collector=collector) | Q(collector=collector))
+
         sales_with_pending_balance = Sale.objects.\
             filter(filters).\
             filter(uncollectible=False).\

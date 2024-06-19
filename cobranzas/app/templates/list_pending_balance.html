@@ -15,10 +15,13 @@
 
   <form action="{% url 'list-pending-balance' %}" method="get" class="filterset-form">
     <div class="row">
-      <div class="col-sm-5 col-md-5">
+      <div class="col-sm-3">
+        {{ filter_form.collector|as_crispy_field }}
+      </div>
+      <div class="col-sm-4 col-md-5">
         {{ filter_form.customer|as_crispy_field }}
       </div>
-      <div class="col-sm-5 col-md-5">
+      <div class="col-sm-5 col-md-4">
         {{ filter_form.city|as_crispy_field }}
       </div>
     </div>

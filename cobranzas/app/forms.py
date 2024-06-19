@@ -170,3 +170,4 @@ class SaleFilterForm(forms.Form):
 class PendingBalanceFilterForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.order_by('name'), required=False, label=_('Customer'))
     city = forms.ChoiceField(choices=(('', '---------'),) + Customer.CITY, required=False, label=_('City'))
+    collector = UserModelChoiceField(queryset=User.objects.order_by('first_name', 'last_name'), required=False, label=_('Collector'))
