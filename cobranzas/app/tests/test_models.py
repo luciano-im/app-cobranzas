@@ -79,7 +79,7 @@ class SaleModelTest(TestCase):
         customer = mixer.blend(Customer, name='Luciano')
         tz = timezone.get_current_timezone()
         self.today = timezone.make_aware(datetime.datetime.today(), tz, True)
-        self.sale = mixer.blend(Sale, id=1, date=self.today, customer=customer, price=10000.00)
+        self.sale = mixer.blend(Sale, id=1, date=self.today, customer=customer, price=10000.00, sale_date=self.today)
         sale_installment = mixer.blend(SaleInstallment, sale=self.sale, installment_amount=10000.00, paid_amount=2000.00)
 
     def test_sale_instance(self):
@@ -87,8 +87,7 @@ class SaleModelTest(TestCase):
 
     def test_sale_str(self):
         # Convert today to UTC because SQLite store date as UTC
-        utc_today = self.today.astimezone(timezone.utc)
-        self.assertEqual(str(self.sale), f"{utc_today.strftime('%m/%d/%Y')} - Luciano - 1")
+        self.assertEqual(str(self.sale), f"{self.today.strftime('%m/%d/%Y')} - Luciano - 1")
 
     def test_sale_paid_amount(self):
         self.assertEqual(self.sale.paid_amount, 2000.00)
