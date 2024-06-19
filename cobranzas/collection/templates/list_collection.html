@@ -88,7 +88,7 @@
                       <tbody>
                         {% for i in collection.collectioninstallment_set.all %}
                           <tr>
-                            <td>{{i.sale_installment.sale.pk}}</td>
+                            <td><a href="{% url 'list-sales' %}?id={{i.sale_installment.sale.pk}}">{{i.sale_installment.sale.pk}}</a></td>
                             <td>{{i.sale_installment.sale.date|date:"d/m/y"}}</td>
                             <td class="text-center">{{i.sale_installment.installment}}</td>
                             <td class="text-end">{{i.amount|floatformat:0|intcomma}}</td>
