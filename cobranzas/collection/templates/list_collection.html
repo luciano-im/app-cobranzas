@@ -46,7 +46,7 @@
         <th scope="col">{% translate "Date" context "Column name" %}</th>
         <th scope="col">{% translate "Customer" context "Column name" %}</th>
         <th scope="col">{% translate "Amount" context "Column name" %}</th>
-        <th scope="col">{% translate "Actions" context "Column name" %}</th>
+        <th scope="col" class="text-center">{% translate "Actions" context "Column name" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -56,7 +56,7 @@
           <td class="col-2 col-sm-1">{{collection.date|date:"d/m/y"}}</td>
           <td class="col-4">{{collection.customer}}</td>
           <td class="col-2 text-end">{{collection.paid_amount|floatformat:0|intcomma}}</td>
-          <td class="actions col-3 col-sm-4">
+          <td class="actions text-center col-3 col-sm-4">
             <a href="{% url 'print-collection' collection.pk %}" class="btn btn-primary" target="_blank">
               <i class="bi bi-receipt"></i>
               <span class="d-none d-sm-inline">{% translate "Receipt" context "Receipt button" %}</span>
