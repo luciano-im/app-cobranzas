@@ -339,7 +339,7 @@ class SaleUpdateView(LoginRequiredMixin, AdminPermission, UpdateView):
             if product_formset.is_valid():
                 return self.form_valid(form, product_formset)
             else:
-                return ValidationError(product_formset.errors)
+                raise ValidationError(product_formset.errors)
         else:
             # If form and product formset are valid, calculate total price and continue with form_valid
             if form.is_valid() and product_formset.is_valid():
