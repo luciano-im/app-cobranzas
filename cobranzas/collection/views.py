@@ -471,7 +471,7 @@ class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, 
         if filters:
             queryset = CollectionDelivery.objects.\
                 filter(filters).\
-                select_related('collection', 'collector').\
+                select_related('collection', 'collection__customer', 'collector').\
                 order_by('collector', '-pk').\
                 all()
         else:
@@ -483,7 +483,7 @@ class CollectionDeliveryListView(LoginRequiredMixin, AdminPermission, ListView, 
 
             queryset = CollectionDelivery.objects.\
                 filter(date__gte=value).\
-                select_related('collection', 'collector').\
+                select_related('collection', 'collection__customer', 'collector').\
                 order_by('collector', '-pk').\
                 all()
 
