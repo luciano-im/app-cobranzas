@@ -105,7 +105,9 @@ class SaleProductModelTest(TestCase):
         post_save.disconnect(receiver=update_sync_value, sender=Sale, dispatch_uid='app.signals.update_sync_value.Sale')
 
         product = mixer.blend(Product, name='Cocina')
-        sale = mixer.blend(Sale, id=1)
+        tz = timezone.get_current_timezone()
+        self.today = timezone.make_aware(datetime.datetime.today(), tz, True)
+        sale = mixer.blend(Sale, id=1, sale_date=self.today)
         self.sale_product = mixer.blend(SaleProduct, sale=sale, product=product, price=2000.00)
 
     def test_saleproduct_instance(self):
@@ -123,7 +125,9 @@ class SaleInstallmentModelTest(TestCase):
         post_save.disconnect(receiver=postSave_Sale, sender=Sale, dispatch_uid='app.signals.postSave_Sale')
         post_save.disconnect(receiver=update_sync_value, sender=Sale, dispatch_uid='app.signals.update_sync_value.Sale')
 
-        sale = mixer.blend(Sale, id=1)
+        tz = timezone.get_current_timezone()
+        self.today = timezone.make_aware(datetime.datetime.today(), tz, True)
+        sale = mixer.blend(Sale, id=1, sale_date=self.today)
         self.sale_installment = mixer.blend(
             SaleInstallment,
             sale=sale,

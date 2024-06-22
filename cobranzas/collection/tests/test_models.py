@@ -52,7 +52,7 @@ class CollectionInstallmentModelTest(TestCase):
         post_save.disconnect(receiver=update_sync_value, sender=Sale, dispatch_uid='app.signals.update_sync_value.Sale')
 
         collection = mixer.blend(Collection, id=1)
-        sale = mixer.blend(Sale, id=5)
+        sale = mixer.blend(Sale, id=5, sale_date=timezone.make_aware(datetime.datetime.today(), timezone.get_current_timezone(), True))
         sale_installment = mixer.blend(SaleInstallment, sale=sale, installment=12, installment_amount=10000.00, paid_amount=2000.00)
         self.collection_installment = mixer.blend(CollectionInstallment, id=3, collection=collection, sale_installment=sale_installment, amount=2000.00)
 
