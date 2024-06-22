@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q, Sum, F, Count, Prefetch
+from django.db.models.signals import post_save
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -23,6 +24,8 @@ from collection.forms import CollectionFormset, CollectionFilterForm, Collection
 from app.permissions import AdminPermission
 
 from app.serializers import SalesByCustomerSerializer, CustomersSerializer
+
+from app.signals import update_sync_value
 
 from silk.profiling.profiler import silk_profile
 from rest_framework.renderers import JSONRenderer
@@ -425,11 +428,16 @@ class CollectionDeliveryView(LoginRequiredMixin, AdminPermission, TemplateView):
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+
+        # Disable signal to avoid updating Sync value repeteadly
+        post_save.disconnect(receiver=update_sync_value, sender=Collection, dispatch_uid='app.signals.update_sync_value.Collection')
+
         selected_collector = request.POST.get('selected-collector', None)
         if selected_collector:
             collection_list = request.POST.getlist('collection')
             date = datetime.now()
             collector = User.objects.get(id=selected_collector)
+            # TODO: Create CollectionDelivery using bulk_create and validate data using full_clean
             with transaction.atomic():
                 for c in collection_list:
                     collection_id = int(c.split('-')[1])
