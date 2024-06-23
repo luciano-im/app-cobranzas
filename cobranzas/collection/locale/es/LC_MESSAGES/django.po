@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-17 10:53-0300\n"
+"POT-Creation-Date: 2024-06-23 20:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -315,14 +315,14 @@ msgctxt "Column name"
 msgid "Total"
 msgstr "Total"
 
-#: collection/views.py:259
+#: collection/views.py:262
 msgid "The total paid must be greater than zero"
 msgstr "El total pagado debe ser mayor a cero"
 
-#: collection/views.py:352
+#: collection/views.py:355
 msgid "Collection could not be saved"
 msgstr "No se pudo guardar la cobranza"
 
-#: collection/views.py:446
+#: collection/views.py:466
 msgid "The Collector has not been specified"
 msgstr "El Cobrador no ha sido especificado"

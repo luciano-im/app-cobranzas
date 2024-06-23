@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-17 10:53-0300\n"
+"POT-Creation-Date: 2024-06-23 20:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,17 +39,18 @@ msgid "Create User"
 msgstr "Crear Usuario"
 
 #: app/forms.py:45 app/forms.py:63 app/forms.py:84 app/forms.py:149
-#: app/models.py:40 app/models.py:75
+#: app/forms.py:173 app/models.py:40 app/models.py:75
 msgid "Collector"
 msgstr "Cobrador"
 
 #: app/forms.py:60 app/forms.py:82 app/models.py:74
 #: app/templates/list_sales.html:32
+#: app/templates/list_uncollectible_sales.html:22
 msgid "Sale Date"
 msgstr "Fecha de Venta"
 
 #: app/forms.py:61 app/forms.py:83 app/forms.py:164 app/forms.py:171
-#: app/models.py:65
+#: app/forms.py:177 app/models.py:65
 msgid "Customer"
 msgstr "Cliente"
 
@@ -104,11 +105,11 @@ msgstr "SKU"
 msgid "ID"
 msgstr "ID"
 
-#: app/forms.py:165
+#: app/forms.py:165 app/forms.py:178
 msgid "From Date"
 msgstr "Fecha Desde"
 
-#: app/forms.py:166
+#: app/forms.py:166 app/forms.py:179
 msgid "To Date"
 msgstr "Fecha Hasta"
 
@@ -173,6 +174,7 @@ msgid "Partially Paid"
 msgstr "Pago Parcial"
 
 #: app/models.py:114 app/templates/list_sales.html:132
+#: app/templates/list_uncollectible_sales.html:89
 msgid "Installment"
 msgstr "Cuota"
 
@@ -246,56 +248,60 @@ msgstr "Nueva Venta"
 msgid "Sales List"
 msgstr "Listado de Ventas"
 
-#: app/templates/base.html:118
+#: app/templates/base.html:113 app/templates/list_uncollectible_sales.html:14
+msgid "Uncollectible Sales List"
+msgstr "Ventas Incobrables"
+
+#: app/templates/base.html:119
 msgid "Collections"
 msgstr "Cobranzas"
 
-#: app/templates/base.html:121 app/templates/home.html:9
+#: app/templates/base.html:122 app/templates/home.html:9
 msgid "New Collection"
 msgstr "Nueva Cobranza"
 
-#: app/templates/base.html:123 app/templates/home.html:21
+#: app/templates/base.html:124 app/templates/home.html:21
 msgid "Collection List"
 msgstr "Listado de Cobranzas"
 
-#: app/templates/base.html:124
+#: app/templates/base.html:125
 msgid "Non-Synchronized Collections"
 msgstr "Cobranzas sin Sincronizar"
 
-#: app/templates/base.html:127
+#: app/templates/base.html:128
 msgid "Delivery of Collections"
 msgstr "Rendición de Cobros"
 
-#: app/templates/base.html:134
+#: app/templates/base.html:135
 msgid "Reports"
 msgstr "Reportes"
 
-#: app/templates/base.html:137
+#: app/templates/base.html:138
 msgid "Collection Delivery List"
 msgstr "Listado de Rendición de Cobranzas"
 
-#: app/templates/base.html:138 app/templates/list_pending_balance.html:14
+#: app/templates/base.html:139 app/templates/list_pending_balance.html:14
 msgid "Pending Balance List"
 msgstr "Reporte de Saldos Pendientes"
 
-#: app/templates/base.html:139 app/templates/list_defaulters.html:14
+#: app/templates/base.html:140 app/templates/list_defaulters.html:14
 msgid "Defaulters List"
 msgstr "Reporte de Morosos"
 
-#: app/templates/base.html:158
+#: app/templates/base.html:159
 msgid "You're offline!"
 msgstr "Estas offline!"
 
-#: app/templates/base.html:166
+#: app/templates/base.html:167
 msgid "Last Sync"
 msgstr "Ult. Sincronización"
 
-#: app/templates/base.html:169
+#: app/templates/base.html:170
 msgctxt "Sync button"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: app/templates/base.html:171
+#: app/templates/base.html:172
 msgctxt "Collections pending synchronization tooltip"
 msgid "Collections pending synchronization!"
 msgstr "Cobranzas pendientes de sincronización!"
@@ -350,29 +356,33 @@ msgid "installment of"
 msgstr "cuota de"
 
 #: app/templates/create_sale.html:114 app/templates/list_defaulters.html:79
-#: app/templates/list_pending_balance.html:76 app/templates/list_sales.html:179
+#: app/templates/list_pending_balance.html:79 app/templates/list_sales.html:179
+#: app/templates/list_uncollectible_sales.html:126
 #: app/templates/update_sale.html:191
 msgctxt "dselect search button"
 msgid "Search"
 msgstr "Buscar"
 
 #: app/templates/create_sale.html:115 app/templates/list_defaulters.html:80
-#: app/templates/list_pending_balance.html:77 app/templates/list_sales.html:180
+#: app/templates/list_pending_balance.html:80 app/templates/list_sales.html:180
+#: app/templates/list_uncollectible_sales.html:127
 #: app/templates/update_sale.html:192
 msgctxt "dselect no results text"
 msgid "No Results"
 msgstr "Sin Resultados"
 
 #: app/templates/list_customers.html:27 app/templates/list_defaulters.html:26
-#: app/templates/list_pending_balance.html:26
+#: app/templates/list_pending_balance.html:29
 #: app/templates/list_products.html:23 app/templates/list_sales.html:41
+#: app/templates/list_uncollectible_sales.html:31
 msgctxt "Filter button"
 msgid "Filter"
 msgstr "Filtrar"
 
 #: app/templates/list_customers.html:28 app/templates/list_defaulters.html:27
-#: app/templates/list_pending_balance.html:27
+#: app/templates/list_pending_balance.html:30
 #: app/templates/list_products.html:24 app/templates/list_sales.html:42
+#: app/templates/list_uncollectible_sales.html:32
 msgctxt "Clear filters button"
 msgid "Clear"
 msgstr "Borrar Filtros"
@@ -404,7 +414,7 @@ msgid "Collector"
 msgstr "Cobrador"
 
 #: app/templates/list_customers.html:42 app/templates/list_defaulters.html:45
-#: app/templates/list_pending_balance.html:40
+#: app/templates/list_pending_balance.html:43
 #: app/templates/list_products.html:36 app/templates/list_sales.html:58
 #: app/templates/list_users.html:15
 msgctxt "Column name"
@@ -418,16 +428,19 @@ msgid "Edit"
 msgstr "Editar"
 
 #: app/templates/list_customers.html:70 app/templates/list_sales.html:95
+#: app/templates/list_uncollectible_sales.html:66
 msgid "More Details"
 msgstr "Mas Detalles"
 
 #: app/templates/list_defaulters.html:39
+#: app/templates/list_uncollectible_sales.html:38
 msgctxt "Column name"
 msgid "Sale"
 msgstr "Venta"
 
 #: app/templates/list_defaulters.html:40
-#: app/templates/list_pending_balance.html:36 app/templates/list_sales.html:51
+#: app/templates/list_pending_balance.html:39 app/templates/list_sales.html:51
+#: app/templates/list_uncollectible_sales.html:40
 msgctxt "Column name"
 msgid "Customer"
 msgstr "Cliente"
@@ -438,6 +451,7 @@ msgid "Remarks"
 msgstr "Observaciones"
 
 #: app/templates/list_defaulters.html:42
+#: app/templates/list_uncollectible_sales.html:42
 msgctxt "Column name"
 msgid "Pending Installments"
 msgstr "Cuotas Pendientes"
@@ -456,22 +470,22 @@ msgstr "Días de Mora"
 msgid "No Payments"
 msgstr "Sin Pagos"
 
-#: app/templates/list_pending_balance.html:37
+#: app/templates/list_pending_balance.html:40
 msgctxt "Column name"
 msgid "Sales"
 msgstr "Ventas"
 
-#: app/templates/list_pending_balance.html:38
+#: app/templates/list_pending_balance.html:41
 msgctxt "Column name"
 msgid "Paid Amount"
 msgstr "Importe Pagado"
 
-#: app/templates/list_pending_balance.html:39
+#: app/templates/list_pending_balance.html:42
 msgctxt "Column name"
 msgid "Pending Balance"
 msgstr "Saldo Pendiente"
 
-#: app/templates/list_pending_balance.html:62
+#: app/templates/list_pending_balance.html:65
 msgid "Total"
 msgstr "Total"
 
@@ -481,16 +495,20 @@ msgid "Brand"
 msgstr "Marca"
 
 #: app/templates/list_products.html:34 app/templates/list_sales.html:117
+#: app/templates/list_uncollectible_sales.html:73
 msgctxt "Column name"
 msgid "Price"
 msgstr "Precio"
 
 #: app/templates/list_sales.html:50
+#: app/templates/list_uncollectible_sales.html:39
 msgctxt "Column name"
 msgid "Date"
 msgstr "Fecha"
 
 #: app/templates/list_sales.html:54 app/templates/list_sales.html:133
+#: app/templates/list_uncollectible_sales.html:41
+#: app/templates/list_uncollectible_sales.html:90
 msgctxt "Column name"
 msgid "Amount"
 msgstr "Importe"
@@ -515,23 +533,32 @@ msgid "Other Data"
 msgstr "Otros Datos"
 
 #: app/templates/list_sales.html:116
+#: app/templates/list_uncollectible_sales.html:72
 msgctxt "Column name"
 msgid "Product"
 msgstr "Producto"
 
 #: app/templates/list_sales.html:128
+#: app/templates/list_uncollectible_sales.html:85
 msgid "Details of Fees"
 msgstr "Detalle de Cuotas"
 
 #: app/templates/list_sales.html:134
+#: app/templates/list_uncollectible_sales.html:91
 msgctxt "Column name"
 msgid "Amount Paid"
 msgstr "Importe Pagado"
 
 #: app/templates/list_sales.html:135
+#: app/templates/list_uncollectible_sales.html:92
 msgctxt "Column name"
 msgid "Status"
 msgstr "Estado"
+
+#: app/templates/list_uncollectible_sales.html:43
+msgctxt "Column name"
+msgid "Balance Due"
+msgstr "Saldo Adeudado"
 
 #: app/templates/list_users.html:11
 msgctxt "Column name"
@@ -627,9 +654,6 @@ msgstr "Esta venta ya tiene cuotas pagadas, ¡no se puede eliminar!"
 #~ msgctxt "Column name"
 #~ msgid "Sale ID"
 #~ msgstr "ID de Venta"
-
-#~ msgid "Uncollectible Sales"
-#~ msgstr "Ventas Incobrables"
 
 #~ msgctxt "Select customer default option"
 #~ msgid "Select a customer"
