@@ -21,7 +21,7 @@ from django.views.generic.edit import UpdateView
 from app.forms import CustomUserCreationForm, CustomerCreationForm, SaleCreationForm, SaleWithPaymentsUpdateForm
 from app.forms import SaleProductCreationForm, SaleWithPaymentsProductUpdateForm, ProductCreationForm
 from app.forms import CustomerFilterForm, ProductFilterForm, SaleFilterForm
-from app.forms import CustomAuthenticationForm, PendingBalanceFilterForm
+from app.forms import CustomAuthenticationForm, PendingBalanceFilterForm, UncollectibleSalesFilterForm
 from app.forms import create_saleproduct_formset
 from app.models import User, Customer, Sale, Product, SaleProduct, SaleInstallment
 from collection.models import CollectionInstallment
@@ -500,4 +500,37 @@ class DefaultersListView(LoginRequiredMixin, AdminPermission, ListView, FilterSe
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = PendingBalanceFilterForm(self.request.GET)
+        return context
+
+
+class UncollectibleSalesListView(LoginRequiredMixin, AdminPermission, ListView, FilterSetView):
+    template_name = 'list_uncollectible_sales.html'
+    context_object_name = 'sales'
+    filterset = [
+        ('customer', 'customer', 'exact'),
+        ('date_from', 'date', 'gte'),
+        ('date_to', 'date', 'lte'),
+    ]
+
+    def get_queryset(self):
+        filters = self.get_filters(self.request)
+        if filters:
+            queryset = Sale.objects.\
+                filter(filters).\
+                filter(uncollectible=True).\
+                prefetch_related('saleinstallment_set', 'saleproduct_set', 'customer').\
+                annotate(pending_installments=Count('saleinstallment__pk', filter=~Q(saleinstallment__status='PAID')))
+        else:
+            # Filter last month by default
+            queryset = Sale.objects.\
+                filter(sale_date__gte=timezone.now() - relativedelta(months=1)).\
+                filter(uncollectible=True).\
+                prefetch_related('saleinstallment_set', 'saleproduct_set', 'customer').\
+                annotate(pending_installments=Count('saleinstallment__pk', filter=~Q(saleinstallment__status='PAID')))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = UncollectibleSalesFilterForm(self.request.GET)
         return context

@@ -21,6 +21,7 @@ from app.views import HomeView, UserCreationView, UserListView, CustomerCreation
 from app.views import CustomerListView, SaleCreationView, SaleUpdateView, SaleListView
 from app.views import ProductCreationView, ProductUpdateView, ProductListView, LoginView, PendingBalanceListView
 from app.views import ProductDeleteView, CustomerDeleteView, SaleDeleteView, DefaultersListView
+from app.views import UncollectibleSalesListView
 from collection.views import CollectionCreationView, CollectionListView, CollectionPrintView
 from collection.views import CollectionDataView, PendingCollectionView, LocalCollectionPrintView
 from collection.views import CollectionUpdateView, CollectionDeliveryView, CollectionDeliveryListView
@@ -56,6 +57,7 @@ urlpatterns = [
     path('reports/collections-delivery/', CollectionDeliveryListView.as_view(), name='list-collection-delivery'),
     path('reports/pending-balance/', PendingBalanceListView.as_view(), name='list-pending-balance'),
     path('reports/defaulters/', DefaultersListView.as_view(), name='list-defaulters'),
+    path('reports/uncollectible-sales', UncollectibleSalesListView.as_view(), name='list-uncollectible-sales'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # Include SW views

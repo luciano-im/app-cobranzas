@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block extra_header %}
+  <link rel="stylesheet" href="{% static 'library/dselect/dselect.css' %}">
+  <script src="{% static 'library/dselect/dselect.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <h2>{% translate "Uncollectible Sales List" %}</h2>
+
+  <form action="{% url 'list-uncollectible-sales' %}" method="get" class="filterset-form">
+    <div class="row">
+      <div class="col-sm-5 col-md-5">
+        {{ filter_form.customer|as_crispy_field }}
+      </div>
+      <div class="col-sm-8 col-md-6 col-lg-5">
+        <label for="id_date_from" class="form-label">{% translate "Sale Date" %}</label>
+        <div class="input-group mb-3">
+          <input type="date" name="date_from" class="dateinput form-control" id="id_date_from" value="{{filter_form.date_from.value}}">
+          <span class="input-group-text">&nbsp;</span>
+          <input type="date" name="date_to" class="dateinput form-control" id="id_date_to" value="{{filter_form.date_to.value}}">
+        </div>
+      </div>
+    </div>
+    <div>
+      <input type="submit" value="{% translate "Filter" context "Filter button" %}" class="btn btn-primary">
+      <a href="{% url 'list-customers' %}" class="btn btn-secondary erase-filters">{% translate "Clear" context "Clear filters button" %}</a>
+    </div>
+  </form>
+  <table class="table table-hover table-with-installments-detail">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">{% translate "Sale" context "Column name" %}</th>
+        <th scope="col">{% translate "Date" context "Column name" %}</th>
+        <th scope="col">{% translate "Customer" context "Column name" %}</th>
+        <th scope="col" class="text-center">{% translate "Amount" context "Column name" %}</th>
+        <th scope="col" class="text-center col-2 d-none d-sm-table-cell">{% translate "Pending Installments" context "Column name" %}</th>
+        <th scope="col" class="text-center" style="color: red;">{% translate "Balance Due" context "Column name" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sale in sales %}
+        <tr class="sale-detail">
+          <th scope="row" class="col-1">{{sale.id}}</th>
+          <td class="col-2">{{sale.date|date:"d/m/y"}}</td>
+          <td class="col-3">{{sale.customer}}</td>
+          <td class="text-center col-2">{{sale.price|floatformat:0|intcomma}}</td>
+          <td class="text-center col-2 d-none d-sm-table-cell">{{sale.pending_installments|floatformat:0|intcomma}}</td>
+          <td class="text-center col-2" style="color: red;">{{sale.pending_balance|floatformat:0|intcomma}}</td>
+        </tr>
+        <tr>
+          <td colspan="6" class="sale-remarks">
+            {{sale.remarks}}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" class="installments-detail">
+            <div class="accordion accordion-flush" id="accordion-flush-{{sale.id|unlocalize}}">
+              <div class="accordion-item">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{sale.id|unlocalize}}" aria-expanded="false" aria-controls="flush-collapse-{{sale.id|unlocalize}}">
+                  {% translate "More Details" %}
+                </button>
+                <div id="flush-collapse-{{sale.id|unlocalize}}" class="accordion-collapse collapse" aria-labelledby="flush-heading-{{sale.id|unlocalize}}" data-bs-parent="#accordion-flush-{{sale.id|unlocalize}}">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead class="table-light">
+                        <th scope="col">{% translate "Product" context "Column name" %}</th>
+                        <th scope="col">{% translate "Price" context "Column name" %}</th>
+                      </thead>
+                      <tbody>
+                        {% for p in sale.saleproduct_set.all %}
+                          <tr>
+                            <td>{{p.product}}</td>
+                            <td>{{p.price|floatformat:0|intcomma}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <br>
+                    <h6>{% translate "Details of Fees" %}</h6>
+                    <table class="table">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="row">{% translate "Installment" %}</th>
+                          <th>{% translate "Amount" context "Column name" %}</th>
+                          <th>{% translate "Amount Paid" context "Column name" %}</th>
+                          <th>{% translate "Status" context "Column name" %}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in sale.saleinstallment_set.all|dictsort:"id" %}
+                          <tr>
+                            <td scope="row">{{i.installment}}</td>
+                            <td>{{i.installment_amount|floatformat:0|intcomma}}</td>
+                            <td>{{i.paid_amount|floatformat:0|intcomma}}</td>
+                            <td>{{i.get_status_display}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  const config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: false, // Creatable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: '', // Can be "sm" or "lg". Default ''
+    placeholder: '{% translate "Search" context "dselect search button" %}',
+    noResults: '{% translate "No Results" context "dselect no results text" %}'
+  };
+  dselect(document.querySelector('#id_customer'), config);
+
+  // Set focus on search field when user opens the select element
+  const customerSelect = document.querySelector('#id_customer + div.dselect-wrapper');
+  const customerSearch = customerSelect.querySelector('.dropdown-menu input');
+
+  customerSelect.addEventListener('shown.bs.dropdown', e => {
+    customerSearch.focus();
+  });
+</script>
+{% endblock %}
