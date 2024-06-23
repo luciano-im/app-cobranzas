@@ -373,7 +373,13 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
         if filters:
             queryset = Collection.objects.\
                 filter(filters).\
-                prefetch_related('collectioninstallment_set').\
+                prefetch_related(
+                    Prefetch('collectioninstallment_set', queryset=CollectionInstallment.objects.select_related(
+                        'sale_installment',
+                        'sale_installment__sale'
+                    ))
+                ).\
+                select_related('customer').\
                 annotate(paid_amount=Sum('collectioninstallment__amount')).\
                 order_by('-pk').\
                 all()
@@ -386,7 +392,13 @@ class CollectionListView(LoginRequiredMixin, ListView, FilterSetView):
 
             queryset = Collection.objects.\
                 filter(date__gte=value).\
-                prefetch_related('collectioninstallment_set').\
+                prefetch_related(
+                    Prefetch('collectioninstallment_set', queryset=CollectionInstallment.objects.select_related(
+                        'sale_installment',
+                        'sale_installment__sale'
+                    ))
+                ).\
+                select_related('customer').\
                 annotate(paid_amount=Sum('collectioninstallment__amount')).\
                 order_by('-pk').\
                 all()
