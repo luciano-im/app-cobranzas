@@ -1,0 +1,21 @@
+{
+  "sqltools.connections": [],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none",
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  // "python.testing.unittestArgs": [
+  //   "-v",
+  //   "-s",
+  //   "./cobranzas",
+  //   "-p",
+  //   "test*.py"
+  // ],
+  "python.testing.pytestArgs": [
+    "cobranzas",
+    "-s",
+    "-vv"
+  ],
+}
